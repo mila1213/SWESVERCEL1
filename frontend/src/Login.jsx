@@ -1,58 +1,69 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { auth } from '../firebase'; 
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { Link, useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate(); 
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Aquí luego conectarás con Firebase o Supabase
-    console.log("Intentando iniciar sesión con:", { email, password });
-    alert(`Iniciando sesión como: ${email}`);
+    setError(''); 
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      alert("¡Bienvenido de nuevo!");
+    } catch (err) {
+      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+        setError("Correo o contraseña incorrectos.");
+      } else {
+        setError("Ocurrió un error al intentar iniciar sesión.");
+      }
+    }
   };
 
   return (
-    <div style={styles.container}>
-      <form onSubmit={handleLogin} style={styles.form}>
-        <h2 style={styles.title}>Iniciar Sesión</h2>
-        
-        <div style={styles.inputGroup}>
-          <label>Correo Electrónico:</label>
-          <input 
-            type="email" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-            required 
-            style={styles.input}
-            placeholder="ejemplo@epn.edu.ec"
-          />
-        </div>
+    <div className="auth-container">
+      <div className="auth-card">
+        <form className="auth-form" onSubmit={handleLogin}>
+          <h2 className="auth-title">Iniciar Sesión</h2>
+          
+          {error && <p className="error-message">{error}</p>}
 
-        <div style={styles.inputGroup}>
-          <label>Contraseña:</label>
-          <input 
-            type="password" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-            required 
-            style={styles.input}
-            placeholder="********"
-          />
-        </div>
+          <div className="input-group">
+            <label>Correo Electrónico</label>
+            <input 
+              type="email" 
+              placeholder="ejemplo@epn.edu.ec" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)} 
+              required 
+            />
+          </div>
 
-        <button type="submit" style={styles.button}>Entrar</button>
-      </form>
+          <div className="input-group">
+            <label>Contraseña</label>
+            <input 
+              type="password" 
+              placeholder="••••••••" 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)} 
+              required 
+            />
+          </div>
+
+          <button type="submit" className="auth-button">Entrar</button>
+        </form>
+
+        <div className="auth-footer">
+          <p>¿No tienes cuenta? <Link to="/register" className="auth-link">Regístrate aquí</Link></p>
+        </div>
+      </div>
     </div>
   );
-};
-
-const styles = {
-  container: { display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' },
-  form: { padding: '2rem', border: '1px solid #ccc', borderRadius: '8px', background: '#f9f9f9', width: '300px' },
-  title: { textAlign: 'center', marginBottom: '1rem', color: '#333' },
-  inputGroup: { marginBottom: '1rem' },
-  input: { width: '100%', padding: '8px', marginTop: '5px', borderRadius: '4px', border: '1px solid #ddd' },
-  button: { width: '100%', padding: '10px', background: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }
 };
 
 export default Login;
