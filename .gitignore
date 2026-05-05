@@ -1,7 +1,9 @@
 # Node / React
 node_modules/
 .env
-.firebase.js
+scr/
+firebase.js
+
 # Java
 target/
 *.class
