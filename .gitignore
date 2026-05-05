@@ -10,3 +10,6 @@ target/
 # IDEs
 .vscode/
 .idea/
+
+# Firebase credentials
+backend/serviceAccountKey.json
