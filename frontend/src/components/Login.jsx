@@ -16,7 +16,7 @@ const Login = () => {
       });
 
       if (res.ok) {
-        alert("¡Bienvenido!");
+        alert("Bienvenido!");
         navigate('/'); 
       } else {
         alert("Credenciales incorrectas");
