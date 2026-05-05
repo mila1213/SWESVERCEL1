@@ -1,76 +1,42 @@
-import React, { useState } from 'react';
-import { auth } from '../../firebase'; 
-import { signInWithEmailAndPassword } from "firebase/auth";
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError('');
+    const { email, password } = Object.fromEntries(new FormData(e.target));
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      alert("¡Bienvenido!");
-      navigate('/inventory'); 
+      const res = await fetch('http://localhost:8000/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
 
-    } catch (err) {
-      if (
-        err.code === 'auth/user-not-found' || 
-        err.code === 'auth/wrong-password' || 
-        err.code === 'auth/invalid-credential' ||
-        err.code === 'auth/invalid-email'
-      ) {
-        setError("Correo o contraseña incorrectos.");
+      if (res.ok) {
+        alert("¡Bienvenido!");
+        navigate('/'); 
       } else {
-        setError("Error al intentar iniciar sesión.");
+        alert("Credenciales incorrectas");
       }
+    } catch {
+      alert("Error de conexión");
     }
   };
 
   return (
     <div>
+      <h2>Iniciar Sesión</h2>
       <form onSubmit={handleLogin}>
-        <h2>Iniciar Sesión</h2>
-
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-
-        <div>
-          <label>Correo Electrónico</label>
-          <input 
-            type="email" 
-            placeholder="ejemplo@correo.com" 
-            value={email}
-            onChange={(e) => setEmail(e.target.value)} 
-            required 
-          />
-        </div>
+        <input name="email" type="email" placeholder="Correo" required />
+       <br />
+        <input name="password" type="password" placeholder="Contraseña" required />
         <br />
-
-        <div>
-          <label>Contraseña</label>
-          <input 
-            type="password" 
-            placeholder="••••••••" 
-            value={password}
-            onChange={(e) => setPassword(e.target.value)} 
-            required 
-          />
-        </div>
-        <br />
-
         <button type="submit">Entrar</button>
       </form>
-
-      <div>
-        <p>
-          ¿No tienes cuenta? <Link to="/register">Regístrate aquí</Link>
-        </p>
-      </div>
+      <p>¿No tienes cuenta? <Link to="/register">Regístrate</Link></p>
     </div>
   );
 };

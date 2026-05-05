@@ -1,65 +1,44 @@
-import React, { useState } from 'react';
-import { auth, db } from '../../firebase'; 
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 const Register = () => {
-  const [nombre, setNombre] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const { nombre, email, password } = Object.fromEntries(new FormData(e.target));
 
     try {
-      
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      await setDoc(doc(db, 'usuarios', user.uid), {
-        nombre: nombre,
-        email: email,
+      const res = await fetch('http://localhost:8000/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, email, password }),
       });
 
-      alert("¡Usuario registrado con éxito!");
-      
-      // Limpiar el formulario
-      setNombre('');
-      setEmail('');
-      setPassword('');
-
-      navigate('/login');
-
-    } catch (error) {
-      console.error("Error:", error.code);
-      if (error.code === 'auth/email-already-in-use') {
-        alert("El correo ya está en uso.");
+      if (res.ok) {
+        alert("¡Éxito!");
+        navigate('/login');
       } else {
-        alert("Ocurrió un error al registrarse.");
+        alert("Error en el registro");
       }
+    } catch {
+      alert("Error de conexión");
     }
   };
 
   return (
     <div>
       <h2>Registro</h2>
-
       <form onSubmit={handleSubmit}>
-        <input type="text" placeholder="Nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
-        <br /><br />
-
-        <input type="email" placeholder="Correo" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <br /><br />
-
-        <input type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} required/>
-        <br /><br />
+        <input name="nombre" placeholder="Nombre" required />
+        <br />
+        <input name="email" type="email" placeholder="Correo" required />
+        <br />
+        <input name="password" type="password" placeholder="Contraseña" required />
+        <br />
         <button type="submit">Registrarse</button>
       </form>
-
-      <p>
-        ¿Ya tienes cuenta? <Link to="/login">Inicia sesión aquí</Link>
-      </p>
+      <p>¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link></p>
     </div>
   );
 };
