@@ -1,47 +1,42 @@
 import React, { useState } from 'react';
-import { auth, db } from '../firebase';
+import { auth, db } from '../../firebase'; 
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
-import { Link } from 'react-router-dom'; 
+import { Link, useNavigate } from 'react-router-dom';
 
 const Register = () => {
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
+      
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
+      await setDoc(doc(db, 'usuarios', user.uid), {
+        nombre: nombre,
+        email: email,
+      });
 
-      alert("Usuario registrado exitosamente");
-
-      try {
-        await setDoc(doc(db, 'usuarios', user.uid), {
-          nombre: nombre,
-          email: email
-        });
-
-        alert("Registrado exitosamente");
-
-      } catch (firestoreError) {
-        console.error("Error Firestore:", firestoreError);
-        alert("Usuario creado, pero error al guardar en Firestore");
-      }
-
+      alert("¡Usuario registrado con éxito!");
+      
+      // Limpiar el formulario
       setNombre('');
       setEmail('');
       setPassword('');
 
-    } catch (authError) {
-      console.error("Error Auth:", authError);
+      navigate('/login');
 
-      if (authError.code === 'auth/email-already-in-use') {
-        alert("El correo ya está registrado");
+    } catch (error) {
+      console.error("Error:", error.code);
+      if (error.code === 'auth/email-already-in-use') {
+        alert("El correo ya está en uso.");
       } else {
-        alert("Error: " + authError.message);
+        alert("Ocurrió un error al registrarse.");
       }
     }
   };
@@ -53,16 +48,17 @@ const Register = () => {
       <form onSubmit={handleSubmit}>
         <input type="text" placeholder="Nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
         <br /><br />
+
         <input type="email" placeholder="Correo" value={email} onChange={(e) => setEmail(e.target.value)} required />
         <br /><br />
+
         <input type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} required/>
         <br /><br />
-        <button type="submit">
-          Registrarse
-        </button>
+        <button type="submit">Registrarse</button>
       </form>
+
       <p>
-        ¿Ya tienes una cuenta? <Link to="/login">Inicia sesión aquí</Link>
+        ¿Ya tienes cuenta? <Link to="/login">Inicia sesión aquí</Link>
       </p>
     </div>
   );
