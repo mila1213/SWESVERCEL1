@@ -1,11 +1,10 @@
 # SWES
 
-Descripcion: ...
+Descripcion: Desarrollo de un sistema web para la promoción, gestión y búsqueda de emprendimientos y servicios de los estudiantes de la Escuela Politecnica Nacional. 
 
 ## Estructura
 * **/docs**: Diseños y mockups.
 * **/frontend**: Interfaz de usuario creada con:
-  
   1. React + Vite: Proporciona un renderizado eficiente de componentes y una velocidad de desarrollo superior gracias al hot-reload de Vite.
   2. Tailwind CSS: Framework principal de estilos dentro del frontend.
   3. Configuración Visual: El diseño se centra en los archivos **tailwind.config.js** e **index.css**
@@ -13,7 +12,7 @@ Descripcion: ...
 * **.gitignore**: Configurado para no subir archivos innecesarios o pesados.
 
 ## Tecnologías
-* **Base de Datos**: 
+* **Base de Datos**: Firestone.
 * **Autenticación**: Firebase.
 * **Entorno**: Node.js v24.14.1 y npm 11.11.0.
 * **Desarrollo de la interfaz de usuario del sistema**: Tailwind CSS
