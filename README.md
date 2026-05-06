@@ -69,6 +69,14 @@ El sistema sigue una arquitectura cliente-servidor:
 - El sistema requiere configuración manual de Firebase
 - No incluye archivo `serviceAccountKey.json` por seguridad
 
+## Diseño y Mockups
+
+Puedes visualizar el prototipo del sistema en Figma en el siguiente enlace:
+
+https://www.figma.com/design/fNTTzkFcvX08LUIrXNV0WA/Sin-t%C3%ADtulo?node-id=0-1&t=gz4VUQkisP9iNQFS-1
+
+Nota: El diseño presentado en Figma es una propuesta conceptual y puede sufrir modificaciones durante el desarrollo del sistema.
+
 ## Capturas del sistema
 
 1. Registro de cuenta
