@@ -7,11 +7,15 @@ El sistema permite a los usuarios registrarse e iniciar sesión para acceder a s
 La plataforma organiza los emprendimientos en distintas categorías, como tecnología, educación y comida, facilitando la búsqueda y navegación. De esta manera, SWES fomenta la colaboración, visibilidad y crecimiento de iniciativas estudiantiles dentro de la comunidad universitaria.
 
 ## Funcionalidades
+
 - Registro e inicio de sesión de usuarios
-- Publicación de emprendimientos
-- Visualización de servicios
+- Publicación y gestión de emprendimientos
+- Visualización de servicios disponibles
 - Clasificación por categorías (tecnología, educación, comida)
-- Navegación entre usuarios y servicios
+- Navegación entre usuarios y emprendimientos
+- Contacto directo con los emprendimientos a través de WhatsApp
+- Comunicación rápida entre cliente y emprendedor para facilitar acuerdos y consultas
+  
 ## Arquitectura del sistema
 
 El sistema sigue una arquitectura cliente-servidor:
