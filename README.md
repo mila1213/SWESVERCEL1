@@ -4,7 +4,10 @@ Descripcion: ...
 
 ## Estructura
 * **/docs**: Diseños y mockups.
-* **/frontend**: Interfaz de usuario creada con **React + Vite**.
+* **/frontend**: Interfaz de usuario creada con:
+  **1. React + Vite: ** Proporcion un renderizado eficiente de componentes y una velocidad de desarrollo superior gracias al hot-reload de Vite.
+  **2. Tailwind CSS: ** Framework principal de estilos dentro del frontend.
+  **3. Configuración Visual: ** El diseño se centra en los archivos **tailwind.config.js** e **index.css**
 * **/backend**: Carpeta para la lógica del servidor.
 * **.gitignore**: Configurado para no subir archivos innecesarios o pesados.
 
