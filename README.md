@@ -86,8 +86,20 @@ Nota: El diseño presentado en Figma es una propuesta conceptual y puede sufrir 
    <img width="959" height="499" alt="image" src="https://github.com/user-attachments/assets/1226b376-373c-40cd-a84a-ac3dd7fc5694" />
 
 3. Inicio de sesion
+
+   <img width="702" height="443" alt="image" src="https://github.com/user-attachments/assets/44d85d26-9478-4c7b-821e-91606538f5b2" />
+
+5. Autenticacion de inicio de sesion: Credenciales incorrectas
    
-   <img width="959" height="500" alt="image" src="https://github.com/user-attachments/assets/fb567b24-f2a9-4d5a-803d-40fba4086585" />
+   <img width="699" height="434" alt="image" src="https://github.com/user-attachments/assets/15097803-02d6-4ce5-91f8-b322e94b45ae" />
+
+6. Autenticacion de registro de usuario: Validacion de correo electronico unico
+
+   <img width="701" height="440" alt="image" src="https://github.com/user-attachments/assets/1795b7c4-ed4f-46f0-a5bb-ef100b6543af" />
+
+7. Autenticacion de registro de usuario: Validacion de la contraseña con un minimo de 6 caracteres
+
+   <img width="701" height="441" alt="image" src="https://github.com/user-attachments/assets/c70a2252-1fa8-48d2-a786-4d1ea86ee7a3" />
 
 4. Autenticacion en Firebase
 
