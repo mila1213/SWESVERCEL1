@@ -79,7 +79,7 @@ Nota: El diseño presentado en Figma es una propuesta conceptual y puede sufrir 
 
 ## Capturas del sistema
 
-1. Registro de cuenta
+1. Registro de cuenta 
    
    <img width="959" height="500" alt="image" src="https://github.com/user-attachments/assets/c858c9ed-aaf8-4cce-a101-8ca08302a070" />
 
@@ -88,6 +88,11 @@ Nota: El diseño presentado en Figma es una propuesta conceptual y puede sufrir 
 3. Inicio de sesion
    
    <img width="959" height="500" alt="image" src="https://github.com/user-attachments/assets/fb567b24-f2a9-4d5a-803d-40fba4086585" />
+
+4. Autenticacion en Firebase
+
+   <img width="1535" height="629" alt="image" src="https://github.com/user-attachments/assets/44a5ce2a-9cbb-4575-8726-0daa01138c08" />
+
 
 ## Autores
 - Nombres: Concepcion Arequipa, Camila Bueno y Leonor Yumi
