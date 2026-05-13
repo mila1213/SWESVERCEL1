@@ -1,6 +1,5 @@
 const express = require("express");
 const cors = require("cors");
-// Asegúrate de que en ./firebase estés exportando 'admin' y 'auth' correctamente
 const { auth } = require("./firebase");
 
 const app = express();
@@ -14,7 +13,7 @@ app.get("/", (req, res) => res.send("API Firebase funcionando"));
 //REGISTRO -
 app.post("/api/register", async (req, res) => {
   try {
-    const { email, password, nombre } = req.body; // Añadimos nombre por tu formulario anterior
+    const { email, password, nombre } = req.body; 
 
     if (!email || !password) {
       return res.status(400).json({ mensaje: "Faltan datos obligatorios" });
