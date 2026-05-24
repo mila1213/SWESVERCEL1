@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getAll } from '../services/crudService';
 
-export default function Dashboard() {
+function Dashboard() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -50,3 +50,4 @@ export default function Dashboard() {
     </div>
   );
 }
+export default Dashboard;

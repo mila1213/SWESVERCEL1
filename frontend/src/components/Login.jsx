@@ -18,13 +18,15 @@ const Login = () => {
         body: JSON.stringify({ email, password }),
       });
 
+      const data = await res.json();
       if (res.ok) {
         alert("Bienvenido!");
         navigate('/dashboard'); 
       } else {
-        alert("Credenciales incorrectas");
+        alert(data.mensaje || data.message || "Credenciales incorrectas");
       }
-    } catch {
+    } catch (error) {
+      console.error(error);
       alert("Error de conexión");
     }
   };

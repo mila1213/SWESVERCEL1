@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getAll, deleteResource } from '../services/crudService';
 import { Link, useNavigate } from 'react-router-dom';
 
-export default function AdminProducts() {
+ function AdminProducts() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -65,3 +65,4 @@ export default function AdminProducts() {
     </div>
   );
 }
+export default AdminProducts;

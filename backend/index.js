@@ -1,7 +1,8 @@
 const express = require("express");
 const cors = require("cors");
-// Asegúrate de que en ./firebase estés exportando 'admin' y 'auth' correctamente
+require('dotenv').config();
 const { auth } = require("./firebase");
+const API_KEY = process.env.FIREBASE_API_KEY || "AIzaSyDgoX5bD9EOMxRwTe1lN1yRIg9lBiNR7So";
 
 const app = express();
 
@@ -14,7 +15,7 @@ app.get("/", (req, res) => res.send("API Firebase funcionando"));
 //REGISTRO -
 app.post("/api/register", async (req, res) => {
   try {
-    const { email, password, nombre } = req.body; // Añadimos nombre por tu formulario anterior
+    const { email, password, nombre } = req.body; 
 
     if (!email || !password) {
       return res.status(400).json({ message: "Faltan datos obligatorios", mensaje: "Faltan datos obligatorios" });
@@ -24,7 +25,7 @@ app.post("/api/register", async (req, res) => {
       return res.status(400).json({ message: "La contraseña debe tener al menos 6 caracteres", mensaje: "La contraseña debe tener al menos 6 caracteres" });
     }
 
-    // Crear el usuario mediante la REST API para obtener idToken y poder enviar correo de verificación
+    // Crear el usuario 
     const signUpUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${API_KEY}`;
     const signUpRes = await fetch(signUpUrl, {
       method: 'POST',
@@ -44,7 +45,7 @@ app.post("/api/register", async (req, res) => {
 
     const idToken = signUpData.idToken;
 
-    // Enviar correo de verificación usando sendOobCode con idToken
+    // Enviar correo de verificación 
     const sendVerifyUrl = `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${API_KEY}`;
     const FRONTEND_VERIFY = process.env.FRONTEND_VERIFY_URL || 'http://localhost:5173/verify';
     const sendVerifyRes = await fetch(sendVerifyUrl, {
@@ -56,7 +57,6 @@ app.post("/api/register", async (req, res) => {
 
     if (!sendVerifyRes.ok) {
       console.error('Error enviando correo verificación:', sendVerifyData);
-      // No hacemos rollback; devolvemos que el registro fue creado pero el correo no se envió
       return res.status(201).json({ message: 'Usuario creado, pero no se pudo enviar correo de verificación', mensaje: 'Usuario creado, pero no se pudo enviar correo de verificación', detalle: sendVerifyData, uid: signUpData.localId });
     }
 
@@ -89,8 +89,8 @@ app.post("/api/login", async (req, res) => {
 
     if (!response.ok) {
       const errorMsg = data.error ? data.error.message : "Error desconocido";
-      console.log("Fallo de login:", errorMsg);
-      return res.status(401).json({ mensaje: "Credenciales inválidas" });
+      console.log("Fallo de login:", errorMsg, data);
+      return res.status(401).json({ mensaje: errorMsg || "Credenciales inválidas", error: data });
     }
 
     res.json({ message: 'Login exitoso', mensaje: 'Login exitoso', token: data.idToken, uid: data.localId, email: data.email });
@@ -109,12 +109,11 @@ app.post('/api/google', async (req, res) => {
     const decoded = await auth.verifyIdToken(idToken);
     const { uid, email, name, picture } = decoded;
 
-    // Intentar obtener el usuario; si no existe, crearlo en Auth
     let userRecord;
     try {
       userRecord = await auth.getUser(uid);
     } catch (err) {
-      // Crear usuario con los datos mínimos
+      // Crear usuario 
       userRecord = await auth.createUser({
         uid,
         email,
@@ -123,7 +122,6 @@ app.post('/api/google', async (req, res) => {
       });
     }
 
-    // Crear un custom token si se desea para sesiones seguras en el cliente
     const customToken = await auth.createCustomToken(uid);
 
     res.json({ message: 'Google sign-in verificado', mensaje: 'Google sign-in verificado', uid: userRecord.uid, email: userRecord.email, customToken });
@@ -159,7 +157,7 @@ app.post('/api/forgot-password', async (req, res) => {
   }
 });
 
-// VERIFICAR EMAIL usando oobCode (código obtenido desde el enlace que envía Firebase)
+// VERIFICAR EMAIL 
 app.get('/api/verify/:oobCode', async (req, res) => {
   try {
     const { oobCode } = req.params;

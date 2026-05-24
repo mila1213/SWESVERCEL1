@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { createResource, getById, updateResource } from '../services/crudService';
 // Simple client-side image handling (File -> data URL)
 
-export default function ProductForm() {
+function ProductForm() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [form, setForm] = useState({ title: '', description: '', price: '', image: '' });
@@ -92,3 +92,4 @@ export default function ProductForm() {
     </div>
   );
 }
+export default  ProductForm;

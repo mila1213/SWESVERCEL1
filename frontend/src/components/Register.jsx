@@ -73,7 +73,6 @@ const Register = () => {
         </form>
 
         <p className="mt-6 text-center text-gray-600 text-[19px]">¿Ya tienes cuenta? <Link to="/login" className='text-[oklch(28.2%_0.091_267.935)] hover:underline font-bold text-[19px]'>Inicia sesión</Link></p>
-        <p className="mt-2 text-center text-gray-600 text-[16px]"><Link to="/forgot-password" className='text-gray-600 hover:underline'>Recuperar contraseña</Link></p>
       </div>
     </div>
   );
