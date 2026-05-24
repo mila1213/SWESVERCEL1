@@ -1,7 +1,7 @@
 # Node / React
 node_modules/
 .env
-.serviceAccountKey.json
+serviceAccountKey.json
 # Java
 target/
 *.class

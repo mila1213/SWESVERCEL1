@@ -7,7 +7,7 @@ import logoSwes from '../assets/icono_sistema.png';
 const Login = () => {
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+const handleLogin = async (e) => {
     e.preventDefault();
     const { email, password } = Object.fromEntries(new FormData(e.target));
 
@@ -18,18 +18,32 @@ const Login = () => {
         body: JSON.stringify({ email, password }),
       });
 
+      // LEEMOS LA RESPUESTA UNA SOLA VEZ
       const data = await res.json();
+      console.log("DEBUG - Datos recibidos del servidor:", data);
+
       if (res.ok) {
-        alert("Bienvenido!");
-        navigate('/dashboard'); 
+        // Verificamos que los datos existan antes de guardarlos
+        if (data.uid) {
+          localStorage.setItem('uid', data.uid); 
+          localStorage.setItem('token', data.token);
+          
+          alert("Bienvenido!");
+          navigate('/dashboard'); 
+        } else {
+          // Esto pasa si el servidor responde OK pero no envía el UID
+          console.error("DEBUG - El servidor no devolvió UID");
+          alert("Error: El servidor no envió el ID de usuario.");
+        }
       } else {
-        alert(data.mensaje || data.message || "Credenciales incorrectas");
+        // Si res.ok es false (ej. error 401)
+        alert(data.mensaje || "Credenciales incorrectas");
       }
     } catch (error) {
-      console.error(error);
-      alert("Error de conexión");
+      console.error("Error en el login:", error);
+      alert("Error de conexión con el servidor");
     }
-  };
+};
 
   const handleGoogle = async () => {
     try {
@@ -37,7 +51,12 @@ const Login = () => {
       const result = await signInWithPopup(auth, provider);
       const idToken = await result.user.getIdToken();
       const res = await googleSignIn(idToken);
-      if (res && (res.message || res.mensaje)) {
+      
+      if (res && res.uid) { // Asegúrate de recibir el UID desde tu servicio
+        // 🔥 AÑADE ESTO TAMBIÉN
+        localStorage.setItem('uid', res.uid);
+        localStorage.setItem('token', res.token);
+        
         alert('Inicio con Google exitoso');
         navigate('/dashboard');
       } else {
