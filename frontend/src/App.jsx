@@ -8,6 +8,7 @@ import Dashboard from "./components/Dashboard";
 import AdminProducts from "./components/AdminProducts";
 import ProductForm from "./components/ProductForm";
 import Header from "./components/Header"; // <-- Importamos tu Header
+import Profile from "./components/Profile";
 import "./index.css";
 import "./App.css";
 
@@ -33,6 +34,7 @@ function AppInner() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/admin/products" element={<AdminProducts />} />
         <Route path="/admin/products/new" element={<ProductForm />} />
         <Route path="/admin/products/edit/:id" element={<ProductForm />} />
