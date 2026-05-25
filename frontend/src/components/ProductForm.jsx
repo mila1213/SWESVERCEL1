@@ -94,12 +94,15 @@ function ProductForm() {
     setLoading(true);
     try {
       const userId = localStorage.getItem('uid') || 'anonimo';
+      const sellerName = localStorage.getItem('name') || localStorage.getItem('email') || 'Vendedor';
+      const sellerPhone = localStorage.getItem('phone') || '';
       
-      // Armamos el objeto final asegurando que envíe tanto 'image' como 'imagen' por compatibilidad con tu BD
       const payload = { 
         ...form, 
         userId,
-        imagen: form.image // Duplicamos el campo temporalmente para asegurar el tiro en el backend
+        sellerName,
+        sellerPhone,
+        imagen: form.image
       };
 
       // 👁️ TRUCO DE ESPÍA: Mira tu consola del navegador al dar click en Publicar

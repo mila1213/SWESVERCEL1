@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { auth } from '../../firebase';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
@@ -7,17 +7,32 @@ import logoSwes from '../assets/icono_sistema.png';
 
 const Register = () => {
   const navigate = useNavigate();
+  const [role, setRole] = useState('visitante');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData);
+    const normalizedEmail = data.email?.toLowerCase().trim();
+
+    if (data.role === 'visitante') {
+      return alert('Los visitantes deben registrarse con Google. Usa el botón de Google.');
+    }
+
+    if (data.role === 'emprendedor') {
+      if (!normalizedEmail?.endsWith('@epn.edu.ec')) {
+        return alert('El correo debe ser @epn.edu.ec para el rol emprendedor.');
+      }
+      if (!data.phone?.trim()) {
+        return alert('El número de celular es obligatorio para emprendedores.');
+      }
+    }
 
     try {
       const res = await fetch('http://localhost:8000/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: data.email, password: data.password, nombre: data.nombre }),
+        body: JSON.stringify({ email: normalizedEmail, password: data.password, nombre: data.nombre, role: data.role, phone: data.phone }),
       });
 
       const result = await res.json();
@@ -76,87 +91,126 @@ const Register = () => {
             </p>
           </div>
 
-          {/* Input: Nombre Completo */}
+          {/* Selector de Rol */}
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-neutral-text">Nombre completo</label>
-            <div className="flex items-center border border-neutral-border rounded-input px-3 gap-2 bg-white
-                            focus-within:border-brand-primary focus-within:shadow-input transition-all">
-              <svg className="w-4 h-4 text-neutral-muted shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-              </svg>
-              <input 
-                name="nombre" 
-                type="text" 
-                placeholder="Nombre completo del estudiante" 
-                required 
-                className="flex-1 py-2.5 text-sm text-neutral-text placeholder:text-neutral-muted outline-none bg-transparent" 
-              />
-            </div>
+            <label className="text-sm font-medium text-neutral-text">Rol de usuario</label>
+            <select
+              name="role"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="w-full py-2.5 px-3 border border-neutral-border rounded-input text-sm text-neutral-text bg-white focus:border-brand-primary focus:shadow-input transition-all outline-none"
+            >
+              <option value="emprendedor">Emprendedor</option>
+              <option value="visitante">Visitante</option>
+            </select>
           </div>
 
-          {/* Input: Correo Electrónico */}
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-neutral-text">Correo electrónico</label>
-            <div className="flex items-center border border-neutral-border rounded-input px-3 gap-2 bg-white
-                            focus-within:border-brand-primary focus-within:shadow-input transition-all">
-              <svg className="w-4 h-4 text-neutral-muted shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25H4.5a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0l-9.75 6.75L2.25 6.75" />
-              </svg>
-              <input 
-                name="email" 
-                type="email" 
-                placeholder="usuario@correo.com" 
-                required 
-                className="flex-1 py-2.5 text-sm text-neutral-text placeholder:text-neutral-muted outline-none bg-transparent" 
-              />
-            </div>
-          </div>
+          {role === 'emprendedor' ? (
+            <>
+              {/* Input: Nombre Completo */}
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-neutral-text">Nombre completo</label>
+                <div className="flex items-center border border-neutral-border rounded-input px-3 gap-2 bg-white
+                                focus-within:border-brand-primary focus-within:shadow-input transition-all">
+                  <svg className="w-4 h-4 text-neutral-muted shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                  </svg>
+                  <input 
+                    name="nombre" 
+                    type="text" 
+                    placeholder="Nombre completo del estudiante" 
+                    required 
+                    className="flex-1 py-2.5 text-sm text-neutral-text placeholder:text-neutral-muted outline-none bg-transparent" 
+                  />
+                </div>
+              </div>
 
-          {/* Input: Contraseña */}
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-neutral-text">Contraseña</label>
-            <div className="flex items-center border border-neutral-border rounded-input px-3 gap-2 bg-white
-                            focus-within:border-brand-primary focus-within:shadow-input transition-all">
-              <svg className="w-4 h-4 text-neutral-muted shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-              </svg>
-              <input 
-                name="password" 
-                type="password" 
-                placeholder="Mínimo 6 caracteres" 
-                required 
-                minLength={6} 
-                className="flex-1 py-2.5 text-sm text-neutral-text placeholder:text-neutral-muted outline-none bg-transparent" 
-              />
-            </div>
-          </div>
+              {/* Input: Correo Electrónico */}
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-neutral-text">Correo electrónico</label>
+                <div className="flex items-center border border-neutral-border rounded-input px-3 gap-2 bg-white
+                                focus-within:border-brand-primary focus-within:shadow-input transition-all">
+                  <svg className="w-4 h-4 text-neutral-muted shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25H4.5a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0l-9.75 6.75L2.25 6.75" />
+                  </svg>
+                  <input 
+                    name="email" 
+                    type="email" 
+                    placeholder="usuario@epn.edu.ec" 
+                    required 
+                    className="flex-1 py-2.5 text-sm text-neutral-text placeholder:text-neutral-muted outline-none bg-transparent" 
+                  />
+                </div>
+              </div>
 
-          {/* Botón Principal de Registro */}
-          <button type="submit"
-            className="w-full bg-brand-primary hover:bg-brand-hover text-white font-semibold
-                       py-3 rounded-btn text-sm transition-all flex items-center justify-center gap-2 mt-2">
-            Registrarse en el Sistema →
-          </button>
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-neutral-text">Celular</label>
+                <div className="flex items-center border border-neutral-border rounded-input px-3 gap-2 bg-white
+                                focus-within:border-brand-primary focus-within:shadow-input transition-all">
+                  <svg className="w-4 h-4 text-neutral-muted shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.25 6.75A2.25 2.25 0 014.5 4.5h1.125c.621 0 1.125.504 1.125 1.125v13.5c0 .621-.504 1.125-1.125 1.125H4.5A2.25 2.25 0 012.25 18.75V6.75zM17.25 3.75h3.75a.75.75 0 01.75.75v15a.75.75 0 01-.75.75H17.25a.75.75 0 01-.75-.75V4.5a.75.75 0 01.75-.75z" />
+                  </svg>
+                  <input
+                    name="phone"
+                    type="tel"
+                    placeholder="09XXXXXXXX"
+                    required
+                    className="flex-1 py-2.5 text-sm text-neutral-text placeholder:text-neutral-muted outline-none bg-transparent"
+                  />
+                </div>
+              </div>
 
-          {/* Divisor Google */}
-          <div className="flex items-center text-xs text-neutral-muted my-1">
-            <div className="flex-1 border-t border-neutral-border"></div>
-            <span className="px-3 uppercase tracking-wider text-[10px] font-medium">O regístrate con</span>
-            <div className="flex-1 border-t border-neutral-border"></div>
-          </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-neutral-text">Contraseña</label>
+                <div className="flex items-center border border-neutral-border rounded-input px-3 gap-2 bg-white
+                                focus-within:border-brand-primary focus-within:shadow-input transition-all">
+                  <svg className="w-4 h-4 text-neutral-muted shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                  </svg>
+                  <input 
+                    name="password" 
+                    type="password" 
+                    placeholder="Mínimo 6 caracteres" 
+                    required 
+                    minLength={6} 
+                    className="flex-1 py-2.5 text-sm text-neutral-text placeholder:text-neutral-muted outline-none bg-transparent" 
+                  />
+                </div>
+              </div>
 
-          {/* Botón Google */}
-          <button type="button" onClick={handleGoogle}
-            className="w-full border border-neutral-border hover:bg-neutral-50 text-neutral-text font-medium
-                       py-2.5 rounded-btn text-sm transition-all flex items-center justify-center gap-2.5 bg-white shadow-sm">
-            <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
-              <path fill="#EA4335" d="M12 5.04c1.64 0 3.12.56 4.28 1.67l3.2-3.2C17.52 1.58 14.94 1 12 1 7.35 1 3.37 3.67 1.39 7.56l3.77 2.93c.9-2.69 3.42-4.45 6.84-4.45z"/>
-              <path fill="#4285F4" d="M23.49 12.27c0-.81-.07-1.59-.2-2.34H12v4.43h6.44c-.28 1.47-1.11 2.71-2.36 3.55l3.67 2.84c2.15-1.98 3.38-4.89 3.38-8.48z"/>
-              <path fill="#FBBC05" d="M5.16 14.51c-.23-.69-.36-1.43-.36-2.2s.13-1.51.36-2.2L1.39 7.56C.5 9.35 0 11.33 0 12.4c0 1.07.5 3.05 1.39 4.84l3.77-2.73z"/>
-              <path fill="#34A853" d="M12 23c3.24 0 5.97-1.07 7.96-2.91l-3.67-2.84c-1.1.74-2.51 1.18-4.29 1.18-3.42 0-5.94-1.76-6.84-4.45L1.39 16.91C3.37 20.33 7.35 23 12 23z"/>
-            </svg>
-            Registrarse con Google
-          </button>
+              <button type="submit"
+                className="w-full bg-brand-primary hover:bg-brand-hover text-white font-semibold
+                           py-3 rounded-btn text-sm transition-all flex items-center justify-center gap-2 mt-2">
+                Registrarse en el Sistema →
+              </button>
+
+              <p className="text-xs text-center text-neutral-muted mt-2">
+                Como emprendedor, regístrate con tu correo @epn.edu.ec y tu número de celular.
+              </p>
+            </>
+          ) : (
+            <>
+              <div className="rounded-2xl border border-neutral-border bg-white/80 p-4 text-sm text-neutral-muted">
+                <p>Como visitante solo puedes registrarte con Google para explorar productos y comparar.</p>
+              </div>
+
+              <button type="button" onClick={handleGoogle}
+                className="w-full border border-neutral-border hover:bg-neutral-50 text-neutral-text font-medium
+                           py-3 rounded-btn text-sm transition-all flex items-center justify-center gap-2.5 bg-white shadow-sm">
+                <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
+                  <path fill="#EA4335" d="M12 5.04c1.64 0 3.12.56 4.28 1.67l3.2-3.2C17.52 1.58 14.94 1 12 1 7.35 1 3.37 3.67 1.39 7.56l3.77 2.93c.9-2.69 3.42-4.45 6.84-4.45z"/>
+                  <path fill="#4285F4" d="M23.49 12.27c0-.81-.07-1.59-.2-2.34H12v4.43h6.44c-.28 1.47-1.11 2.71-2.36 3.55l3.67 2.84c2.15-1.98 3.38-4.89 3.38-8.48z"/>
+                  <path fill="#FBBC05" d="M5.16 14.51c-.23-.69-.36-1.43-.36-2.2s.13-1.51.36-2.2L1.39 7.56C.5 9.35 0 11.33 0 12.4c0 1.07.5 3.05 1.39 4.84l3.77-2.73z"/>
+                  <path fill="#34A853" d="M12 23c3.24 0 5.97-1.07 7.96-2.91l-3.67-2.84c-1.1.74-2.51 1.18-4.29 1.18-3.42 0-5.94-1.76-6.84-4.45L1.39 16.91C3.37 20.33 7.35 23 12 23z"/>
+                </svg>
+                Registrarse con Google
+              </button>
+
+              <p className="text-xs text-center text-neutral-muted mt-2">
+                Estás en modo visitante. Usa Google para iniciar sesión y explorar el catálogo.
+              </p>
+            </>
+          )}
 
           {/* Enlace para volver al Login */}
           <p className="text-center text-sm text-neutral-muted mt-2">

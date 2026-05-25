@@ -1,12 +1,10 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { auth } from '../../firebase';
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { googleSignIn } from '../services/authService';
-import logoSwes from '../assets/icono_sistema.png';
 import {
   signInWithEmailAndPassword
 } from "firebase/auth";
+import logoSwes from '../assets/icono_sistema.png';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -33,20 +31,21 @@ const handleLogin = async (e) => {
       console.log("DEBUG - Datos recibidos del servidor:", data);
 
       if (res.ok) {
-        // Verificamos que los datos existan antes de guardarlos
         if (data.uid) {
           localStorage.setItem('uid', data.uid); 
           localStorage.setItem('token', data.token);
-          
+          localStorage.setItem('role', data.role || 'visitante');
+          if (data.phone) localStorage.setItem('phone', data.phone);
+          localStorage.setItem('email', data.email);
+          localStorage.setItem('name', data.name || '');
+
           alert("Bienvenido!");
           navigate('/dashboard'); 
         } else {
-          // Esto pasa si el servidor responde OK pero no envía el UID
           console.error("DEBUG - El servidor no devolvió UID");
           alert("Error: El servidor no envió el ID de usuario.");
         }
       } else {
-        // Si res.ok es false (ej. error 401)
         alert(data.mensaje || "Credenciales incorrectas");
       }
     } catch (error) {
@@ -54,29 +53,6 @@ const handleLogin = async (e) => {
       alert("Error de conexión con el servidor");
     }
 };
-
-  const handleGoogle = async () => {
-    try {
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const idToken = await result.user.getIdToken();
-      const res = await googleSignIn(idToken);
-      
-      if (res && res.uid) { // Asegúrate de recibir el UID desde tu servicio
-        // 🔥 AÑADE ESTO TAMBIÉN
-        localStorage.setItem('uid', res.uid);
-        localStorage.setItem('token', res.token);
-        
-        alert('Inicio con Google exitoso');
-        navigate('/dashboard');
-      } else {
-        alert('No se pudo iniciar con Google');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Error en Google Sign-In');
-    }
-  };
 
   return (
   
@@ -206,25 +182,6 @@ const handleLogin = async (e) => {
     <button type="submit"
       className="w-full bg-brand-primary hover:bg-brand-hover text-white font-semibold py-3 rounded-btn text-sm transition-all flex items-center justify-center gap-2">
       Ingresar al Sistema →
-    </button>
-
-    {/* Divisor Google */}
-    <div className="flex items-center text-xs text-neutral-muted">
-      <div className="flex-1 border-t border-neutral-border"></div>
-      <span className="px-3 uppercase tracking-wider text-[10px] font-medium">O continúa con</span>
-      <div className="flex-1 border-t border-neutral-border"></div>
-    </div>
-
-    {/* Botón Google */}
-    <button type="button" onClick={handleGoogle}
-      className="w-full border border-neutral-border hover:bg-neutral-50 text-neutral-text font-medium py-2.5 rounded-btn text-sm transition-all flex items-center justify-center gap-2.5 bg-white shadow-sm">
-      <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
-        <path fill="#EA4335" d="M12 5.04c1.64 0 3.12.56 4.28 1.67l3.2-3.2C17.52 1.58 14.94 1 12 1 7.35 1 3.37 3.67 1.39 7.56l3.77 2.93c.9-2.69 3.42-4.45 6.84-4.45z"/>
-        <path fill="#4285F4" d="M23.49 12.27c0-.81-.07-1.59-.2-2.34H12v4.43h6.44c-.28 1.47-1.11 2.71-2.36 3.55l3.67 2.84c2.15-1.98 3.38-4.89 3.38-8.48z"/>
-        <path fill="#FBBC05" d="M5.16 14.51c-.23-.69-.36-1.43-.36-2.2s.13-1.51.36-2.2L1.39 7.56C.5 9.35 0 11.33 0 12.4c0 1.07.5 3.05 1.39 4.84l3.77-2.73z"/>
-        <path fill="#34A853" d="M12 23c3.24 0 5.97-1.07 7.96-2.91l-3.67-2.84c-1.1.74-2.51 1.18-4.29 1.18-3.42 0-5.94-1.76-6.84-4.45L1.39 16.91C3.37 20.33 7.35 23 12 23z"/>
-      </svg>
-      Iniciar sesión con Google
     </button>
 
     {/* Registrarse + footer */}

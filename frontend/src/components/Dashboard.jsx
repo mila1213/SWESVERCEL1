@@ -1,27 +1,39 @@
 import { useEffect, useState } from 'react';
-import SidebarFilters from './SidebarFilters';
 import { useNavigate } from 'react-router-dom';
+import { FaWhatsapp } from 'react-icons/fa';
+
+import SidebarFilters from './SidebarFilters';
 import { getAll } from '../services/crudService';
 
 function Dashboard() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   const [categoriaActiva, setCategoriaActiva] = useState('todas');
   const [busqueda, setBusqueda] = useState('');
 
+  const navigate = useNavigate();
+
+  const role =
+    typeof window !== 'undefined'
+      ? localStorage.getItem('role') || 'visitante'
+      : 'visitante';
+
+  const fallbackWhatsApp = '593998887765';
+
   useEffect(() => {
-    (async () => {
+    const cargarDatos = async () => {
       try {
         const data = await getAll('products');
         setItems(data || []);
-      } catch (err) {
-        console.error(err);
+      } catch (error) {
+        console.error('Error al cargar productos:', error);
       } finally {
         setLoading(false);
       }
-    })();
+    };
+
+    cargarDatos();
   }, []);
 
   const alLimpiarFiltros = () => {
@@ -29,121 +41,183 @@ function Dashboard() {
     setBusqueda('');
   };
 
-  // 👇 LÓGICA DE FILTRADO: Filtra en tiempo real los items cargados
+  // FILTRAR PRODUCTOS
   const itemsFiltrados = items.filter((it) => {
-    // 1. Validar filtro por categoría
-    const cumpleCategoria = 
-      categoriaActiva === 'todas' || 
-      it.category?.toLowerCase() === categoriaActiva.toLowerCase();
+    const cumpleCategoria =
+      categoriaActiva === 'todas' ||
+      (it.category || '').toLowerCase() ===
+        categoriaActiva.toLowerCase();
 
-    // 2. Validar filtro por buscador (nombre o descripción)
     const textoNombre = (it.name || it.title || '').toLowerCase();
     const textoDesc = (it.description || '').toLowerCase();
-    const cumpleBusqueda = 
-      textoNombre.includes(busqueda.toLowerCase()) || 
+
+    const cumpleBusqueda =
+      textoNombre.includes(busqueda.toLowerCase()) ||
       textoDesc.includes(busqueda.toLowerCase());
 
     return cumpleCategoria && cumpleBusqueda;
   });
 
   return (
-    // Max-w aumentado a 7xl para dar espacio al menú lateral de forma cómoda
-    <div className="max-w-7xl mx-auto my-8 p-6 text-gray-800">
-      
-      {/* 1. Contenedor del Layout: Flex coloca Filtros e Información lado a lado */}
-      <div className="flex flex-col lg:flex-row gap-8 items-start">
+    <div className="min-h-screen bg-gray-100">
+      <div className="max-w-7xl mx-auto px-4 py-8">
         
-        {/* MENÚ DE FILTROS (Lado Izquierdo) */}
-        <SidebarFilters 
-          categoriaActiva={categoriaActiva}
-          setCategoriaActiva={setCategoriaActiva}
-          alLimpiarFiltros={alLimpiarFiltros}
-        />
+        {/* CONTENEDOR */}
+        <div className="flex flex-col lg:flex-row gap-6">
 
-        {/* SECCIÓN DE CONTENIDO (Lado Derecho) */}
-        <main className="flex-1 w-full">
-          
-          {/* Encabezado Principal */}
-          <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 border-b pb-4">
-            <div>
-              <h2 className="text-3xl font-bold text-gray-800">Explorador de Emprendimientos SEWS</h2>
-              <p className="text-gray-500 text-sm mt-1">Productos y servicios ofrecidos por estudiantes</p>
-            </div>
-            <button 
-              onClick={() => navigate('/admin/products/new')}
-              className="px-5 py-2.5 bg-[#00665c] text-white font-semibold rounded-lg shadow hover:bg-[#004d45] transition whitespace-nowrap"
-            >
-              + Registrar Emprendimiento
-            </button>
-          </header>
+          {/* SIDEBAR */}
+          <SidebarFilters
+            categoriaActiva={categoriaActiva}
+            setCategoriaActiva={setCategoriaActiva}
+            alLimpiarFiltros={alLimpiarFiltros}
+          />
 
-          {/* Barra de Búsqueda */}
-          <div className="mb-6 relative">
-            <span className="absolute left-4 top-3.5 text-gray-400">🔍</span>
-            <input 
-              type="text" 
-              placeholder="Buscar por nombre, fundador o palabra clave..." 
-              value={busqueda}
-              onChange={(e) => setBusqueda(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:border-gray-400 transition-colors shadow-sm"
-            />
-          </div>
+          {/* CONTENIDO */}
+          <main className="flex-1">
 
-          {/* Renderizado Condicional de Tarjetas */}
-          {loading ? (
-            <p className="text-center text-gray-500 font-medium py-12">Cargando la vitrina de emprendimientos...</p>
-          ) : itemsFiltrados.length === 0 ? (
-            <div className="text-center text-gray-500 py-12 border border-dashed border-gray-300 rounded-lg bg-gray-50">
-              No se encontraron publicaciones que coincidan con los filtros seleccionados.
-            </div>
-          ) : (
-            /* Cuadrícula de Tarjetas (Grid) - Usando ya el array filtrado */
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-              {itemsFiltrados.map((it) => (
-                <div 
-                  key={it.id} 
-                  className="flex flex-col bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition"
-                >
-                  {/* Imagen de la Tarjeta */}
-                  <div className="w-full h-48 bg-gray-100 flex items-center justify-center border-b border-gray-200 overflow-hidden">
-                    {(it.image || it.imagen) ? (
-                      <img 
-                        src={it.image || it.imagen} 
-                        alt={it.name || it.title} 
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <span className="text-gray-400 text-sm">Sin imagen</span>
-                    )}
-                  </div>
+            {/* HEADER */}
+            <div className="bg-white rounded-xl shadow-sm p-5 mb-6 border">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-800">
+                    Emprendimientos SWES
+                    
+                  </h1>
 
-                  {/* Detalles de la Tarjeta */}
-                  <div className="p-4 flex flex-col flex-1 gap-2">
-                    <div className="flex justify-between items-start gap-2">
-                      <h3 className="font-bold text-lg text-gray-800 line-clamp-1">{it.name || it.title}</h3>
-                      {it.category && (
-                        <span className="px-2 py-0.5 bg-blue-50 text-blue-700 text-xs font-semibold rounded border border-blue-100 whitespace-nowrap">
-                          {it.category}
-                        </span>
-                      )}
-                    </div>
-
-                    <p className="text-gray-600 text-sm line-clamp-3 flex-1">
-                      {it.description || "Sin descripción disponible."}
-                    </p>
-
-                    <div className="pt-2 border-t border-gray-100 mt-2 flex justify-between items-center">
-                      <span className="text-xs text-gray-400">Precio</span>
-                      <strong className="text-xl text-blue-600">${parseFloat(it.price || 0).toFixed(2)}</strong>
-                    </div>
-                  </div>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Explora productos y servicios de estudiantes
+                  </p>
                 </div>
-              ))}
-            </div>
-          )}
-        </main>
-      </div>
 
+                {role !== 'visitante' ? (
+                  <button
+                    onClick={() => navigate('/admin/products/new')}
+                    className="bg-[#00665c] hover:bg-[#004d45] text-white px-5 py-2 rounded-lg transition"
+                  >
+                    + Registrar
+                  </button>
+                ) : (
+                  <div className="text-sm bg-green-50 text-green-700 border border-green-200 px-4 py-2 rounded-lg">
+                    Modo visitante
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* BUSCADOR */}
+            <div className="mb-6">
+              <input
+                type="text"
+                placeholder="Buscar emprendimientos..."
+                value={busqueda}
+                onChange={(e) => setBusqueda(e.target.value)}
+                className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#00665c]"
+              />
+            </div>
+
+            {/* LOADING */}
+            {loading ? (
+              <div className="text-center py-10 text-gray-500">
+                Cargando emprendimientos...
+              </div>
+            ) : itemsFiltrados.length === 0 ? (
+              <div className="bg-white rounded-xl border p-10 text-center text-gray-500">
+                No se encontraron resultados.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                {itemsFiltrados.map((it) => {
+                  const rawPhone =
+                    it.sellerPhone ||
+                    it.phone ||
+                    it.telefono ||
+                    fallbackWhatsApp;
+
+                  const phoneNumber = rawPhone.replace(/\D/g, '');
+
+                  return (
+                    <div
+                      key={it.id}
+                      className="bg-white rounded-2xl overflow-hidden shadow-sm border hover:shadow-lg transition"
+                    >
+                      {/* IMAGEN */}
+                      <div className="h-52 bg-gray-200 overflow-hidden">
+                        {it.image || it.imagen ? (
+                          <img
+                            src={it.image || it.imagen}
+                            alt={it.name || it.title}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-gray-400">
+                            Sin imagen
+                          </div>
+                        )}
+                      </div>
+
+                      {/* INFO */}
+                      <div className="p-5 flex flex-col gap-3">
+
+                        {/* TITULO */}
+                        <div className="flex justify-between items-start gap-2">
+                          <h2 className="font-bold text-lg text-gray-800">
+                            {it.name || it.title}
+                          </h2>
+
+                          {it.category && (
+                            <span className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full">
+                              {it.category}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* DESCRIPCION */}
+                        <p className="text-sm text-gray-600 line-clamp-3">
+                          {it.description ||
+                            'Sin descripción disponible'}
+                        </p>
+
+                        {/* VENDEDOR */}
+                        <div className="text-sm text-gray-500">
+                          <span className="font-semibold text-gray-700">
+                            Vendedor:
+                          </span>{' '}
+                          {it.sellerName || it.nombre || 'Anónimo'}
+                        </div>
+
+                        {/* WHATSAPP */}
+                        <a
+                          href={`https://wa.me/${phoneNumber}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center gap-2 text-green-600 hover:text-green-700 font-medium"
+                        >
+                          <FaWhatsapp className="text-2xl" />
+
+                          <span>
+                            {rawPhone}
+                          </span>
+                        </a>
+
+                        {/* PRECIO */}
+                        <div className="border-t pt-3 flex justify-between items-center mt-2">
+                          <span className="text-gray-500 text-sm">
+                            Precio
+                          </span>
+
+                          <span className="text-xl font-bold text-[#00665c]">
+                            ${parseFloat(it.price || 0).toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </main>
+        </div>
+      </div>
     </div>
   );
 }

@@ -4,6 +4,34 @@ require('dotenv').config();
 const { auth, db } = require("./firebase"); 
 const API_KEY = process.env.FIREBASE_API_KEY || "AIzaSyDgoX5bD9EOMxRwTe1lN1yRIg9lBiNR7So";
 
+const ADMIN_EMAILS = [
+  'leonor.yumi@epn.edu.ec',
+  'camila.bueno@epn.edu.ec',
+  'concepcion.arequipa@epn.edu.ec'
+].map((email) => email.toLowerCase());
+
+const getRoleByEmail = (email) => {
+  if (!email) return 'visitante';
+  const normalized = email.toLowerCase().trim();
+  if (ADMIN_EMAILS.includes(normalized)) return 'administrador';
+  if (normalized.endsWith('@epn.edu.ec')) return 'emprendedor';
+  return 'visitante';
+};
+
+const normalizePhone = (phone) => {
+  if (!phone) return '';
+  return String(phone).replace(/\D/g, '');
+};
+
+const saveUserProfile = async (uid, profile) => {
+  await db.collection('users').doc(uid).set(profile, { merge: true });
+};
+
+const loadUserProfile = async (uid) => {
+  const doc = await db.collection('users').doc(uid).get();
+  return doc.exists ? doc.data() : null;
+};
+
 const app = express();
 
 app.use(cors());
@@ -15,9 +43,12 @@ app.get("/", (req, res) => res.send("API Firebase funcionando"));
 // REGISTRO
 app.post("/api/register", async (req, res) => {
   try {
-    const { email, password, nombre } = req.body; 
+    const { email, password, nombre, role, phone } = req.body;
+    const normalizedEmail = email?.toLowerCase().trim();
+    const normalizedPhone = normalizePhone(phone);
+    const selectedRole = role || 'emprendedor';
 
-    if (!email || !password) {
+    if (!normalizedEmail || !password) {
       return res.status(400).json({ message: "Faltan datos obligatorios", mensaje: "Faltan datos obligatorios" });
     }
 
@@ -25,11 +56,33 @@ app.post("/api/register", async (req, res) => {
       return res.status(400).json({ message: "La contraseña debe tener al menos 6 caracteres", mensaje: "La contraseña debe tener al menos 6 caracteres" });
     }
 
+    if (selectedRole === 'visitante') {
+      return res.status(400).json({ message: 'Los visitantes deben registrarse con Google', mensaje: 'Los visitantes deben registrarse con Google' });
+    }
+
+    if (selectedRole === 'administrador') {
+      if (!ADMIN_EMAILS.includes(normalizedEmail)) {
+        return res.status(403).json({ message: 'Correo no autorizado para administrador', mensaje: 'Correo no autorizado para administrador' });
+      }
+      if (password !== '123456') {
+        return res.status(400).json({ message: 'La contraseña de administrador debe ser 123456', mensaje: 'La contraseña de administrador debe ser 123456' });
+      }
+    }
+
+    if (selectedRole === 'emprendedor') {
+      if (!normalizedEmail.endsWith('@epn.edu.ec')) {
+        return res.status(400).json({ message: 'El correo debe ser @epn.edu.ec para el rol emprendedor', mensaje: 'El correo debe ser @epn.edu.ec para el rol emprendedor' });
+      }
+      if (!normalizedPhone) {
+        return res.status(400).json({ message: 'El número de celular es obligatorio para emprendedores', mensaje: 'El número de celular es obligatorio para emprendedores' });
+      }
+    }
+
     const signUpUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${API_KEY}`;
     const signUpRes = await fetch(signUpUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password, returnSecureToken: true }),
+      body: JSON.stringify({ email: normalizedEmail, password, returnSecureToken: true }),
     });
     const signUpData = await signUpRes.json();
 
@@ -53,12 +106,21 @@ app.post("/api/register", async (req, res) => {
     });
     const sendVerifyData = await sendVerifyRes.json();
 
+    const profile = {
+      email: normalizedEmail,
+      role: selectedRole,
+      nombre: nombre?.trim() || '',
+      phone: normalizedPhone,
+      createdAt: new Date().toISOString(),
+    };
+    await saveUserProfile(signUpData.localId, profile);
+
     if (!sendVerifyRes.ok) {
       console.error('Error sending email verification:', sendVerifyData);
-      return res.status(201).json({ message: 'Usuario creado, pero no se pudo enviar correo de verificación', mensaje: 'Usuario creado, pero no se pudo enviar correo de verificación', detalle: sendVerifyData, uid: signUpData.localId });
+      return res.status(201).json({ message: 'Usuario creado, pero no se pudo enviar correo de verificación', mensaje: 'Usuario creado, pero no se pudo enviar correo de verificación', detalle: sendVerifyData, uid: signUpData.localId, role: selectedRole });
     }
 
-    res.status(201).json({ message: 'Usuario registrado con éxito. Revisa tu correo para verificar cuenta.', mensaje: 'Usuario registrado con éxito. Revisa tu correo para verificar cuenta.', uid: signUpData.localId });
+    res.status(201).json({ message: 'Usuario registrado con éxito. Revisa tu correo para verificar cuenta.', mensaje: 'Usuario registrado con éxito. Revisa tu correo para verificar cuenta.', uid: signUpData.localId, role: selectedRole });
   } catch (error) {
     console.error("Error en Registro:", error);
     res.status(500).json({ message: "Error interno al registrar", mensaje: "Error interno al registrar", detalle: error.message });
@@ -69,8 +131,9 @@ app.post("/api/register", async (req, res) => {
 app.post("/api/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    
-    if (!email || !password) {
+    const normalizedEmail = email?.toLowerCase().trim();
+
+    if (!normalizedEmail || !password) {
       return res.status(400).json({ mensaje: "Correo y contraseña requeridos" });
     }
 
@@ -79,7 +142,7 @@ app.post("/api/login", async (req, res) => {
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password, returnSecureToken: true }),
+      body: JSON.stringify({ email: normalizedEmail, password, returnSecureToken: true }),
     });
 
     const data = await response.json();
@@ -90,7 +153,22 @@ app.post("/api/login", async (req, res) => {
       return res.status(401).json({ mensaje: errorMsg || "Credenciales inválidas", error: data });
     }
 
-    res.json({ message: 'Login exitoso', mensaje: 'Login exitoso', token: data.idToken, uid: data.localId, email: data.email });
+    let role = 'visitante';
+    let phone = '';
+    let nombre = '';
+    const profile = await loadUserProfile(data.localId);
+
+    if (profile) {
+      role = profile.role || getRoleByEmail(normalizedEmail);
+      phone = profile.phone || '';
+      nombre = profile.nombre || '';
+    } else {
+      role = getRoleByEmail(normalizedEmail);
+      await saveUserProfile(data.localId, { email: normalizedEmail, role, createdAt: new Date().toISOString() });
+      nombre = '';
+    }
+
+    res.json({ message: 'Login exitoso', mensaje: 'Login exitoso', token: data.idToken, uid: data.localId, email: data.email, role, phone, name: nombre });
   } catch (error) {
     console.error("Error en Login:", error);
     res.status(500).json({ mensaje: "Error en el servidor al iniciar sesión" });
@@ -105,6 +183,8 @@ app.post('/api/google', async (req, res) => {
 
     const decoded = await auth.verifyIdToken(idToken);
     const { uid, email, name, picture } = decoded;
+    const normalizedEmail = email?.toLowerCase().trim();
+    const role = getRoleByEmail(normalizedEmail);
 
     let userRecord;
     try {
@@ -112,15 +192,29 @@ app.post('/api/google', async (req, res) => {
     } catch (err) {
       userRecord = await auth.createUser({
         uid,
-        email,
+        email: normalizedEmail,
         displayName: name || '',
         photoURL: picture || null,
       });
     }
 
+    const profile = await loadUserProfile(uid);
+    const phone = profile?.phone || '';
+    const nombre = profile?.nombre || name || '';
+
+    if (!profile) {
+      await saveUserProfile(uid, {
+        email: normalizedEmail,
+        role,
+        nombre,
+        phone,
+        createdAt: new Date().toISOString(),
+      });
+    }
+
     const customToken = await auth.createCustomToken(uid);
 
-    res.json({ message: 'Google sign-in verificado', mensaje: 'Google sign-in verificado', uid: userRecord.uid, email: userRecord.email, customToken });
+    res.json({ message: 'Google sign-in verificado', mensaje: 'Google sign-in verificado', uid: userRecord.uid, email: normalizedEmail, role, phone, name: nombre, customToken });
   } catch (error) {
     console.error('Error en Google sign-in:', error);
     res.status(500).json({ message: 'Error verifying Google token', mensaje: 'Error verifying Google token', detalle: error.message });
@@ -240,7 +334,7 @@ app.get("/api/products/user/:userId", async (req, res) => {
 // 3. CREAR UN NUEVO PRODUCTO
 app.post("/api/products", async (req, res) => {
   try {
-    const { name, price, description, category, userId, image, imagen } = req.body;
+    const { name, price, description, category, userId, image, imagen, sellerName, sellerPhone } = req.body;
 
     if (!name || !price || !category) {
       return res.status(400).json({ mensaje: "Nombre, precio y categoría son campos obligatorios" });
@@ -250,13 +344,26 @@ app.post("/api/products", async (req, res) => {
       return res.status(400).json({ mensaje: "El precio debe ser un número mayor a 0" });
     }
 
+    let finalSellerName = sellerName || '';
+    let finalSellerPhone = normalizePhone(sellerPhone);
+
+    if (userId && (!finalSellerName || !finalSellerPhone)) {
+      const profile = await loadUserProfile(userId);
+      if (profile) {
+        finalSellerName = finalSellerName || profile.nombre || '';
+        finalSellerPhone = finalSellerPhone || profile.phone || '';
+      }
+    }
+
     const nuevoProducto = {
       name: name.trim(),
       price: parseFloat(price),
       description: description ? description.trim() : "",
       category,
-      userId: userId || "anonimo", 
-      image: image || imagen || "", 
+      userId: userId || "anonimo",
+      sellerName: finalSellerName,
+      sellerPhone: finalSellerPhone,
+      image: image || imagen || "",
       createdAt: new Date().toISOString()
     };
 

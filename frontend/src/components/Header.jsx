@@ -10,13 +10,12 @@ function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const [username, setUsername] = useState('Usuario');
+  const role = typeof window !== 'undefined' ? localStorage.getItem('role') || 'visitante' : 'visitante';
 
   const handleLogout = async () => {
-
-  await signOut(auth);
-
-  navigate('/login');
-};
+    await signOut(auth);
+    navigate('/login');
+  };
 
   useEffect(() => {
 
@@ -41,8 +40,8 @@ function Navbar() {
   }, []);
 
   const links = [
-    { to: '/dashboard',       label: 'Tablero' },
-    { to: '/admin/products',  label: 'Emprendimientos' },
+    { to: '/dashboard', label: 'Tablero' },
+    ...(role !== 'visitante' ? [{ to: '/admin/products', label: 'Emprendimientos' }] : []),
   ];
 
   return (
@@ -96,7 +95,7 @@ function Navbar() {
                 {/* Info básica del usuario */}
                 <div className="px-4 py-3 border-b border-neutral-border bg-neutral-bg/30">
                   <p className="text-xs font-bold text-neutral-text">Hola, {username}</p>
-                  <p className="text-[11px] text-neutral-muted truncate">Panel de gestión</p>
+                  <p className="text-[11px] text-neutral-muted truncate">Rol: {role === 'administrador' ? 'Administrador' : role === 'emprendedor' ? 'Emprendedor' : 'Visitante'}</p>
                 </div>
 
                 {/* Enlace a la nueva página de Perfil */}
