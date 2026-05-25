@@ -4,6 +4,10 @@ import { auth } from '../../firebase';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { googleSignIn } from '../services/authService';
 import logoSwes from '../assets/icono_sistema.png';
+import {
+  signInWithEmailAndPassword
+} from "firebase/auth";
+
 const Login = () => {
   const navigate = useNavigate();
 
@@ -12,6 +16,12 @@ const handleLogin = async (e) => {
     const { email, password } = Object.fromEntries(new FormData(e.target));
 
     try {
+      // LOGIN FIREBASE
+    await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
       const res = await fetch('http://localhost:8000/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

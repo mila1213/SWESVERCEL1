@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import logoSwes from '../assets/icono_sistema.png';
+import { auth } from '../../firebase';
+import { signOut } from 'firebase/auth';
 
 function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -9,19 +11,25 @@ function Navbar() {
   const navigate = useNavigate();
   const [username, setUsername] = useState('Usuario');
 
-  const handleLogout = () => {
-    localStorage.removeItem('uid');
-    localStorage.removeItem('token');
-    navigate('/login');
-  };
+  const handleLogout = async () => {
+
+  await signOut(auth);
+
+  navigate('/login');
+};
 
   useEffect(() => {
-    const storedUid = localStorage.getItem('uid');
-    if (storedUid) {
-      setUsername(storedUid);
-    }
-  }, []);
 
+  const user = auth.currentUser;
+
+  if (user) {
+
+    setUsername(
+      user.displayName || 'Usuario'
+    );
+  }
+
+}, []);
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -102,9 +110,38 @@ function Navbar() {
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    Mi Perfil / Ajustes
+                    Mi Perfil
                   </Link>
                 </div>
+
+                <Link
+  to="/settings"
+  onClick={() => setDropdownOpen(false)}
+  className="flex items-center gap-2 px-4 py-2 text-sm text-neutral-subtle
+             hover:bg-neutral-bg hover:text-neutral-text transition-all"
+>
+  <svg
+    className="w-4 h-4"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={1.8}
+    viewBox="0 0 24 24"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M10.325 4.317a1.724 1.724 0 013.35 0 1.724 1.724 0 002.573 1.066 1.724 1.724 0 012.37 2.37 1.724 1.724 0 001.065 2.572 1.724 1.724 0 010 3.351 1.724 1.724 0 00-1.066 2.573 1.724 1.724 0 01-2.37 2.37 1.724 1.724 0 00-2.572 1.065 1.724 1.724 0 01-3.351 0 1.724 1.724 0 00-2.573-1.066 1.724 1.724 0 01-2.37-2.37 1.724 1.724 0 00-1.065-2.572 1.724 1.724 0 010-3.351 1.724 1.724 0 001.066-2.573 1.724 1.724 0 012.37-2.37 1.724 1.724 0 002.572-1.065z"
+    />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+    />
+  </svg>
+
+  Configuración
+</Link>
+
 
                 {/* Botón de Salida */}
                 <div className="border-t border-neutral-border py-1">

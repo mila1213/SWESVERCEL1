@@ -7,10 +7,13 @@ import ResetPassword from "./components/ResetPassword";
 import Dashboard from "./components/Dashboard";
 import AdminProducts from "./components/AdminProducts";
 import ProductForm from "./components/ProductForm";
-import Header from "./components/Header"; // <-- Importamos tu Header
+import Header from "./components/Header";
 import Profile from "./components/Profile";
+import EditProfile from "./components/EditProfile";
+import ProtectedRoute from "./components/ProtectedRoute";
 import "./index.css";
 import "./App.css";
+import Settings from "./components/Settings";
 
 function AppInner() {
   const location = useLocation();
@@ -33,11 +36,13 @@ function AppInner() {
         <Route path="/verify" element={<VerifyAccount />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/admin/products" element={<AdminProducts />} />
-        <Route path="/admin/products/new" element={<ProductForm />} />
-        <Route path="/admin/products/edit/:id" element={<ProductForm />} />
+        <Route path="/dashboard" element={ <ProtectedRoute> <Dashboard /> </ProtectedRoute>}/>
+        <Route path="/profile" element={<ProtectedRoute> <Profile /> </ProtectedRoute>} />
+        <Route path="/profile/edit" element={<ProtectedRoute> <EditProfile /> </ProtectedRoute>}/>
+        <Route path="/admin/products" element={<ProtectedRoute> <AdminProducts/> </ProtectedRoute>} />
+        <Route path="/admin/products/new" element={<ProtectedRoute> <ProductForm /> </ProtectedRoute>} />
+        <Route path="/admin/products/edit/:id" element={<ProtectedRoute> <ProductForm /> </ProtectedRoute>} />
+        <Route path="/settings" element={<ProtectedRoute> <Settings /> </ProtectedRoute>} />
       </Routes>
     </main>
   );
