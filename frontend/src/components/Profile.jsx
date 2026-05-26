@@ -1,132 +1,63 @@
 import { useEffect, useState } from 'react';
-
 import { useNavigate } from 'react-router-dom';
-
 import { auth } from '../../firebase';
 
 function Profile() {
-
   const navigate = useNavigate();
-
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState('Usuario');
   const [email, setEmail] = useState('');
 
   useEffect(() => {
-
     const user = auth.currentUser;
-
     if (user) {
-
       setUsername(user.displayName || 'Usuario');
       setEmail(user.email || '');
     }
-
   }, []);
 
   return (
-
-    <div className="max-w-2xl mx-auto my-12 p-10 bg-white rounded-2xl border border-gray-100 shadow-[0_10px_40px_rgba(0,0,0,0.03)] text-gray-800">
-
-      {/* HEADER */}
-
-      <div className="flex items-center gap-5 pb-6 border-b border-gray-100 mb-8">
-
-        <div className="w-14 h-14 rounded-full bg-[#00665c] text-white flex items-center justify-center text-xl font-bold">
-
-          {username?.charAt(0)?.toUpperCase()}
-
-        </div>
-
-        <div>
-
-          <h2 className="text-xl font-bold text-gray-950">
-            Mi Perfil
-          </h2>
-
-          <p className="text-gray-400 text-xs font-medium">
-            Información personal de la cuenta
-          </p>
-
-        </div>
-
+    <div className="max-w-2xl mx-auto my-12 rounded-3xl bg-white px-8 py-10 shadow-xl shadow-slate-200">
+      <div className="mb-8 border-b border-slate-200 pb-6">
+        <h2 className="text-3xl font-semibold text-slate-900">Mi perfil</h2>
+        <p className="mt-2 text-sm text-slate-500">
+          Revisa tu información y cambia contraseña si lo necesitas.
+        </p>
       </div>
 
-      {/* DATOS */}
-
-      <div className="flex flex-col gap-6">
-
-        {/* NOMBRE */}
-
-        <div>
-
-          <p className="text-xs uppercase text-gray-400 font-bold mb-2">
-            Nombre
-          </p>
-
-          <div className="bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-medium">
-
-            {username}
-
-          </div>
-
+      <div className="grid gap-5">
+        <div className="rounded-3xl border border-slate-200 bg-slate-50 px-5 py-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Nombre</p>
+          <p className="mt-2 text-base font-medium text-slate-900">{username}</p>
         </div>
 
-        {/* EMAIL */}
-
-        <div>
-
-          <p className="text-xs uppercase text-gray-400 font-bold mb-2">
-            Correo Electrónico
-          </p>
-
-          <div className="bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-medium">
-
-            {email}
-
-          </div>
-
+        <div className="rounded-3xl border border-slate-200 bg-slate-50 px-5 py-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Correo</p>
+          <p className="mt-2 text-base font-medium text-slate-900">{email}</p>
+          <p className="mt-2 text-sm text-slate-500">El correo no puede cambiarse desde aquí.</p>
         </div>
 
-        {/* INSTITUCIÓN */}
-
-        <div>
-
-          <p className="text-xs uppercase text-gray-400 font-bold mb-2">
-            Institución Asociada
-          </p>
-
-          <div className="bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold text-[#00665c]">
-
-            Escuela Politécnica Nacional
-
-          </div>
-
+        <div className="rounded-3xl border border-slate-200 bg-slate-50 px-5 py-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Institución</p>
+          <p className="mt-2 text-base font-medium text-[#00665c]">Escuela Politécnica Nacional</p>
         </div>
-
       </div>
 
-      {/* BOTONES */}
-
-      <div className="flex flex-col-reverse sm:flex-row justify-between items-center gap-4 mt-10">
-
-        <button
-          type="button"
-          onClick={() => navigate('/dashboard')}
-          className="w-full sm:w-auto px-5 py-2.5 border border-gray-200 text-gray-500 text-xs font-bold rounded-xl hover:bg-gray-50 transition-all uppercase tracking-wider"
-        >
-          Volver al Tablero
-        </button>
-
+      <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:justify-between">
         <button
           type="button"
           onClick={() => navigate('/profile/edit')}
-          className="w-full sm:w-auto px-6 py-2.5 bg-[#00665c] hover:bg-[#004d45] text-white text-xs font-bold rounded-xl transition-all uppercase tracking-wider"
+          className="rounded-full bg-[#00665c] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#004d45]"
         >
-          Editar Perfil
+          Editar información
         </button>
-
+        <button
+          type="button"
+          onClick={() => navigate('/settings')}
+          className="rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+        >
+          Cambiar contraseña
+        </button>
       </div>
-
     </div>
   );
 }

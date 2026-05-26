@@ -7,242 +7,300 @@ import logoSwes from '../assets/icono_sistema.png';
 
 const Register = () => {
   const navigate = useNavigate();
+
   const [role, setRole] = useState('visitante');
 
+  // REGISTRO NORMAL
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData);
+
     const normalizedEmail = data.email?.toLowerCase().trim();
 
-    if (data.role === 'visitante') {
-      return alert('Los visitantes deben registrarse con Google. Usa el botón de Google.');
+    // VALIDAR CORREO EPN
+    if (!normalizedEmail?.endsWith('@epn.edu.ec')) {
+      return alert('Debes usar un correo institucional @epn.edu.ec');
     }
 
-    if (data.role === 'emprendedor') {
-      if (!normalizedEmail?.endsWith('@epn.edu.ec')) {
-        return alert('El correo debe ser @epn.edu.ec para el rol emprendedor.');
-      }
-      if (!data.phone?.trim()) {
-        return alert('El número de celular es obligatorio para emprendedores.');
-      }
+    // SOLO EMPRENDEDOR NECESITA CELULAR
+    if (role === 'emprendedor' && !data.phone?.trim()) {
+      return alert('El número de celular es obligatorio');
     }
 
     try {
       const res = await fetch('http://localhost:8000/api/register', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: normalizedEmail, password: data.password, nombre: data.nombre, role: data.role, phone: data.phone }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+
+        body: JSON.stringify({
+          nombre: data.nombre,
+          email: normalizedEmail,
+          password: data.password,
+          role: role,
+          phone: data.phone || '',
+        }),
       });
 
       const result = await res.json();
 
       if (res.ok) {
-        alert(result.message || result.mensaje || 'Registro exitoso. Revisa tu correo.');
+        alert(result.message || 'Registro exitoso');
         navigate('/login');
       } else {
-        alert(result.message || result.mensaje || 'No se pudo registrar');
+        alert(result.message || 'No se pudo registrar');
       }
     } catch (error) {
-      console.error('Error en el fetch:', error);
+      console.error(error);
       alert('Error de conexión con el servidor');
     }
   };
 
+  // GOOGLE
   const handleGoogle = async () => {
     try {
       const provider = new GoogleAuthProvider();
+
       const result = await signInWithPopup(auth, provider);
+
+      const email = result.user.email?.toLowerCase();
+
+      // VALIDAR CORREO EPN
+      if (!email.endsWith('@epn.edu.ec')) {
+        return alert('Solo se permiten correos institucionales @epn.edu.ec');
+      }
+
       const idToken = await result.user.getIdToken();
+
       const res = await googleSignIn(idToken);
-      if (res && res.message) {
+
+      if (res) {
         alert('Inicio con Google exitoso');
         navigate('/dashboard');
       } else {
-        alert('No se pudo iniciar con Google');
+        alert('No se pudo iniciar sesión');
       }
     } catch (err) {
       console.error(err);
-      alert('Error en Google Sign-In');
+      alert('Error con Google Sign-In');
     }
   };
 
   return (
     <div className="h-screen w-full flex overflow-hidden">
-      
-      
 
-      {/* ── Lado derecho: Formulario de Registro ── */}
-      <div className="flex-1 flex flex-col items-center justify-center bg-neutral-bg px-24 py-6">
+      {/* FORMULARIO */}
+      <div className="flex-1 flex items-center justify-center bg-gray-100 px-6 py-8">
 
-        <form onSubmit={handleSubmit} className="max-w-sm w-full flex flex-col gap-3">
-          
-          {/* Encabezado */}
-          <div className="mb-1">
-            <div className="flex items-center gap-2 mb-2 md:hidden">
-              <img src={logoSwes} alt="Logo SWES" className="w-6 h-6 object-contain"/>
-              <span className="font-bold text-neutral-text text-lg">SWES EPN</span>
-            </div>
-            <h2 className="text-2xl font-bold text-neutral-text leading-tight">
+        <form
+          onSubmit={handleSubmit}
+          className="w-full max-w-md bg-white rounded-3xl shadow-xl p-8 flex flex-col gap-4"
+        >
+
+          {/* LOGO */}
+          <div className="flex flex-col items-center mb-2">
+            <img
+              src={logoSwes}
+              alt="SWES"
+              className="w-16 h-16 object-contain mb-3"
+            />
+
+            <h2 className="text-3xl font-bold text-gray-800">
               Crear cuenta
             </h2>
-            <p className="text-sm text-neutral-muted mt-1">
-              Registrate para comenzar tu viaje emprendedor de la EPN.
+
+            <p className="text-sm text-gray-500 text-center mt-2">
+              Plataforma de emprendimientos de la EPN
             </p>
           </div>
 
-          {/* Selector de Rol */}
+          {/* ROL */}
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-neutral-text">Rol de usuario</label>
+            <label className="text-sm font-medium text-gray-700">
+              Tipo de usuario
+            </label>
+
             <select
-              name="role"
               value={role}
               onChange={(e) => setRole(e.target.value)}
-              className="w-full py-2.5 px-3 border border-neutral-border rounded-input text-sm text-neutral-text bg-white focus:border-brand-primary focus:shadow-input transition-all outline-none"
+              className="border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#00665c]"
             >
-              <option value="emprendedor">Emprendedor</option>
               <option value="visitante">Visitante</option>
+              <option value="emprendedor">Emprendedor</option>
             </select>
           </div>
 
-          {role === 'emprendedor' ? (
+          {/* NOMBRE */}
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-gray-700">
+              Nombre completo
+            </label>
+
+            <input
+              name="nombre"
+              type="text"
+              placeholder="Ingresa tu nombre"
+              required
+              className="border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#00665c]"
+            />
+          </div>
+
+          {/* EMAIL */}
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-gray-700">
+              Correo institucional
+            </label>
+
+            <input
+              name="email"
+              type="email"
+              placeholder="usuario@epn.edu.ec"
+              required
+              className="border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#00665c]"
+            />
+          </div>
+
+          {/* TELEFONO SOLO EMPRENDEDOR */}
+          {role === 'emprendedor' && (
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-gray-700">
+                Número celular
+              </label>
+
+              <input
+                name="phone"
+                type="tel"
+                placeholder="09XXXXXXXX"
+                required
+                className="border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#00665c]"
+              />
+            </div>
+          )}
+
+          {/* PASSWORD */}
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-gray-700">
+              Contraseña
+            </label>
+
+            <input
+              name="password"
+              type="password"
+              placeholder="Mínimo 6 caracteres"
+              minLength={6}
+              required
+              className="border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#00665c]"
+            />
+          </div>
+
+          {/* BOTON REGISTRO */}
+          <button
+            type="submit"
+            className="bg-[#00665c] hover:bg-[#004d45] text-white py-3 rounded-xl font-semibold transition mt-2"
+          >
+            Registrarse
+          </button>
+
+          {/* GOOGLE SOLO VISITANTE */}
+          {role === 'visitante' && (
             <>
-              {/* Input: Nombre Completo */}
-              <div className="flex flex-col gap-1">
-                <label className="text-sm font-medium text-neutral-text">Nombre completo</label>
-                <div className="flex items-center border border-neutral-border rounded-input px-3 gap-2 bg-white
-                                focus-within:border-brand-primary focus-within:shadow-input transition-all">
-                  <svg className="w-4 h-4 text-neutral-muted shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                  </svg>
-                  <input 
-                    name="nombre" 
-                    type="text" 
-                    placeholder="Nombre completo del estudiante" 
-                    required 
-                    className="flex-1 py-2.5 text-sm text-neutral-text placeholder:text-neutral-muted outline-none bg-transparent" 
+              <div className="flex items-center gap-3 my-1">
+                <div className="flex-1 h-px bg-gray-200"></div>
+
+                <span className="text-xs text-gray-400">o</span>
+
+                <div className="flex-1 h-px bg-gray-200"></div>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleGoogle}
+                className="border border-gray-300 bg-white hover:bg-gray-50 py-3 rounded-xl font-medium flex items-center justify-center gap-3 transition"
+              >
+                <svg className="w-5 h-5" viewBox="0 0 24 24">
+                  <path
+                    fill="#EA4335"
+                    d="M12 5.04c1.64 0 3.12.56 4.28 1.67l3.2-3.2C17.52 1.58 14.94 1 12 1 7.35 1 3.37 3.67 1.39 7.56l3.77 2.93c.9-2.69 3.42-4.45 6.84-4.45z"
                   />
-                </div>
-              </div>
-
-              {/* Input: Correo Electrónico */}
-              <div className="flex flex-col gap-1">
-                <label className="text-sm font-medium text-neutral-text">Correo electrónico</label>
-                <div className="flex items-center border border-neutral-border rounded-input px-3 gap-2 bg-white
-                                focus-within:border-brand-primary focus-within:shadow-input transition-all">
-                  <svg className="w-4 h-4 text-neutral-muted shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25H4.5a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0l-9.75 6.75L2.25 6.75" />
-                  </svg>
-                  <input 
-                    name="email" 
-                    type="email" 
-                    placeholder="usuario@epn.edu.ec" 
-                    required 
-                    className="flex-1 py-2.5 text-sm text-neutral-text placeholder:text-neutral-muted outline-none bg-transparent" 
+                  <path
+                    fill="#4285F4"
+                    d="M23.49 12.27c0-.81-.07-1.59-.2-2.34H12v4.43h6.44c-.28 1.47-1.11 2.71-2.36 3.55l3.67 2.84c2.15-1.98 3.38-4.89 3.38-8.48z"
                   />
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <label className="text-sm font-medium text-neutral-text">Celular</label>
-                <div className="flex items-center border border-neutral-border rounded-input px-3 gap-2 bg-white
-                                focus-within:border-brand-primary focus-within:shadow-input transition-all">
-                  <svg className="w-4 h-4 text-neutral-muted shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.25 6.75A2.25 2.25 0 014.5 4.5h1.125c.621 0 1.125.504 1.125 1.125v13.5c0 .621-.504 1.125-1.125 1.125H4.5A2.25 2.25 0 012.25 18.75V6.75zM17.25 3.75h3.75a.75.75 0 01.75.75v15a.75.75 0 01-.75.75H17.25a.75.75 0 01-.75-.75V4.5a.75.75 0 01.75-.75z" />
-                  </svg>
-                  <input
-                    name="phone"
-                    type="tel"
-                    placeholder="09XXXXXXXX"
-                    required
-                    className="flex-1 py-2.5 text-sm text-neutral-text placeholder:text-neutral-muted outline-none bg-transparent"
+                  <path
+                    fill="#FBBC05"
+                    d="M5.16 14.51c-.23-.69-.36-1.43-.36-2.2s.13-1.51.36-2.2L1.39 7.56C.5 9.35 0 11.33 0 12.4c0 1.07.5 3.05 1.39 4.84l3.77-2.73z"
                   />
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <label className="text-sm font-medium text-neutral-text">Contraseña</label>
-                <div className="flex items-center border border-neutral-border rounded-input px-3 gap-2 bg-white
-                                focus-within:border-brand-primary focus-within:shadow-input transition-all">
-                  <svg className="w-4 h-4 text-neutral-muted shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                  </svg>
-                  <input 
-                    name="password" 
-                    type="password" 
-                    placeholder="Mínimo 6 caracteres" 
-                    required 
-                    minLength={6} 
-                    className="flex-1 py-2.5 text-sm text-neutral-text placeholder:text-neutral-muted outline-none bg-transparent" 
+                  <path
+                    fill="#34A853"
+                    d="M12 23c3.24 0 5.97-1.07 7.96-2.91l-3.67-2.84c-1.1.74-2.51 1.18-4.29 1.18-3.42 0-5.94-1.76-6.84-4.45L1.39 16.91C3.37 20.33 7.35 23 12 23z"
                   />
-                </div>
-              </div>
-
-              <button type="submit"
-                className="w-full bg-brand-primary hover:bg-brand-hover text-white font-semibold
-                           py-3 rounded-btn text-sm transition-all flex items-center justify-center gap-2 mt-2">
-                Registrarse en el Sistema →
-              </button>
-
-              <p className="text-xs text-center text-neutral-muted mt-2">
-                Como emprendedor, regístrate con tu correo @epn.edu.ec y tu número de celular.
-              </p>
-            </>
-          ) : (
-            <>
-              <div className="rounded-2xl border border-neutral-border bg-white/80 p-4 text-sm text-neutral-muted">
-                <p>Como visitante solo puedes registrarte con Google para explorar productos y comparar.</p>
-              </div>
-
-              <button type="button" onClick={handleGoogle}
-                className="w-full border border-neutral-border hover:bg-neutral-50 text-neutral-text font-medium
-                           py-3 rounded-btn text-sm transition-all flex items-center justify-center gap-2.5 bg-white shadow-sm">
-                <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
-                  <path fill="#EA4335" d="M12 5.04c1.64 0 3.12.56 4.28 1.67l3.2-3.2C17.52 1.58 14.94 1 12 1 7.35 1 3.37 3.67 1.39 7.56l3.77 2.93c.9-2.69 3.42-4.45 6.84-4.45z"/>
-                  <path fill="#4285F4" d="M23.49 12.27c0-.81-.07-1.59-.2-2.34H12v4.43h6.44c-.28 1.47-1.11 2.71-2.36 3.55l3.67 2.84c2.15-1.98 3.38-4.89 3.38-8.48z"/>
-                  <path fill="#FBBC05" d="M5.16 14.51c-.23-.69-.36-1.43-.36-2.2s.13-1.51.36-2.2L1.39 7.56C.5 9.35 0 11.33 0 12.4c0 1.07.5 3.05 1.39 4.84l3.77-2.73z"/>
-                  <path fill="#34A853" d="M12 23c3.24 0 5.97-1.07 7.96-2.91l-3.67-2.84c-1.1.74-2.51 1.18-4.29 1.18-3.42 0-5.94-1.76-6.84-4.45L1.39 16.91C3.37 20.33 7.35 23 12 23z"/>
                 </svg>
+
                 Registrarse con Google
               </button>
-
-              <p className="text-xs text-center text-neutral-muted mt-2">
-                Estás en modo visitante. Usa Google para iniciar sesión y explorar el catálogo.
-              </p>
             </>
           )}
 
-          {/* Enlace para volver al Login */}
-          <p className="text-center text-sm text-neutral-muted mt-2">
-            ¿Ya tienes una cuenta?{' '}
-            <Link to="/login" className="text-brand-accent font-semibold hover:opacity-80 transition-opacity">
+          {/* TEXTO */}
+          <p className="text-xs text-center text-gray-500 mt-1">
+            {role === 'emprendedor'
+              ? 'Los emprendedores deben ingresar su número celular.'
+              : 'Los visitantes pueden registrarse con correo institucional o Google.'}
+          </p>
+
+          {/* LOGIN */}
+          <p className="text-center text-sm text-gray-600 mt-3">
+            ¿Ya tienes cuenta?{' '}
+            <Link
+              to="/login"
+              className="text-[#00665c] font-semibold hover:underline"
+            >
               Inicia sesión
             </Link>
           </p>
 
-          <p className="text-center text-xs text-neutral-subtle mt-1">© 2026 Escuela Politécnica Nacional</p>
-        </form>
+          <p className="text-center text-xs text-gray-400 mt-2">
+            © 2026 Escuela Politécnica Nacional
+          </p>
 
+        </form>
       </div>
 
-      {/* ── Panel izquierdo oscuro (Consistente con Login) ── */}
-      <div className="hidden md:flex w-1/2 bg-brand-panel flex-col justify-center px-10 py-12 gap-8">
-        
-        {/* Contenedor superior agrupado en el centro del espacio restante */}
-        <div className="flex flex-col gap-8 items-start w-full">
-          
-          {/* Card SWES */}
-          <div className="w-full bg-brand-panel-card border border-brand-panel-border rounded-card px-10 py-8 text-center">
-            <h1 className="text-white text-7xl font-bold tracking-tight mb-4">SWES</h1>
-            <p className="text-white/50 text-sm font-semibold tracking-widest uppercase leading-relaxed mb-3">
-              Plataforma de Gestión<br />de Emprendimientos
+      {/* PANEL DERECHO */}
+      <div className="hidden lg:flex w-1/2 bg-[#0f172a] items-center justify-center px-12">
+
+        <div className="max-w-lg">
+
+          <div className="bg-white/5 border border-white/10 rounded-3xl p-10 backdrop-blur-sm">
+
+            <h1 className="text-7xl font-bold text-white mb-5">
+              SWES
+            </h1>
+
+            <p className="text-white/70 text-lg leading-relaxed">
+              Sistema web para impulsar los emprendimientos y talentos
+              de los estudiantes de la Escuela Politécnica Nacional.
             </p>
-            <p className="text-brand-accent text-xs font-medium">
-              Impulsando la Innovación y el Talento Politécnico
-            </p>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              <span className="bg-white/10 text-white text-sm px-4 py-2 rounded-full">
+                Innovación
+              </span>
+
+              <span className="bg-white/10 text-white text-sm px-4 py-2 rounded-full">
+                Emprendimiento
+              </span>
+
+              <span className="bg-white/10 text-white text-sm px-4 py-2 rounded-full">
+                Tecnología
+              </span>
+            </div>
+
           </div>
-          
-          
+
         </div>
       </div>
 

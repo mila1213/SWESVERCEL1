@@ -12,7 +12,7 @@ function SidebarFilters({ categoriaActiva, setCategoriaActiva, alLimpiarFiltros 
   ];
 
   return (
-    <aside className="w-72 bg-white border border-gray-200 rounded-xl p-5 flex flex-col gap-6 select-none h-fit shadow-sm">
+    <aside className="w-full bg-white border border-gray-200 rounded-xl p-5 flex flex-col gap-6 select-none h-fit shadow-sm">
       
       <h2 className="text-lg font-bold text-gray-800">Filtros</h2>
 

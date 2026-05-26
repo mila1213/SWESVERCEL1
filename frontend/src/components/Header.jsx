@@ -2,14 +2,18 @@ import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import logoSwes from '../assets/icono_sistema.png';
 import { auth } from '../../firebase';
-import { signOut } from 'firebase/auth';
+import { signOut, onAuthStateChanged } from 'firebase/auth';
 
 function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
-  const [username, setUsername] = useState('Usuario');
+  const [username, setUsername] = useState(
+    typeof window !== 'undefined'
+      ? localStorage.getItem('name') || localStorage.getItem('displayName') || localStorage.getItem('email') || 'Usuario'
+      : 'Usuario'
+  );
   const role = typeof window !== 'undefined' ? localStorage.getItem('role') || 'visitante' : 'visitante';
 
   const handleLogout = async () => {
@@ -18,17 +22,15 @@ function Navbar() {
   };
 
   useEffect(() => {
-
-  const user = auth.currentUser;
-
-  if (user) {
-
-    setUsername(
-      user.displayName || 'Usuario'
-    );
-  }
-
-}, []);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUsername(user.displayName || user.email || localStorage.getItem('name') || 'Usuario');
+      } else {
+        setUsername(localStorage.getItem('name') || localStorage.getItem('email') || 'Usuario');
+      }
+    });
+    return () => unsubscribe();
+  }, []);
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
