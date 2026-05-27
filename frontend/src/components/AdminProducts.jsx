@@ -4,6 +4,7 @@ import {
   getByUserId,
   deleteResource
 } from '../services/crudService';
+import { auth } from '../../firebase';
 
 import {
   Link,
@@ -20,7 +21,7 @@ function AdminProducts() {
 
   const navigate = useNavigate();
   const role = localStorage.getItem('role') || 'visitante';
-  const miUid = localStorage.getItem('uid');
+  const miUid = localStorage.getItem('uid') || auth.currentUser?.uid || '';
 
   // Función para disparar notificaciones que desaparecen solas
   const mostrarToast = (texto, tipo = 'success') => {
@@ -37,6 +38,10 @@ function AdminProducts() {
       if (role === 'administrador') {
         data = await getAll('products');
       } else if (role === 'emprendedor') {
+        if (!miUid) {
+          console.warn('UID de usuario no disponible en localStorage ni auth.currentUser.');
+          throw new Error('No se encontró el identificador de usuario. Inicia sesión de nuevo.');
+        }
         data = await getByUserId('products', miUid);
       }
       setProducts(data || []);

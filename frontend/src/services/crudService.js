@@ -12,8 +12,8 @@ export const getById = async (resource, id) => {
   return res.data;
 };
 
-export const getByUserId = async (userId) => {
-  const res = await axios.get(`${BACKEND}/products/user/${userId}`);
+export const getByUserId = async (resource, userId) => {
+  const res = await axios.get(`${BACKEND}/${resource}/user/${userId}`);
   return res.data;
 };
 

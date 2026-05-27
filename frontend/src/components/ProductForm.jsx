@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createResource, getById, updateResource } from '../services/crudService';
+import { auth } from '../../firebase';
 
 function ProductForm() {
   const { id } = useParams();
@@ -93,8 +94,13 @@ function ProductForm() {
 
     setLoading(true);
     try {
-      const userId = localStorage.getItem('uid') || 'anonimo';
-      const sellerName = localStorage.getItem('name') || localStorage.getItem('email') || 'Vendedor';
+      const userId = localStorage.getItem('uid') || auth.currentUser?.uid || 'anonimo';
+      const sellerName =
+        localStorage.getItem('name') ||
+        auth.currentUser?.displayName ||
+        localStorage.getItem('email') ||
+        auth.currentUser?.email ||
+        'Vendedor';
       const sellerPhone = localStorage.getItem('phone') || '';
       
       const payload = { 
@@ -102,10 +108,9 @@ function ProductForm() {
         userId,
         sellerName,
         sellerPhone,
-        imagen: form.image
+        image: form.image
       };
 
-      // 👁️ TRUCO DE ESPÍA: Mira tu consola del navegador al dar click en Publicar
       console.log("🚀 ¡REVISANDO PAYLOAD JUSTO ANTES DE MANDAR AL BACKEND!", payload);
 
       if (id) {
