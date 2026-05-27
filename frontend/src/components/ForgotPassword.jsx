@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link } from 'react-router-dom';
-// 1. IMPORTAMOS DIRECTAMENTE LAS HERRAMIENTAS DE FIREBASE CLIENT
 import { auth } from "../../firebase"; 
 import { sendPasswordResetEmail } from "firebase/auth";
 
@@ -17,7 +16,7 @@ function ForgotPassword() {
     setLoading(true);
 
     try {
-      // 2. ENVIAR EL CORREO MEDIANTE EL SDK OFICIAL DE FIREBASE
+    
       await sendPasswordResetEmail(auth, email.trim());
       
       setAlerta({ 
@@ -29,7 +28,6 @@ function ForgotPassword() {
     } catch (error) {
       console.error("Error completo Firebase:", error);
       
-      // Mapeamos los códigos nativos que devuelve Firebase Authentication
       const firebaseErrors = {
         'auth/invalid-email': 'El formato del correo institucional ingresado no es válido.',
         'auth/user-not-found': 'No existe ninguna cuenta registrada con este correo electrónico.',
@@ -59,7 +57,7 @@ function ForgotPassword() {
           </p>
         </div>
 
-        {/* ALERTA VISUAL E INTUITIVA */}
+        {/* ALERTA VISUAL*/}
         {alerta.mostrar && (
           <div className={`border-l-4 p-3.5 rounded-xl text-xs font-semibold flex items-center gap-2.5 transition-all duration-300 ${
             alerta.tipo === 'error' 
@@ -71,7 +69,7 @@ function ForgotPassword() {
           </div>
         )}
 
-        {/* Formulario o confirmación */}
+        {/* Formulario*/}
         {!sent ? (
           <form onSubmit={handleSubmit} className="flex flex-col gap-3">
             <div className="flex flex-col gap-1">
@@ -105,7 +103,8 @@ function ForgotPassword() {
           </form>
 
         ) : (
-          /* Estado: correo enviado con éxito */
+          
+
           <div className="flex flex-col items-center gap-3 py-2">
             <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center shadow-lg shadow-green-100">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -118,7 +117,6 @@ function ForgotPassword() {
           </div>
         )}
 
-        {/* Link volver */}
         <p className="text-center text-sm text-neutral-muted mt-2">
           ¿Recordaste tu contraseña?{' '}
           <Link to="/login" className="text-brand-accent font-semibold hover:opacity-80 transition-opacity">

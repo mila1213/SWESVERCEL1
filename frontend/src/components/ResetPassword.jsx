@@ -21,7 +21,7 @@ function ResetPassword() {
   return (
     <div className="min-h-[80vh] flex flex-col justify-center items-center px-4 bg-neutral-bg">
       
-      {/* Contenedor con la clase card estilizada en Tailwind */}
+      {/* Contenedor con Tailwind */}
       <section className="w-full max-w-md p-10 bg-white rounded-2xl border border-gray-100 shadow-[0_10px_40px_rgba(0,0,0,0.03)] text-gray-800">
         
         {/* Encabezado */}

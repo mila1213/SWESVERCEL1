@@ -46,7 +46,7 @@ function ProductForm() {
       errorMsg = 'Debes seleccionar una categoría para tu emprendimiento.';
     }
 
-    // Solo actualiza errores si el campo requiere validación activa
+    // Solo actualiza errores si el campo requiere validacion activa
     if (['name', 'price', 'category'].includes(name)) {
       setErrors(prev => ({ ...prev, [name]: errorMsg }));
     }
@@ -111,7 +111,7 @@ function ProductForm() {
         image: form.image
       };
 
-      console.log("🚀 ¡REVISANDO PAYLOAD JUSTO ANTES DE MANDAR AL BACKEND!", payload);
+      console.log("¡REVISANDO PAYLOAD JUSTO ANTES DE MANDAR AL BACKEND!", payload);
 
       if (id) {
         await updateResource('products', id, payload);

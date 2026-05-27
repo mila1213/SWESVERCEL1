@@ -9,7 +9,7 @@ function EditProfile() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   
-  // ESTADO MEJORADO PARA ALERTAS INTUITIVAS
+  // ESTADO PARA ALERTAS INTUITIVAS
   const [alerta, setAlerta] = useState({ mostrar: false, texto: '', tipo: '' });
   const [loading, setLoading] = useState(false);
 
@@ -50,11 +50,11 @@ function EditProfile() {
 
       dispararAlerta('¡Tus cambios se han guardado con éxito!', 'success');
       
-      // Limpiamos los campos de contraseña después de un cambio exitoso
+      // Limpieza de los campos de contraseña después de un cambio exitoso
       setNewPassword('');
       setConfirmPassword('');
 
-      // Redirección sutil para que el usuario aprecie el mensaje de éxito
+      // Redirección para que el usuario aprecie el mensaje de éxito
       setTimeout(() => {
         navigate('/profile');
       }, 1500);
@@ -80,7 +80,7 @@ function EditProfile() {
         </p>
       </div>
 
-      {/* ALERTAS INTUITIVAS CON ESTILO (REEMPLAZA AL TEXTO SIMPLE) */}
+      {/* ALERTAS INTUITIVAS*/}
       {alerta.mostrar && (
         <div
           className={`mb-6 border-l-4 p-4 rounded-xl text-sm font-medium transition-all duration-300 flex items-center gap-3 ${

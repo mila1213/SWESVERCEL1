@@ -190,7 +190,7 @@ const Login = () => {
             <span className="text-sm text-neutral-subtle">Recordar mi sesión en este equipo</span>
           </label>
 
-          {/* Mensaje de error/éxito */}
+          {/* Mensaje de error y exito */}
           {mensaje.texto && (
             <div className={`text-sm px-4 py-3 rounded-xl text-center font-medium ${
               mensaje.tipo === 'error'

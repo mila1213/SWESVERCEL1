@@ -2,7 +2,7 @@ import React from 'react';
 
 function SidebarFilters({ categoriaActiva, setCategoriaActiva, alLimpiarFiltros }) {
   
-  // CORREGIDO: El 'id' ahora coincide exactamente con el 'value' del formulario
+  
   const categorias = [
     { id: 'Comida', label: 'Comida y Snacks', icon: '🍔' },
     { id: 'Tecnología', label: 'Tecnología / Software', icon: '💻' },

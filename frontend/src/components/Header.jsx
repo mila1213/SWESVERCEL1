@@ -94,7 +94,7 @@ function Navbar() {
               <div className="absolute right-0 mt-2 w-48 bg-neutral-surface border border-neutral-border
                               rounded-card shadow-form z-50 overflow-hidden animate-fadeIn">
                 
-                {/* Info básica del usuario */}
+                {/* Info del usuario*/}
                 <div className="px-4 py-3 border-b border-neutral-border bg-neutral-bg/30">
                   <p className="text-xs font-bold text-neutral-text">Hola, {username}</p>
                   <p className="text-[11px] text-neutral-muted truncate">Rol: {role === 'administrador' ? 'Administrador' : role === 'emprendedor' ? 'Emprendedor' : 'Visitante'}</p>

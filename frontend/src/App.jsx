@@ -18,15 +18,15 @@ import Settings from "./components/Settings";
 function AppInner() {
   const location = useLocation();
   
-  // Rutas exactas de autenticación donde NO queremos ver el Header
+  // Rutas exactas de autenticación 
   const authRoutes = ["/", "/login", "/register", "/verify", "/forgot-password"];
   
-  // Ocultamos si es una ruta de auth o si empieza con el token de reset
+  
   const hideNav = authRoutes.includes(location.pathname) || location.pathname.startsWith("/reset-password/");
 
   return (
     <main>
-      {/* Si el usuario está logueado, el Header se pintará hermoso arriba */}
+      
       {!hideNav && <Header />}
 
       <Routes>

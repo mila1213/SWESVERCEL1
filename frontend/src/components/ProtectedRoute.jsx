@@ -23,7 +23,7 @@ function ProtectedRoute({ children }) {
     return () => unsubscribe();
   }, []);
 
-  // Firebase aún cargando
+  // Firebase cargando
 
   if (user === undefined) {
 

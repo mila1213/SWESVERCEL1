@@ -129,7 +129,7 @@ function Dashboard() {
         {/* CONTENIDO */}
         <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6 items-start">
 
-          {/* SIDEBAR - sticky on large screens */}
+          {/* SIDEBAR */}
           <aside className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm lg:sticky lg:top-24 lg:h-[calc(100vh-6rem)] lg:overflow-auto lg:min-w-[300px]">
             <SidebarFilters
               categoriaActiva={categoriaActiva}

@@ -15,18 +15,17 @@ app.use(cors());
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
-// =======================================
+
 // CORREOS DE ADMINISTRADORES
-// =======================================
 const ADMIN_EMAILS = [
   "leonor.yumi@epn.edu.ec",
   "camila.bueno@epn.edu.ec",
   "concepcion.arequipa@epn.edu.ec",
 ].map((email) => email.toLowerCase());
 
-// =======================================
+
 // OBTENER ROL SEGÚN EL CORREO
-// =======================================
+
 const getRoleByEmail = (email) => {
   if (!email) return "visitante";
 
@@ -43,36 +42,35 @@ const getRoleByEmail = (email) => {
   return "visitante";
 };
 
-// =======================================
+
 // NORMALIZAR TELÉFONO
-// =======================================
 const normalizePhone = (phone) => {
   if (!phone) return "";
 
   return String(phone).replace(/\D/g, "");
 };
 
-// =======================================
+
 // GUARDAR PERFIL EN FIRESTORE
-// =======================================
+
 const saveUserProfile = async (uid, profile) => {
   await db.collection("users").doc(uid).set(profile, {
     merge: true,
   });
 };
 
-// =======================================
+
 // CARGAR PERFIL DESDE FIRESTORE
-// =======================================
+
 const loadUserProfile = async (uid) => {
   const doc = await db.collection("users").doc(uid).get();
 
   return doc.exists ? doc.data() : null;
 };
 
-// =======================================
+
 // CREAR CUENTAS ADMINISTRADORAS
-// =======================================
+
 const ensureAdminAccounts = async () => {
   for (const email of ADMIN_EMAILS) {
     try {
@@ -249,9 +247,8 @@ app.post("/api/register", async (req, res) => {
   }
 });
 
-// =======================================
+
 // LOGIN
-// =======================================
 app.post("/api/login", async (req, res) => {
   try {
     const { email, password } = req.body;

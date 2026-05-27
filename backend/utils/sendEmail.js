@@ -40,7 +40,6 @@ try {
     };
   }
 } catch (err) {
-  // nodemailer not installed or other error — fallback noop
   console.warn('sendEmail: nodemailer no disponible, fallback noop.', err && err.message);
   sendEmail = async (opts) => {
     console.log('sendEmail fallback noop:', opts && { to: opts.to, subject: opts.subject });
