@@ -1,9 +1,15 @@
+import { useState } from 'react';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../../firebase';
 
 function Settings() {
 
+  const [alerta, setAlerta] = useState({ mostrar: false, texto: '', tipo: '' });
+  const [loading, setLoading] = useState(false);
+
   const handleResetPassword = async () => {
+    setAlerta({ mostrar: false, texto: '', tipo: '' });
+    setLoading(true);
 
     try {
 
@@ -12,17 +18,23 @@ function Settings() {
         auth.currentUser.email
       );
 
-      alert(
-        'Se envió un correo para cambiar tu contraseña.'
-      );
+      setAlerta({
+        mostrar: true,
+        texto: '¡Enlace enviado! Revisa tu bandeja de entrada de tu correo electronico.',
+        tipo: 'success'
+      });
 
     } catch (error) {
 
       console.error(error);
 
-      alert(
-        'Error al enviar correo.'
-      );
+      setAlerta({
+        mostrar: true,
+        texto: 'Hubo un inconveniente al procesar la solicitud. Por favor, vuelve a intentarlo más tarde.',
+        tipo: 'error'
+      });
+    }finally {
+      setLoading(false);
     }
   };
 
@@ -43,6 +55,21 @@ function Settings() {
         </p>
 
       </div>
+
+      {/* COMPONENTE DE ALERTA DINÁMICA */}
+      
+      {alerta.mostrar && (
+        <div
+          className={`mb-6 border-l-4 p-4 rounded-xl text-sm font-medium transition-all duration-300 flex items-center gap-3 ${
+            alerta.tipo === 'error'
+              ? 'bg-red-50 border-red-500 text-red-700'
+              : 'bg-green-50 border-green-500 text-green-700'
+          }`}
+        >
+          <span className="text-base">{alerta.tipo === 'error' ? '⚠️' : '✅'}</span>
+          <p>{alerta.texto}</p>
+        </div>
+      )}
 
       {/* TARJETA */}
 
