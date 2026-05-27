@@ -9,7 +9,6 @@ try {
   const MAIL_PASS = process.env.MAIL_PASS || '';
   const MAIL_FROM = process.env.MAIL_FROM || MAIL_USER || 'no-reply@example.com';
 
-  // If SMTP credentials are not provided, export a noop sender.
   if (!MAIL_HOST || !MAIL_USER || !MAIL_PASS) {
     console.warn('sendEmail: SMTP no configurado. Los correos no se enviarán.');
     sendEmail = async (opts) => {

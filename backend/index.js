@@ -16,7 +16,7 @@ app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
 
-// CORREOS DE ADMINISTRADORES
+// googleS DE ADMINISTRADORES
 const ADMIN_EMAILS = [
   "leonor.yumi@epn.edu.ec",
   "camila.bueno@epn.edu.ec",
