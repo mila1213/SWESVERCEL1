@@ -1,15 +1,17 @@
 {
   "info": {
-    "_postman_id": "51556cc4-4a9b-4dcc-99f7-3e77dd3c1321",
+    "_postman_id": "9e420bbf-8e7b-4093-a8c1-36d99d2f6909",
     "name": "SWES",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "51599818",
-    "_collection_link": "https://go.postman.co/collection/51599818-51556cc4-4a9b-4dcc-99f7-3e77dd3c1321?source=collection_link"
+    "_exporter_id": "50409539"
   },
   "item": [
     {
-      "name": "New Request",
+      "name": "Leer emprendimiento",
       "request": {
+        "auth": {
+          "type": "inherit"
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -28,109 +30,16 @@
       "response": []
     },
     {
-      "name": "New Request",
+      "name": "Registro de usuario",
       "request": {
+        "auth": {
+          "type": "inherit"
+        },
         "method": "POST",
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n        \"userId\": \"VFA1tGh0dUMBFAUaJeGw0uJEvOG2\",\r\n        \"createdAt\": \"2026-05-27T04:14:14.184Z\",\r\n        \"sellerPhone\": \"0967350803\",\r\n        \"name\": \"Poli Papipollos\",\r\n        \"sellerName\": \"Juan Jose Martinez Diaz\",\r\n        \"image\": \"https://imgmedia.buenazo.pe/1200x660/buenazo/original/2021/07/16/60f1dce23a85094341222cc1.jpg\",\r\n        \"description\": \"Disfruta tus deliciosas papipollos\",\r\n        \"category\": \"Comida\",\r\n        \"price\": 3.5\r\n    }",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "http://localhost:8000/api/products",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8000",
-          "path": [
-            "api",
-            "products"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "New Request",
-      "request": {
-        "method": "PUT",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\r\n        \"id\": \"30spzh1Ma9okSRtetZCX\",\r\n        \"userId\": \"VFA1tGh0dUMBFAUaJeGw0uJEvOG2\",\r\n        \"createdAt\": \"2026-05-27T04:14:14.184Z\",\r\n        \"sellerPhone\": \"0967350803\",\r\n        \"name\": \"PoliLimpeza Laptops\",\r\n        \"sellerName\": \"Juan Jose Martinez Diaz\",\r\n        \"image\": \"https://www.prensalibre.com/wp-content/uploads/2019/09/shutterstock_190575641.jpg?quality=52&w=1000\",\r\n        \"description\": \"Se realiza limpieza preventiva de computadores\",\r\n        \"category\": \"Tecnología\",\r\n        \"price\": 20\r\n    }",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "http://localhost:8000/api/products/30spzh1Ma9okSRtetZCX",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8000",
-          "path": [
-            "api",
-            "products",
-            "30spzh1Ma9okSRtetZCX"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "New Request",
-      "request": {
-        "method": "DELETE",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:8000/api/products/okmG72RH6zn988q71VFY",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8000",
-          "path": [
-            "api",
-            "products",
-            "okmG72RH6zn988q71VFY"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "New Request",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:8000",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8000"
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "New Request",
-      "request": {
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\r\n  \"email\": \"usuario@epn.edu.ec\",\r\n  \"password\": \"123456\",\r\n  \"nombre\": \"Nombre Completo\",\r\n  \"role\": \"visitante | emprendedor\",\r\n  \"phone\": \"0912345678\"\r\n}\r\n",
+          "raw": "{\r\n  \"nombre\": \"Jose Lopez\",\r\n  \"email\": \"jose.lopez@epn.edu.ec\",\r\n  \"password\": \"123456\",\r\n  \"role\": \"visitante\",\r\n  \"phone\": \"0999999999\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -153,13 +62,16 @@
       "response": []
     },
     {
-      "name": "New Request",
+      "name": "Login",
       "request": {
+        "auth": {
+          "type": "inherit"
+        },
         "method": "POST",
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"email\": \"usuario@epn.edu.ec\",\r\n  \"password\": \"123456\"\r\n}",
+          "raw": "{\r\n  \"email\": \"jose.lopez@epn.edu.ec\",\r\n  \"password\": \"123456\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -182,13 +94,151 @@
       "response": []
     },
     {
-      "name": "New Request",
+      "name": "Buscar producto por ID",
       "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/api/products/30spzh1Ma9okSRtetZCX",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "products",
+            "30spzh1Ma9okSRtetZCX"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Buscar productos por usuario",
+      "request": {
+        "auth": {
+          "type": "inherit"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/api/products/user/lpervF8vWIastW7P75TqlBbBH6c2",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "products",
+            "user",
+            "lpervF8vWIastW7P75TqlBbBH6c2"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Publicar emprendimiento",
+      "request": {
+        "auth": {
+          "type": "inherit"
+        },
         "method": "POST",
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"name\": \"Nombre\",\r\n  \"email\": \"correo@ejemplo.com\",\r\n  \"subject\": \"Asunto\",\r\n  \"message\": \"Mensaje\"\r\n}",
+          "raw": "{\r\n  \"userId\": \"VFA1tGh0dUMBFAUaJeGw0uJEvOG2\",\r\n  \"sellerName\": \"Jose Martinez\",\r\n  \"sellerPhone\": \"0967350803\",\r\n  \"name\": \"PoliDonas EPN\",\r\n  \"description\": \"Donas artesanales frescas para la comunidad de la Poli.\",\r\n  \"price\": \"1.25\",\r\n  \"category\": \"Alimentos\",\r\n  \"image\": \"https://images.unsplash.com/photo-1551024601-bec78aea704b\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8000/api/products",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "products"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Editar emprendimiento",
+      "request": {
+        "auth": {
+          "type": "inherit"
+        },
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"userId\": \"VFA1tGh0dUMBFAUaJeGw0uJEvOG2\",\r\n  \"sellerName\": \"Jose Martinez\",\r\n  \"sellerPhone\": \"0967350803\",\r\n  \"name\": \"PoliDonas\",\r\n  \"description\": \"Donas artesanales frescas para la comunidad de la Poli.\",\r\n  \"price\": \"1.25\",\r\n  \"category\": \"Alimentos\",\r\n  \"image\": \"https://images.unsplash.com/photo-1551024601-bec78aea704b\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8000/api/products/mIlmUS7GrWSoS1iqSLz0",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "products",
+            "mIlmUS7GrWSoS1iqSLz0"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Eliminar emprendimiento",
+      "request": {
+        "auth": {
+          "type": "inherit"
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/api/products/LLEoJCqdMDa7T5ZWFrdn",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "products",
+            "LLEoJCqdMDa7T5ZWFrdn"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Contactar administradores",
+      "request": {
+        "auth": {
+          "type": "inherit"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Estudiante Interesado\",\r\n  \"email\": \"estudiante.prueba@epn.edu.ec\",\r\n  \"subject\": \"Duda sobre Emprendimiento de Donas\",\r\n  \"message\": \"Hola, me gustaría saber si hacen entregas directamente en el edificio de Sistemas. ¡Gracias!\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -205,6 +255,39 @@
           "path": [
             "api",
             "contact"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Recuperacion de contraseña",
+      "request": {
+        "auth": {
+          "type": "inherit"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"leonoryumi@gmail.com\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8000/api/auth/forgot-password",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "auth",
+            "forgot-password"
           ]
         }
       },
