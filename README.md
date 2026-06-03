@@ -40,6 +40,64 @@ El sistema sigue una arquitectura cliente-servidor:
 * **Entorno**: Node.js v24.14.1 y npm 11.11.0.
 * **Desarrollo de la interfaz de usuario del sistema**: Tailwind CSS
 
+## Endpoints
+| Método | Ruta | Descripción | HU |
+| :--- | :--- | :--- | :--- |
+| GET | `/` | Estado del servidor | - |
+| POST | `/api/register` | Registro de usuario | HUA-01 |
+| POST | `/api/login` | Inicio de sesión | HUA-02 |
+| GET | `/api/products` | Listar productos | HUA-04 |
+| GET | `/api/products/:id` | Ver detalle del producto | HUA-06 |
+| GET | `/api/products/user/:userId` | Ver todos mis productos | HUA-07 |
+| POST | `/api/products` | Publicar o registrar productos | HUA-03 |
+| PUT | `/api/products/:id` | Editar producto | HUA-08, HUA-10 |
+| DELETE | `/api/products/:id` | Eliminar producto | HUA-09, HUA-11 |
+| POST | `/api/contact` | Contactar emprendedores | HUA-12 |
+| POST | `/api/auth/forgot-password` | Solicitar reseteo de contraseña | HUA-15 |
+
+## Capturas de ejecucion de cada Enpoint
+
+/api/register  -> METODO: POST
+
+<img width="921" height="417" alt="image" src="https://github.com/user-attachments/assets/e29c52bd-4a61-4548-a92c-7b153bc71e54" />
+
+/api/login   -> METODO: POST
+
+<img width="921" height="495" alt="image" src="https://github.com/user-attachments/assets/10ee555f-0758-4f2f-b132-92741bd17f19" />
+
+/api/products   -> METODO: GET
+
+<img width="921" height="358" alt="image" src="https://github.com/user-attachments/assets/5ed46ff6-ab56-4836-9b6f-aec33be2df7c" />
+
+/api/products/id   -> METODO: GET
+
+<img width="921" height="452" alt="image" src="https://github.com/user-attachments/assets/77f412c5-dde4-474c-a983-fd7c36144715" />
+
+/api/products/user/userid   -> METODO: GET
+
+<img width="921" height="437" alt="image" src="https://github.com/user-attachments/assets/50514404-57d8-40a2-8ddd-c6024b255893" />
+
+/api/products        -> METODO: POST
+
+<img width="921" height="406" alt="image" src="https://github.com/user-attachments/assets/eb04d871-312b-40b1-9875-ba0791071fd8" />
+
+/api/products/id    -> METODO: PUT
+
+<img width="921" height="423" alt="image" src="https://github.com/user-attachments/assets/a6fc5d21-7cf7-4d4b-877e-5b72f0ab55e4" />
+
+/api/products/:id    -> METODO: DELETE
+
+<img width="921" height="399" alt="image" src="https://github.com/user-attachments/assets/ebb41b32-be41-4a2d-80fd-c0da4f96d442" />
+
+/api/contact         -> METODO: POST
+
+<img width="921" height="393" alt="image" src="https://github.com/user-attachments/assets/f8873b3c-4579-4ac0-994e-e9aa11b998b6" />
+
+/api/auth/forgot-password      -> METODO: POST
+
+<img width="921" height="382" alt="image" src="https://github.com/user-attachments/assets/552c04f0-43bb-48c4-91f1-9f56a5e42c18" />
+
+
 ## Variables de entorno
 
 - Este proyecto utiliza variables de entorno para la configuración.
