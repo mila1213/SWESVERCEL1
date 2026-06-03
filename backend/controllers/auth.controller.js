@@ -1,57 +1,201 @@
-const User = require("../models/User");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+const { auth, db } = require("../firebase");
+
+const API_KEY = process.env.FIREBASE_API_KEY;
+const FRONTEND_VERIFY_URL = process.env.FRONTEND_VERIFY_URL || "http://localhost:5173/verify";
+const FRONTEND_RESET_URL = process.env.FRONTEND_RESET_URL || "http://localhost:5173/reset-password";
+
+const ADMIN_EMAILS = [
+  "leonor.yumi@epn.edu.ec",
+  "camila.bueno@epn.edu.ec",
+  "concepcion.arequipa@epn.edu.ec",
+].map((email) => email.toLowerCase());
+
+const getRoleByEmail = (email) => {
+  if (!email) return "visitante";
+  const normalized = email.toLowerCase().trim();
+  if (ADMIN_EMAILS.includes(normalized)) return "administrador";
+  if (normalized.endsWith("@epn.edu.ec")) return "emprendedor";
+  return "visitante";
+};
+
+const normalizePhone = (phone) => {
+  if (!phone) return "";
+  return String(phone).replace(/\D/g, "");
+};
+
+const createFirebaseRequest = async (pathSuffix, body) => {
+  const response = await fetch(
+    `https://identitytoolkit.googleapis.com/v1/${pathSuffix}?key=${API_KEY}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    }
+  );
+  const data = await response.json();
+  return { ok: response.ok, data };
+};
+
+const saveUserProfile = async (uid, profile) => {
+  await db.collection("users").doc(uid).set(profile, { merge: true });
+};
+
+const loadUserProfile = async (uid) => {
+  const doc = await db.collection("users").doc(uid).get();
+  return doc.exists ? doc.data() : null;
+};
 
 const register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
-    if (!name || !email || !password) return res.status(400).json({ message: "Todos los campos son obligatorios" });
+    const { email, password, nombre, role, phone } = req.body;
+    const normalizedEmail = email?.toLowerCase().trim();
+    const normalizedPhone = normalizePhone(phone);
+    const selectedRole = role || "visitante";
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ message: "El correo ya está registrado" });
+    if (!normalizedEmail || !password || !nombre) {
+      return res.status(400).json({ mensaje: "Faltan datos obligatorios" });
+    }
+    if (!normalizedEmail.endsWith("@epn.edu.ec")) {
+      return res.status(400).json({ mensaje: "Debes usar un correo institucional" });
+    }
+    if (password.length < 6) {
+      return res.status(400).json({ mensaje: "La contraseña debe tener mínimo 6 caracteres" });
+    }
+    if (selectedRole === "emprendedor" && !normalizedPhone) {
+      return res.status(400).json({ mensaje: "El teléfono es obligatorio para emprendedores" });
+    }
+    if (selectedRole === "administrador") {
+      return res.status(403).json({ mensaje: "No puedes registrar administradores" });
+    }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const verificationToken = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: "1d" });
+    const { ok, data } = await createFirebaseRequest("accounts:signUp", {
+      email: normalizedEmail,
+      password,
+      returnSecureToken: true,
+    });
 
-    const user = await User.create({ name, email, password: hashedPassword, verificationToken });
+    if (!ok) {
+      const errorCode = data.error?.message;
+      if (errorCode === "EMAIL_EXISTS") {
+        return res.status(400).json({ mensaje: "El correo ya está registrado" });
+      }
+      return res.status(500).json({ mensaje: "Error al registrar usuario", detalle: data });
+    }
 
-    res.status(201).json({ message: "Usuario registrado correctamente", userId: user._id, verificationToken });
+    await saveUserProfile(data.localId, {
+      email: normalizedEmail,
+      role: selectedRole,
+      nombre: nombre.trim(),
+      phone: normalizedPhone,
+      createdAt: new Date().toISOString(),
+    });
+
+    await createFirebaseRequest("accounts:sendOobCode", {
+      requestType: "VERIFY_EMAIL",
+      idToken: data.idToken,
+      continueUrl: FRONTEND_VERIFY_URL,
+    });
+
+    res.status(201).json({ mensaje: "Usuario registrado correctamente" });
   } catch (error) {
-    res.status(500).json({ message: "Error en el registro", error: error.message });
+    console.error(error);
+    res.status(500).json({ mensaje: "Error interno del servidor", detalle: error.message });
+  }
+};
+
+const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const normalizedEmail = email?.toLowerCase().trim();
+
+    if (!normalizedEmail || !password) {
+      return res.status(400).json({ mensaje: "Correo y contraseña requeridos" });
+    }
+
+    const { ok, data } = await createFirebaseRequest("accounts:signInWithPassword", {
+      email: normalizedEmail,
+      password,
+      returnSecureToken: true,
+    });
+
+    if (!ok) {
+      return res.status(401).json({ mensaje: data.error?.message || "Credenciales inválidas" });
+    }
+
+    let role = "visitante";
+    let phone = "";
+    let nombre = "";
+    const profile = await loadUserProfile(data.localId);
+
+    if (profile) {
+      role = profile.role || getRoleByEmail(normalizedEmail);
+      phone = profile.phone || "";
+      nombre = profile.nombre || "";
+    } else {
+      role = getRoleByEmail(normalizedEmail);
+      await saveUserProfile(data.localId, {
+        email: normalizedEmail,
+        role,
+        nombre: "",
+        phone: "",
+        createdAt: new Date().toISOString(),
+      });
+    }
+
+    res.json({
+      mensaje: "Login exitoso",
+      token: data.idToken,
+      uid: data.localId,
+      email: data.email,
+      role,
+      phone,
+      name: nombre,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: "Error interno del servidor" });
   }
 };
 
 const verifyAccount = async (req, res) => {
   try {
     const { token } = req.params;
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findOne({ email: decoded.email, verificationToken: token });
-    if (!user) return res.status(400).json({ message: "Token inválido" });
+    if (!token) return res.status(400).json({ mensaje: "Falta el token de verificación" });
 
-    user.isVerified = true;
-    user.verificationToken = null;
-    await user.save();
+    const { ok, data } = await createFirebaseRequest("accounts:update", {
+      oobCode: token,
+    });
 
-    res.json({ message: "Cuenta verificada correctamente" });
+    if (!ok) {
+      return res.status(400).json({ mensaje: data.error?.message || "Token inválido o expirado" });
+    }
+
+    res.json({ mensaje: "Cuenta verificada correctamente", email: data.email });
   } catch (error) {
-    res.status(400).json({ message: "Token inválido o expirado" });
+    console.error(error);
+    res.status(500).json({ mensaje: "Error al verificar la cuenta" });
   }
 };
-
 
 const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
-    const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+    if (!email) return res.status(400).json({ mensaje: "El correo es obligatorio" });
 
-    const resetToken = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: "15m" });
-    user.resetToken = resetToken;
-    await user.save();
+    const { ok, data } = await createFirebaseRequest("accounts:sendOobCode", {
+      requestType: "PASSWORD_RESET",
+      email: email.toLowerCase().trim(),
+      continueUrl: FRONTEND_RESET_URL,
+    });
 
-    res.json({ message: "Token de recuperación generado", resetToken });
+    if (!ok) {
+      return res.status(400).json({ mensaje: data.error?.message || "Error al solicitar recuperación de contraseña" });
+    }
+
+    res.json({ mensaje: "Correo de recuperación enviado" });
   } catch (error) {
-    res.status(500).json({ message: "Error al recuperar contraseña", error: error.message });
+    console.error(error);
+    res.status(500).json({ mensaje: "Error al solicitar recuperación de contraseña" });
   }
 };
 
@@ -59,20 +203,66 @@ const resetPassword = async (req, res) => {
   try {
     const { token } = req.params;
     const { newPassword } = req.body;
-    if (!newPassword || newPassword.length < 6) return res.status(400).json({ message: "La contraseña debe tener al menos 6 caracteres" });
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findOne({ email: decoded.email, resetToken: token });
-    if (!user) return res.status(400).json({ message: "Token inválido" });
+    if (!token) return res.status(400).json({ mensaje: "Falta el token de restablecimiento" });
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({ mensaje: "La contraseña debe tener mínimo 6 caracteres" });
+    }
 
-    user.password = await bcrypt.hash(newPassword, 10);
-    user.resetToken = null;
-    await user.save();
+    const { ok, data } = await createFirebaseRequest("accounts:resetPassword", {
+      oobCode: token,
+      newPassword,
+    });
 
-    res.json({ message: "Contraseña actualizada correctamente" });
+    if (!ok) {
+      return res.status(400).json({ mensaje: data.error?.message || "Token inválido o expirado" });
+    }
+
+    res.json({ mensaje: "Contraseña actualizada correctamente" });
   } catch (error) {
-    res.status(400).json({ message: "Token inválido o expirado" });
+    console.error(error);
+    res.status(500).json({ mensaje: "Error al restablecer contraseña" });
   }
 };
 
-module.exports = { register, verifyAccount, forgotPassword, resetPassword };
+const googleSignIn = async (req, res) => {
+  try {
+    const { idToken } = req.body;
+    if (!idToken) return res.status(400).json({ mensaje: "Falta idToken" });
+
+    const decoded = await auth.verifyIdToken(idToken);
+    const { uid, email, name, picture } = decoded;
+    const normalizedEmail = email?.toLowerCase().trim();
+
+    try {
+      await auth.getUser(uid);
+    } catch {
+      await auth.createUser({
+        uid,
+        email: normalizedEmail,
+        displayName: name || "",
+        photoURL: picture || null,
+      });
+    }
+
+    const role = getRoleByEmail(normalizedEmail);
+    const existingProfile = await loadUserProfile(uid);
+    if (!existingProfile) {
+      await saveUserProfile(uid, {
+        email: normalizedEmail,
+        role,
+        nombre: name || "",
+        phone: "",
+        createdAt: new Date().toISOString(),
+      });
+    }
+
+    const customToken = await auth.createCustomToken(uid);
+    res.json({ mensaje: "Google login exitoso", uid, email: normalizedEmail, role, customToken });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: "Error en Google Sign-In", detalle: error.message });
+  }
+};
+
+module.exports = { register, verifyAccount, forgotPassword, resetPassword, login, googleSignIn };
