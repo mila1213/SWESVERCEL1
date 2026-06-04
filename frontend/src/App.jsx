@@ -11,6 +11,7 @@ import Header from "./components/Header";
 import Profile from "./components/Profile";
 import EditProfile from "./components/EditProfile";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Landing from "./components/Landing";
 import "./index.css";
 import "./App.css";
 import Settings from "./components/Settings";
@@ -30,7 +31,7 @@ function AppInner() {
       {!hideNav && <Header />}
 
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<Landing />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/verify" element={<VerifyAccount />} />

@@ -7,6 +7,7 @@ require("dotenv").config({ path: path.join(__dirname, ".env") });
 const authRoutes = require("./routes/auth.routes");
 const productRoutes = require("./routes/product.routes");
 const userRoutes = require("./routes/user.routes");
+const protectedRoutes = require("./routes/protected.routes");
 const { sendEmail } = require("./utils/sendEmail");
 
 const ADMIN_EMAILS = [
@@ -24,6 +25,7 @@ app.get("/", (req, res) => res.send("API Firebase funcionando"));
 app.use("/api", authRoutes);
 app.use("/api", productRoutes);
 app.use("/api", userRoutes);
+app.use("/api", protectedRoutes); 
 
 app.post("/api/contact", async (req, res) => {
   try {

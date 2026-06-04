@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../firebase';
 import { FaWhatsapp } from 'react-icons/fa';
-
+import { getAuth } from 'firebase/auth';
 import SidebarFilters from './SidebarFilters';
 import { getAll } from '../services/crudService';
 
@@ -48,6 +48,7 @@ function Dashboard() {
   const [displayEmailState, setDisplayEmailState] = useState(userEmail);
 
   useEffect(() => {
+    
     if (typeof window === 'undefined') return;
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {

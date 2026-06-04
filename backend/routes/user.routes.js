@@ -6,10 +6,18 @@ const {
   updateUser,
   deleteUser,
 } = require("../controllers/user.controller");
+const { verifyToken, authorizeRoles, authorizeSelfOrAdmin } = require("../middleware/authMiddleware");
 
-router.get("/users", getAllUsers);
-router.get("/users/:id", getUserById);
-router.put("/users/:id", updateUser);
-router.delete("/users/:id", deleteUser);
+// Obtener todos los usuarios (solo administrador)
+router.get("/users", verifyToken, authorizeRoles("administrador"), getAllUsers);
+
+// Obtener usuario por ID (solo el usuario mismo o administrador)
+router.get("/users/:id", verifyToken, authorizeSelfOrAdmin, getUserById);
+
+// Actualizar usuario (solo el usuario mismo o administrador)
+router.put("/users/:id", verifyToken, authorizeSelfOrAdmin, updateUser);
+
+// Eliminar usuario (solo administrador)
+router.delete("/users/:id", verifyToken, authorizeRoles("administrador"), deleteUser);
 
 module.exports = router;
