@@ -26,7 +26,14 @@ export const getById = async (resource, id) => {
 };
 
 export const getByUserId = async (resource, userId) => {
-  const res = await axios.get(`${BACKEND}/${resource}/user/${userId}`);
+  const token = localStorage.getItem("token"); 
+
+  const res = await axios.get(`${BACKEND}/${resource}/user/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${token}` // <-- ¡Este es tu pase de seguridad de Postman!
+    }
+  });
+  
   return res.data;
 };
 

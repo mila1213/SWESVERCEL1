@@ -4,6 +4,7 @@ const { verifyToken, authorizeRoles, authorizeSelfOrAdmin } = require("../middle
 
 const router = express.Router();
 const getProductCollection = () => db.collection("products");
+const getUserCollection = () => db.collection("users"); // Agregamos la referencia a usuarios para contar
 
 // Obtener todos los productos (público)
 router.get("/products", async (req, res) => {
@@ -110,7 +111,7 @@ router.delete("/products/:id", verifyToken, async (req, res) => {
     const isAdmin = req.user.role === "administrador";
 
     if (!isOwner && !isAdmin) {
-      return res.status(403).json({ mensaje: "No tienes permiso para eliminar este producto" });
+      return res.status(403).json({ mensaje: "No tienes permission para eliminar este producto" });
     }
 
     await productCollection.doc(id).delete();
@@ -118,6 +119,41 @@ router.delete("/products/:id", verifyToken, async (req, res) => {
   } catch (error) {
     console.error("Error al eliminar producto:", error);
     res.status(500).json({ mensaje: "Error al eliminar producto" });
+  }
+});
+
+router.get("/admin/stats", verifyToken, authorizeRoles("administrador"), async (req, res) => {
+  try {
+    const productCollection = getProductCollection();
+    const userCollection = getUserCollection();
+
+    // 1. Consultar colecciones de Firebase en paralelo para ahorrar tiempo
+    const [productsSnapshot, usersSnapshot] = await Promise.all([
+      productCollection.get(),
+      userCollection.get()
+    ]);
+
+    const totalProducts = productsSnapshot.size;
+    const totalUsers = usersSnapshot.size;
+
+    // 2. Calcular la sumatoria del precio de todos los productos
+    let totalValue = 0;
+    productsSnapshot.forEach((doc) => {
+      const data = doc.data();
+      const precio = data.price ? Number(data.price) : 0;
+      totalValue += precio;
+    });
+
+    // 3. Responder con los datos calculados limpios
+    res.json({
+      totalUsers,
+      totalProducts,
+      totalValue: totalValue.toFixed(2) 
+    });
+
+  } catch (error) {
+    console.error("Error al generar estadísticas de administrador:", error);
+    res.status(500).json({ mensaje: "Error interno al procesar las métricas" });
   }
 });
 

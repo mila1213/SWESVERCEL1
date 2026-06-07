@@ -363,6 +363,30 @@
         }
       },
       "response": []
+    },
+    {
+      "name": "Estadistica - Administrador",
+      "request": {
+        "auth": {
+          "type": "inherit"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/api/admin/stats",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "admin",
+            "stats"
+          ]
+        }
+      },
+      "response": []
     }
   ]
 }

@@ -15,9 +15,17 @@ function AdminProducts() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // ESTADOS PARA ALERTAS INIUITIVAS
+  // ESTADOS PARA ALERTAS INTUITIVAS
   const [toast, setToast] = useState({ mostrar: false, texto: '', tipo: '' });
   const [modalEliminar, setModalEliminar] = useState({ abierto: false, productoId: null });
+
+  // ==========================================================
+  // INICIO EJEMPLO: Estados para las estadísticas del admin
+  // ==========================================================
+  const [stats, setStats] = useState(null);
+  const [loadingStats, setLoadingStats] = useState(false);
+  // ==========================================================
+  // FIN EJEMPLO
 
   const navigate = useNavigate();
   const role = localStorage.getItem('role') || 'visitante';
@@ -53,8 +61,43 @@ function AdminProducts() {
     }
   };
 
+  // ==========================================================
+  // INICIO EJEMPLO: Función y efecto para cargar stats del back
+  // ==========================================================
+  const loadStats = async () => {
+    if (role !== 'administrador') return;
+    setLoadingStats(true);
+    try {
+      // Usamos el token guardado para pasar la seguridad del backend
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:8000/api/admin/stats', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setStats(data);
+      }
+    } catch (err) {
+      console.error('Error al cargar métricas de simulación:', err);
+    } finally {
+      setLoadingStats(false);
+    }
+  };
+  // ==========================================================
+  // FIN EJEMPLO
+
   useEffect(() => {
     load();
+    // ==========================================================
+    // INICIO EJEMPLO: Ejecutar la carga al montar el componente
+    // ==========================================================
+    loadStats();
+    // ==========================================================
+    // FIN EJEMPLO
   }, []);
 
   // Abre el modal moderno en vez del "confirm" nativo
@@ -71,6 +114,12 @@ function AdminProducts() {
       await deleteResource('products', id);
       mostrarToast('Producto eliminado correctamente', 'success');
       await load();
+      // ==========================================================
+      // INICIO EJEMPLO: Recargar métricas si se borra un producto
+      // ==========================================================
+      await loadStats();
+      // ==========================================================
+      // FIN EJEMPLO
     } catch (err) {
       console.error(err);
       mostrarToast('No se pudo eliminar el producto', 'error');
@@ -143,6 +192,44 @@ function AdminProducts() {
             </button>
           )}
         </div>
+
+        {/* ==========================================================
+            INICIO EJEMPLO: Tarjetas visuales de estadísticas en la interfaz
+            ========================================================== */}
+        {role === 'administrador' && !loadingStats && stats && (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+            
+            {/* Tarjeta 1: Usuarios */}
+            <div className="bg-white p-5 rounded-2xl border shadow-sm flex flex-col justify-between">
+              <div>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Usuarios</p>
+                <h3 className="text-2xl font-extrabold text-gray-800 mt-1">{stats.totalUsers}</h3>
+              </div>
+              <p className="text-xs text-indigo-500 mt-3 font-medium">● Cuentas registradas en Firebase</p>
+            </div>
+
+            {/* Tarjeta 2: Productos */}
+            <div className="bg-white p-5 rounded-2xl border shadow-sm flex flex-col justify-between">
+              <div>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Productos Activos</p>
+                <h3 className="text-2xl font-extrabold text-gray-800 mt-1">{stats.totalProducts}</h3>
+              </div>
+              <p className="text-xs text-teal-600 mt-3 font-medium">● Visibles en catálogo público</p>
+            </div>
+
+            {/* Tarjeta 3: Valor de Catálogo */}
+            <div className="bg-white p-5 rounded-2xl border shadow-sm flex flex-col justify-between">
+              <div>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Valor total del catálogo</p>
+                <h3 className="text-2xl font-extrabold text-[#00665c] mt-1">${stats.totalValue}</h3>
+              </div>
+              <p className="text-xs text-gray-500 mt-3 font-medium">⭐ Métricas comerciales SWES</p>
+            </div>
+
+          </div>
+        )}
+        {/* ==========================================================
+            FIN EJEMPLO */}
 
         {loading ? (
           <div className="text-center py-20 text-gray-500 font-medium">
