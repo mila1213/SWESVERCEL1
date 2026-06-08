@@ -11,6 +11,10 @@ import {
   useNavigate
 } from 'react-router-dom';
 
+import { Doughnut } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+ChartJS.register(ArcElement, Tooltip, Legend);
+
 function AdminProducts() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,13 +23,10 @@ function AdminProducts() {
   const [toast, setToast] = useState({ mostrar: false, texto: '', tipo: '' });
   const [modalEliminar, setModalEliminar] = useState({ abierto: false, productoId: null });
 
-  // ==========================================================
-  // INICIO EJEMPLO: Estados para las estadísticas del admin
-  // ==========================================================
+  
   const [stats, setStats] = useState(null);
   const [loadingStats, setLoadingStats] = useState(false);
-  // ==========================================================
-  // FIN EJEMPLO
+  
 
   const navigate = useNavigate();
   const role = localStorage.getItem('role') || 'visitante';
@@ -193,43 +194,90 @@ function AdminProducts() {
           )}
         </div>
 
-        {/* ==========================================================
-            INICIO EJEMPLO: Tarjetas visuales de estadísticas en la interfaz
-            ========================================================== */}
-        {role === 'administrador' && !loadingStats && stats && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+        
+       {role === 'administrador' && !loadingStats && stats && (
+        
+        <div className="flex flex-col gap-6 mb-8">
+          
+          {/* Fila superior — 3 tarjetas */}
+          
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between min-h-[140px] border-l-4 border-l-violet-500">
+              <div>
+                <p className="text-md font-bold text-black uppercase tracking-wider mb-2">Total usuarios</p>
+                <p className="text-md text-slate-400 font-semibold">Cuentas registradas en SWES</p>
+              </div>
+              <h3 className="text-3xl font-black text-slate-800 mt-4">{stats.totalUsers}</h3>
+            </div>
             
-            {/* Tarjeta 1: Usuarios */}
-            <div className="bg-white p-5 rounded-2xl border shadow-sm flex flex-col justify-between">
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between min-h-[140px] border-l-4 border-l-teal-500">
               <div>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Usuarios</p>
-                <h3 className="text-2xl font-extrabold text-gray-800 mt-1">{stats.totalUsers}</h3>
+                <p className="text-md font-bold text-black uppercase tracking-wider mb-2">Emprendimientos activos</p>
+                <p className="text-md text-slate-400 font-semibold">Visibles en el catálogo público</p>
               </div>
-              <p className="text-xs text-indigo-500 mt-3 font-medium">● Cuentas registradas en Firebase</p>
+              <h3 className="text-3xl font-black text-slate-800 mt-4">{stats.totalProducts}</h3>
             </div>
-
-            {/* Tarjeta 2: Productos */}
-            <div className="bg-white p-5 rounded-2xl border shadow-sm flex flex-col justify-between">
+            
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between min-h-[140px] border-l-4 border-l-amber-500">
               <div>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Productos Activos</p>
-                <h3 className="text-2xl font-extrabold text-gray-800 mt-1">{stats.totalProducts}</h3>
+                <p className="text-md font-bold text-black uppercase tracking-wider mb-2">Valor del catálogo</p>
+                <p className="text-md text-slate-400 font-semibold">Métricas comerciales SWES</p>
               </div>
-              <p className="text-xs text-teal-600 mt-3 font-medium">● Visibles en catálogo público</p>
+              <h3 className="text-3xl font-black text-slate-800 mt-4">${stats.totalValue}</h3>
             </div>
-
-            {/* Tarjeta 3: Valor de Catálogo */}
-            <div className="bg-white p-5 rounded-2xl border shadow-sm flex flex-col justify-between">
-              <div>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Valor total del catálogo</p>
-                <h3 className="text-2xl font-extrabold text-[#00665c] mt-1">${stats.totalValue}</h3>
-              </div>
-              <p className="text-xs text-gray-500 mt-3 font-medium">⭐ Métricas comerciales SWES</p>
-            </div>
-
           </div>
-        )}
-        {/* ==========================================================
-            FIN EJEMPLO */}
+          
+          {/* Fila inferior — Donut grande */}
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+            <h3 className="text-xl font-bold text-slate-700 mb-6">Distribución general de SWES</h3>
+            <div className="flex flex-col md:flex-row items-center gap-10">
+              <div className="w-90 h-90 shrink-0 ml-20">
+                <Doughnut
+                data={{
+                  labels: ['Usuarios', 'Productos', 'Valor'],
+                  datasets: [{
+                    data: [stats.totalUsers, stats.totalProducts, stats.totalValue],
+                    backgroundColor: ['#534AB7', '#1D9E75', '#EF9F27'],
+                    borderWidth: 0,
+                    hoverOffset: 6,
+                  }]
+                }}
+                
+                options={{
+                  cutout: '72%',
+                  plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                      callbacks: { label: (ctx) => ` ${ctx.label}: ${ctx.raw}` }
+                    }
+                  }
+                }}
+                />
+              </div>
+              <div className="flex flex-col gap-8 flex-1 w-full">
+                {[
+                  { label: 'Total usuarios', value: stats.totalUsers, color: '#534AB7', bg: 'bg-violet-50', text: 'text-violet-700' },
+                  { label: 'Productos activos', value: stats.totalProducts, color: '#1D9E75', bg: 'bg-teal-50', text: 'text-teal-700' },
+                  { label: 'Valor catálogo', value: `$${stats.totalValue}`, color: '#EF9F27', bg: 'bg-amber-50', text: 'text-amber-700' },
+                
+                ].map((item, i) => (
+                <div key={i} className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
+                    <p className="text-lg text-slate-500">{item.label}</p>
+                    
+                  </div>
+                  <span className={`text-lg font-black px-3 py-1 rounded-lg ${item.bg} ${item.text}`}>
+                    {item.value}
+                  </span>
+                </div>))}
+              </div>
+              
+            </div>
+          </div>
+        </div>
+      )}
+        
 
         {loading ? (
           <div className="text-center py-20 text-gray-500 font-medium">
