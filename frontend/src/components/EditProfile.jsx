@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth } from '../../firebase';
-import { updatePassword, updateProfile } from 'firebase/auth';
+import { updateUser } from '../services/authService';
 
 function EditProfile() {
   const navigate = useNavigate();
@@ -14,9 +13,8 @@ function EditProfile() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const user = auth.currentUser;
-    if (user) {
-      setUsername(user.displayName || '');
+    if (typeof window !== 'undefined') {
+      setUsername(localStorage.getItem('name') || localStorage.getItem('email') || '');
     }
   }, []);
 
@@ -37,17 +35,17 @@ function EditProfile() {
     setLoading(true);
 
     try {
-      const user = auth.currentUser;
-      if (!user) throw new Error('Usuario no autenticado');
+      const userId = localStorage.getItem('uid');
+      if (!userId) throw new Error('Usuario no autenticado');
 
-      if (username.trim()) {
-        await updateProfile(user, { displayName: username.trim() });
-      }
-
+      const payload = { nombre: username.trim() };
       if (newPassword) {
-        await updatePassword(user, newPassword);
+        // Password changes should be handled via the forgot/reset flow.
+        throw new Error('Para cambiar la contraseña, usa la opción de restablecimiento en Configuración.');
       }
 
+      await updateUser(userId, payload);
+      localStorage.setItem('name', username.trim());
       dispararAlerta('¡Tus cambios se han guardado con éxito!', 'success');
       
       // Limpieza de los campos de contraseña después de un cambio exitoso
@@ -61,11 +59,7 @@ function EditProfile() {
 
     } catch (error) {
       console.error(error);
-      const errors = {
-        'auth/requires-recent-login': 'Acción crítica: Por seguridad, debes iniciar sesión nuevamente para cambiar tu contraseña.',
-        'auth/weak-password': 'La contraseña es muy débil. Debe tener un mínimo de 6 caracteres.',
-      };
-      dispararAlerta(errors[error.code] || 'Ocurrió un inconveniente al intentar guardar los cambios.', 'error');
+      dispararAlerta(error.message || 'Ocurrió un inconveniente al intentar guardar los cambios.', 'error');
     } finally {
       setLoading(false);
     }

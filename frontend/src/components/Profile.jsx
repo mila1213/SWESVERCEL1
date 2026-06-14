@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth } from '../../firebase';
 
 function Profile() {
   const navigate = useNavigate();
@@ -8,10 +7,9 @@ function Profile() {
   const [email, setEmail] = useState('');
 
   useEffect(() => {
-    const user = auth.currentUser;
-    if (user) {
-      setUsername(user.displayName || 'Usuario');
-      setEmail(user.email || '');
+    if (typeof window !== 'undefined') {
+      setUsername(localStorage.getItem('name') || 'Usuario');
+      setEmail(localStorage.getItem('email') || '');
     }
   }, []);
 
@@ -26,7 +24,7 @@ function Profile() {
 
       <div className="grid gap-5">
         <div className="rounded-3xl border border-slate-200 bg-slate-50 px-5 py-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Nombre</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Nombre de usuario</p>
           <p className="mt-2 text-base font-medium text-slate-900">{username}</p>
         </div>
 

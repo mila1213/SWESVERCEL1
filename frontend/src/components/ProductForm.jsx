@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createResource, getById, updateResource } from '../services/crudService';
-import { auth } from '../../firebase';
 
 function ProductForm() {
   const { id } = useParams();
@@ -94,35 +93,45 @@ function ProductForm() {
 
     setLoading(true);
     try {
-      const userId = localStorage.getItem('uid') || auth.currentUser?.uid || 'anonimo';
-      const sellerName =
-        localStorage.getItem('name') ||
-        auth.currentUser?.displayName ||
-        localStorage.getItem('email') ||
-        auth.currentUser?.email ||
-        'Vendedor';
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No hay token de autenticación. Por favor inicia sesión nuevamente.');
+      }
+
+      const sellerName = localStorage.getItem('name') || localStorage.getItem('email') || 'Vendedor';
       const sellerPhone = localStorage.getItem('phone') || '';
-      
-      const payload = { 
-        ...form, 
-        userId,
+
+      const payload = {
+        name: form.name,
+        description: form.description,
+        category: form.category,
+        price: form.price,
+        image: form.image,
         sellerName,
         sellerPhone,
-        image: form.image
+        sellername: sellerName,
+        sellerphone: sellerPhone,
       };
-
-      console.log("¡REVISANDO PAYLOAD JUSTO ANTES DE MANDAR AL BACKEND!", payload);
 
       if (id) {
         await updateResource('products', id, payload);
       } else {
         await createResource('products', payload);
       }
-      navigate('/admin/products');
+      
+      // Redirigir con un delay para asegurar que se guardó
+      setTimeout(() => {
+        navigate('/admin/products', { replace: false });
+      }, 500);
     } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.mensaje || 'Error al guardar el producto');
-    } finally {
+      console.error('Error guardando producto:', err);
+      const errorMessage =
+        err.response?.data?.detail ||
+        err.response?.data?.message ||
+        err.response?.data?.mensaje ||
+        err.message ||
+        'Error al guardar el producto';
+      alert(`Error: ${errorMessage}`);
       setLoading(false);
     }
   };

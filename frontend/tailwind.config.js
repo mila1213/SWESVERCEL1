@@ -5,12 +5,12 @@ export default {
     extend: {
       colors: {
         brand: {
-          primary:      "#0d6e5a",
-          hover:        "#0a5544",
-          accent:       "#4dd9c0",
-          panel:        "#0d1b2e",
-          "panel-card": "#1d3a52",    
-          "panel-border": "#2a4a63", 
+          primary:      "#1e3a8a",
+          hover:        "#162f6f",
+          accent:       "#60a5fa",
+          panel:        "#0c1631",
+          "panel-card": "#14274f",
+          "panel-border": "#1f386f",
         },
         neutral: {
           bg:     "#ffffff",

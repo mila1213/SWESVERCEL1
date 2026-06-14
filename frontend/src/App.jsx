@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import VerifyAccount from "./components/VerifyAccount";
@@ -15,12 +15,14 @@ import Landing from "./components/Landing";
 import "./index.css";
 import "./App.css";
 import Settings from "./components/Settings";
+import AdminStats from "./components/AdminStats";
+import AdminUsers from "./components/AdminUsers";
 
 function AppInner() {
   const location = useLocation();
   
   // Rutas exactas de autenticación 
-  const authRoutes = ["/", "/login", "/register", "/verify", "/forgot-password"];
+  const authRoutes = ["/", "/login", "/register", "/verify", "/forgot-password", "/reset-password"];
   
   
   const hideNav = authRoutes.includes(location.pathname) || location.pathname.startsWith("/reset-password/");
@@ -36,6 +38,7 @@ function AppInner() {
         <Route path="/login" element={<Login />} />
         <Route path="/verify" element={<VerifyAccount />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/dashboard" element={ <ProtectedRoute> <Dashboard /> </ProtectedRoute>}/>
         <Route path="/profile" element={<ProtectedRoute> <Profile /> </ProtectedRoute>} />
@@ -43,6 +46,8 @@ function AppInner() {
         <Route path="/admin/products" element={<ProtectedRoute> <AdminProducts/> </ProtectedRoute>} />
         <Route path="/admin/products/new" element={<ProtectedRoute> <ProductForm /> </ProtectedRoute>} />
         <Route path="/admin/products/edit/:id" element={<ProtectedRoute> <ProductForm /> </ProtectedRoute>} />
+        <Route path="/admin/stats" element={<ProtectedRoute> <AdminStats /> </ProtectedRoute>} />
+        <Route path="/admin/users" element={<ProtectedRoute> <AdminUsers /> </ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute> <Settings /> </ProtectedRoute>} />
       </Routes>
     </main>

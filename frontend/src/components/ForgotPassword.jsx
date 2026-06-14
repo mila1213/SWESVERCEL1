@@ -1,41 +1,65 @@
 import { useState } from "react";
 import { Link } from 'react-router-dom';
-import { auth } from "../../firebase"; 
-import { sendPasswordResetEmail } from "firebase/auth";
+import { forgotPassword, resetPasswordWithCode } from '../services/authService';
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
-  // Guardamos un objeto de alerta con tipo para aplicar estilos semánticos
+  const [code, setCode] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [alerta, setAlerta] = useState({ mostrar: false, texto: '', tipo: '' });
-  const [sent, setSent] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState('');
 
-  const handleSubmit = async (e) => {
+  const handleSendCode = async (e) => {
+    e.preventDefault();
+    setAlerta({ mostrar: false, texto: '', tipo: '' });
+    setLoading(true);
+    setPreviewUrl('');
+
+    try {
+      const data = await forgotPassword(email.trim());
+      setAlerta({
+        mostrar: true,
+        texto: data.message || 'Si el correo existe, se ha enviado un código de recuperación.',
+        tipo: 'success'
+      });
+      setEmailSent(true);
+      if (data.previewUrl) {
+        setPreviewUrl(data.previewUrl);
+      }
+    } catch (error) {
+      console.error('Error en recuperación de contraseña:', error);
+      setAlerta({
+        mostrar: true,
+        texto: error.response?.data?.message || error.message || 'Ocurrió un inconveniente al procesar la solicitud de recuperación.',
+        tipo: 'error'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e) => {
     e.preventDefault();
     setAlerta({ mostrar: false, texto: '', tipo: '' });
     setLoading(true);
 
     try {
-    
-      await sendPasswordResetEmail(auth, email.trim());
-      
-      setAlerta({ 
-        mostrar: true, 
-        texto: 'Enlace enviado de forma exitosa si el usuario se encuentra registrado.', 
-        tipo: 'success' 
-      });
-      setSent(true);
-    } catch (error) {
-      console.error("Error completo Firebase:", error);
-      
-      const firebaseErrors = {
-        'auth/invalid-email': 'El formato del correo institucional ingresado no es válido.',
-        'auth/user-not-found': 'No existe ninguna cuenta registrada con este correo electrónico.',
-      };
-
+      const data = await resetPasswordWithCode(email.trim(), code.trim(), newPassword);
       setAlerta({
         mostrar: true,
-        texto: firebaseErrors[error.code] || 'Ocurrió un inconveniente al procesar la solicitud de recuperación.',
+        texto: data.message || 'Contraseña actualizada correctamente.',
+        tipo: 'success'
+      });
+      setEmailSent(false);
+      setCode("");
+      setNewPassword("");
+    } catch (error) {
+      console.error('Error al restablecer contraseña por código:', error);
+      setAlerta({
+        mostrar: true,
+        texto: error.response?.data?.message || error.message || 'Ocurrió un error al cambiar la contraseña.',
         tipo: 'error'
       });
     } finally {
@@ -53,7 +77,9 @@ function ForgotPassword() {
             Recuperar contraseña
           </h2>
           <p className="text-sm text-neutral-muted mt-1">
-            Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.
+            {!emailSent
+              ? 'Introduce tu correo para recibir el código de recuperación por correo.'
+              : 'Ya se envió un código. Completa email, código y nueva contraseña para cambiarla.'}
           </p>
         </div>
 
@@ -70,8 +96,8 @@ function ForgotPassword() {
         )}
 
         {/* Formulario*/}
-        {!sent ? (
-          <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        {!emailSent ? (
+          <form onSubmit={handleSendCode} className="flex flex-col gap-3">
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium text-neutral-text">Correo electrónico</label>
               <div className="flex items-center border border-neutral-border rounded-input px-3 gap-2 bg-white
@@ -96,33 +122,86 @@ function ForgotPassword() {
               type="submit"
               disabled={loading}
               className="w-full bg-[#00665c] hover:bg-[#004d45] disabled:bg-slate-300 text-white font-semibold
-                         py-3 rounded-btn text-sm transition-all flex items-center justify-center gap-2 mt-1"
+                         py-3 rounded-btn text-sm transition-all"
             >
-              {loading ? 'Procesando...' : 'Enviar enlace de recuperación →'}
+              {loading ? 'Enviando código...' : 'Enviar código de recuperación'}
             </button>
           </form>
 
         ) : (
-          
-
-          <div className="flex flex-col items-center gap-3 py-2">
-            <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center shadow-lg shadow-green-100">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
+          <form onSubmit={handleResetPassword} className="flex flex-col gap-3">
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-neutral-text">Correo electrónico</label>
+              <input
+                type="email"
+                placeholder="usuario@epn.edu.ec"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={loading}
+                className="w-full py-2.5 px-3 border border-neutral-border rounded-input text-sm text-neutral-text bg-white outline-none"
+              />
             </div>
-            <p className="text-xs text-neutral-muted text-center leading-relaxed">
-              Revisa tu bandeja de entrada en tu correo de la Politécnica y sigue el enlace adjunto para restablecer tu contraseña de inmediato.
-            </p>
-          </div>
-        )}
 
-        <p className="text-center text-sm text-neutral-muted mt-2">
-          ¿Recordaste tu contraseña?{' '}
-          <Link to="/login" className="text-brand-accent font-semibold hover:opacity-80 transition-opacity">
-            Iniciar sesión
-          </Link>
-        </p>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-neutral-text">Código de verificación</label>
+              <input
+                type="text"
+                placeholder="123456"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                required
+                disabled={loading}
+                className="w-full py-2.5 px-3 border border-neutral-border rounded-input text-sm text-neutral-text bg-white outline-none"
+              />
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-neutral-text">Nueva contraseña</label>
+              <input
+                type="password"
+                placeholder="Nueva contraseña"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+                disabled={loading}
+                className="w-full py-2.5 px-3 border border-neutral-border rounded-input text-sm text-neutral-text bg-white outline-none"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-[#00665c] hover:bg-[#004d45] disabled:bg-slate-300 text-white font-semibold
+                         py-3 rounded-btn text-sm transition-all"
+            >
+              {loading ? 'Restableciendo...' : 'Restablecer contraseña'}
+            </button>
+
+            {previewUrl && (
+              <div className="rounded-xl bg-slate-50 p-3 text-xs text-slate-700 border border-slate-200 break-words">
+                <p className="font-semibold">Vista de correo de desarrollo:</p>
+                <a href={previewUrl} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">
+                  Abrir correo de prueba
+                </a>
+              </div>
+            )}
+
+            <button
+              type="button"
+              onClick={() => {
+                setEmailSent(false);
+                setEmail("");
+                setCode("");
+                setNewPassword("");
+                setPreviewUrl('');
+              }}
+              className="w-full border border-neutral-border text-neutral-text bg-white py-3 rounded-btn text-sm hover:bg-slate-50 transition"
+            >
+              Enviar otro código
+            </button>
+          </form>
+        )}
 
         <p className="text-center text-xs text-neutral-subtle mt-1">© 2026 Escuela Politécnica Nacional</p>
 

@@ -1,66 +1,51 @@
 import React from 'react';
+import { FiGlobe, FiCpu, FiShoppingBag, FiBookOpen, FiMoreHorizontal, FiRefreshCw } from 'react-icons/fi';
 
 function SidebarFilters({ categoriaActiva, setCategoriaActiva, alLimpiarFiltros }) {
-  
-  
   const categorias = [
-    { id: 'Comida', label: 'Comida y Snacks', icon: '🍔' },
-    { id: 'Tecnología', label: 'Tecnología / Software', icon: '💻' },
-    { id: 'Ropa', label: 'Ropa y Accesorios', icon: '👕' },
-    { id: 'Servicios', label: 'Servicios Académicos / Tutorías', icon: '📚' },
-    { id: 'Otros', label: 'Otros', icon: '✨' },
+    { id: 'Comida', label: 'Comida y Snacks', icon: <FiShoppingBag className="w-5 h-5" /> },
+    { id: 'Tecnología', label: 'Tecnología / Software', icon: <FiCpu className="w-5 h-5" /> },
+    { id: 'Ropa', label: 'Ropa y Accesorios', icon: <FiMoreHorizontal className="w-5 h-5" /> },
+    { id: 'Servicios', label: 'Servicios Académicos / Tutorías', icon: <FiBookOpen className="w-5 h-5" /> },
+    { id: 'Otros', label: 'Otros', icon: <FiGlobe className="w-5 h-5" /> },
   ];
 
   return (
     <aside className="w-full bg-white border border-gray-200 rounded-xl p-5 flex flex-col gap-6 select-none h-fit shadow-sm">
-      
-      <h2 className="text-lg font-bold text-gray-800">Filtros</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-bold text-gray-800">Filtros</h2>
+        <button onClick={alLimpiarFiltros} className="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-2">
+          <FiRefreshCw className="w-4 h-4" />
+          Limpiar
+        </button>
+      </div>
 
-      {/* BLOQUE CATEGORÍAS */}
       <div className="flex flex-col gap-2">
         <span className="text-xs font-bold text-gray-400 tracking-wider uppercase">Categorías</span>
-        <div className="flex flex-col gap-1">
-          
-          {/* Botón para "Todas" */}
+        <div className="flex flex-col gap-2">
           <button
             onClick={() => setCategoriaActiva('todas')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all text-left
-              ${categoriaActiva === 'todas'
-                ? 'bg-[#00665c]/10 text-[#00665c] font-semibold'
-                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-              }`}
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all text-left border ${categoriaActiva === 'todas' ? 'border-[#cbeee7] bg-[#f0fbfa] text-[#00665c]' : 'border-transparent hover:border-gray-100'}`}
           >
-            <span>🌐</span> Todas las Categorías
+            <FiGlobe className="w-5 h-5 text-gray-500" />
+            <span className="truncate">Todas las Categorías</span>
           </button>
 
-          {/* Mapeo de categorías reales */}
           {categorias.map((cat) => {
-            const isActive = categoriaActiva === cat.id; 
+            const isActive = categoriaActiva === cat.id;
             return (
               <button
                 key={cat.id}
                 onClick={() => setCategoriaActiva(cat.id)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all text-left
-                  ${isActive 
-                    ? 'bg-[#00665c]/10 text-[#00665c] font-semibold' 
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                  }`}
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all text-left border ${isActive ? 'border-[#cbeee7] bg-[#f0fbfa] text-[#00665c]' : 'border-transparent hover:border-gray-100'}`}
               >
-                <span className="text-base">{cat.icon}</span>
+                <span className="text-gray-600">{cat.icon}</span>
                 <span className="truncate">{cat.label}</span>
               </button>
             );
           })}
         </div>
       </div>
-
-      {/* BOTÓN GENERAL DE LIMPIAR */}
-      <button 
-        onClick={alLimpiarFiltros}
-        className="w-full py-2 border border-gray-200 text-gray-600 hover:bg-gray-50 rounded-lg text-sm font-medium transition-all mt-2"
-      >
-        Limpiar Filtros
-      </button>
 
     </aside>
   );

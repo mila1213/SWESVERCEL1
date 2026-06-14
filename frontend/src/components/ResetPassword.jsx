@@ -1,15 +1,26 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { resetPassword } from "../services/authService";
 import logoSwes from '../assets/icono_sistema.png'; // Logo institucional
 
 function ResetPassword() {
-  const { token } = useParams();
+  const { token: tokenParam } = useParams();
+  const location = useLocation();
   const [newPassword, setNewPassword] = useState("");
   const [message, setMessage] = useState("");
 
+  const searchParams = new URLSearchParams(location.search);
+  const queryToken = searchParams.get('token') || searchParams.get('oobCode') || searchParams.get('access_token');
+  const hashParams = new URLSearchParams(location.hash.replace(/^#/, ''));
+  const hashToken = hashParams.get('token') || hashParams.get('oobCode') || hashParams.get('access_token');
+  const token = tokenParam || queryToken || hashToken;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!token) {
+      setMessage('No se encontró el token de recuperación. Usa el enlace que envió el correo.');
+      return;
+    }
     try {
       const data = await resetPassword(token, newPassword);
       setMessage(data.message);

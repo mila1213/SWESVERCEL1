@@ -1,8 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import logoSwes from '../assets/icono_sistema.png';
-import { auth } from '../../firebase';
-import { signOut, onAuthStateChanged } from 'firebase/auth';
 
 function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -14,22 +12,19 @@ function Navbar() {
       ? localStorage.getItem('name') || localStorage.getItem('displayName') || localStorage.getItem('email') || 'Usuario'
       : 'Usuario'
   );
-  const role = typeof window !== 'undefined' ? localStorage.getItem('role') || 'visitante' : 'visitante';
+  const role = typeof window !== 'undefined' ? (localStorage.getItem('role') || 'visitante').toLowerCase() : 'visitante';
 
-  const handleLogout = async () => {
-    await signOut(auth);
+  const handleLogout = () => {
+    localStorage.removeItem('uid');
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    localStorage.removeItem('email');
+    localStorage.removeItem('name');
+    localStorage.removeItem('phone');
     navigate('/login');
   };
-
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUsername(user.displayName || user.email || localStorage.getItem('name') || 'Usuario');
-      } else {
-        setUsername(localStorage.getItem('name') || localStorage.getItem('email') || 'Usuario');
-      }
-    });
-    return () => unsubscribe();
+    setUsername(localStorage.getItem('name') || localStorage.getItem('email') || 'Usuario');
   }, []);
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -44,6 +39,10 @@ function Navbar() {
   const links = [
     { to: '/dashboard', label: 'Tablero' },
     ...(role !== 'visitante' ? [{ to: '/admin/products', label: 'Emprendimientos' }] : []),
+    ...(role === 'administrador' ? [
+      { to: '/admin/stats', label: 'Estadísticas' },
+      { to: '/admin/users', label: 'Usuarios' },
+    ] : []),
   ];
 
   return (

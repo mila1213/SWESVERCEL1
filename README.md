@@ -22,8 +22,8 @@ El sistema sigue una arquitectura cliente-servidor:
 
 - Frontend: React + Vite
 - Backend: Node.js + Express
-- Base de datos: Firebase Firestore
-- Autenticación: Firebase Auth
+- Base de datos: Supabase (Postgres)
+- Autenticación: Supabase Auth
   
 ## Estructura
 * **/docs**: Diseños y mockups.
@@ -35,8 +35,8 @@ El sistema sigue una arquitectura cliente-servidor:
 * **.gitignore**: Configurado para no subir archivos innecesarios o pesados.
 
 ## Tecnologías
-* **Base de Datos**: Firestore.
-* **Autenticación**: Firebase.
+* **Base de Datos**: Supabase (Postgres).
+* **Autenticación**: Supabase Auth.
 * **Entorno**: Node.js v24.14.1 y npm 11.11.0.
 * **Desarrollo de la interfaz de usuario del sistema**: Tailwind CSS
 
@@ -102,12 +102,29 @@ El sistema sigue una arquitectura cliente-servidor:
 
 - Este proyecto utiliza variables de entorno para la configuración.
 - El archivo `.env` no está incluido en el repositorio por seguridad.
-  Ejemplo de variables necesarias:
+  Ejemplo de variables necesarias (usar `backend/.env` y `frontend/.env`):
   ```env
-  PORT=8000
-  FIREBASE_API_KEY=tu_api_key
-  FIREBASE_AUTH_DOMAIN=tu_dominio
-  FIREBASE_PROJECT_ID=tu_proyecto
+  # Backend
+  BACKEND_PORT=8000
+  SUPABASE_URL=https://your-project.supabase.co
+  SUPABASE_ANON_KEY=sb_publishable_xxx
+  SUPABASE_SERVICE_ROLE_KEY=sb_secret_xxx
+
+  # Optional email settings for password recovery
+  # Para pruebas locales sin SMTP real, usa ENABLE_DEV_EMAILS=true.
+  # Para enviar correos reales, configura MAIL_HOST, MAIL_USER, MAIL_PASS y pon ENABLE_DEV_EMAILS=false.
+  ENABLE_DEV_EMAILS=true
+  MAIL_HOST=
+  MAIL_PORT=587
+  MAIL_USER=
+  MAIL_PASS=
+  MAIL_FROM=swes-noreply@example.com
+
+  # Frontend (.env)
+  VITE_SUPABASE_URL=https://your-project.supabase.co
+  VITE_SUPABASE_ANON_KEY=sb_publishable_xxx
+  VITE_BACKEND_URL=http://localhost:8000/api
+```
 
 ## Pasos para la ejecucion del proyecto:
 1. Clona el repositorio en Visual Studio Code
@@ -121,11 +138,7 @@ El sistema sigue una arquitectura cliente-servidor:
     1. Entra a la carpeta: `cd backend`
     2. Instala todo lo necesario para el proyecto: `npm install`
     3. Ejecucion del backend: `npm run dev`
-    4. Resultado: Servidor corriendo en `http://localhost:8000/`
-
-## Problemas conocidos
-- El sistema requiere configuración manual de Firebase
-- No incluye archivo `serviceAccountKey.json` por seguridad
+     4. Resultado: Servidor corriendo en `http://localhost:8000/`
 
 ## Diseño y Mockups
 

@@ -8,6 +8,7 @@ const authRoutes = require("./routes/auth.routes");
 const productRoutes = require("./routes/product.routes");
 const userRoutes = require("./routes/user.routes");
 const protectedRoutes = require("./routes/protected.routes");
+const debugRoutes = require("./routes/debug.routes");
 const { sendEmail } = require("./utils/sendEmail");
 
 const ADMIN_EMAILS = [
@@ -21,11 +22,13 @@ app.use(cors());
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
-app.get("/", (req, res) => res.send("API Firebase funcionando"));
+app.get("/", (req, res) => res.send("API Supabase funcionando"));
+app.get("/api", (req, res) => res.send("API Supabase funcionando"));
+app.use("/api", debugRoutes);
 app.use("/api", authRoutes);
 app.use("/api", productRoutes);
 app.use("/api", userRoutes);
-app.use("/api", protectedRoutes); 
+app.use("/api", protectedRoutes);
 
 app.post("/api/contact", async (req, res) => {
   try {

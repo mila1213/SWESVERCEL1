@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { auth } from '../../firebase';
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { googleSignIn } from '../services/authService';
+import { supabase } from '../../supabaseClient';
+import { registerUser } from '../services/authService';
 import logoSwes from '../assets/icono_sistema.png';
 
 const Register = () => {
@@ -33,13 +32,11 @@ const Register = () => {
     if (role === 'emprendedor') {
       const phoneClean = data.phone?.trim();
 
-      // 1. Validar que no esté vacío
       if (!phoneClean) {
         setMensaje({ texto: 'Error: El número de celular es obligatorio.', tipo: 'error' });
         return;
       }
 
-      // 2. Validar que tenga exactamente 10 dígitos numéricos (Ej: 099xxxxxxx)
       const phoneRegex = /^0\d{9}$/; 
       if (!phoneRegex.test(phoneClean)) {
         setMensaje({ 
@@ -51,64 +48,43 @@ const Register = () => {
     }
 
     try {
-      const res = await fetch('http://localhost:8000/api/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          nombre: data.nombre,
-          email: normalizedEmail,
-          password: data.password,
-          role: role,
-          phone: data.phone || '',
-        }),
+      const result = await registerUser({
+        nombre: data.nombre,
+        email: normalizedEmail,
+        password: data.password,
+        role: role,
+        phone: data.phone || '',
       });
 
-      const result = await res.json();
-
-      if (res.ok) {
-        setMensaje({ texto: result.message || '¡Registro exitoso!', tipo: 'success' });
-        setTimeout(() => {
-          navigate('/login');
-        }, 1500);
-      } else {
-        const errorText = result.message || 'El correo institucional o el celular ya se encuentran registrados.';
-        setMensaje({ texto: `Error: ${errorText}`, tipo: 'error' });
-      }
+      setMensaje({ texto: result.message || '¡Registro exitoso!', tipo: 'success' });
+      setTimeout(() => {
+        navigate('/login');
+      }, 1500);
     } catch (error) {
       console.error(error);
-      setMensaje({ texto: 'Error: Error de conexión con el servidor.', tipo: 'error' });
+      const message = error.response?.data?.message || error.response?.data?.mensaje || 'Error de conexión con el servidor.';
+      setMensaje({ texto: `Error: ${message}`, tipo: 'error' });
     }
   };
 
   // GOOGLE
-  const handleGoogle = async () => {
-    try {
-      setMensaje({ texto: '', tipo: '' });
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const email = result.user.email?.toLowerCase();
-      const idToken = await result.user.getIdToken();
-      const res = await googleSignIn(idToken);
-
-      if (res) {
-        localStorage.setItem('uid', result.user.uid);
-        localStorage.setItem('email', email);
-        localStorage.setItem('name', result.user.displayName || '');
-        localStorage.setItem('role', 'visitante');
-        
-        setMensaje({ texto: '¡Inicio con Google exitoso!', tipo: 'success' });
-        setTimeout(() => {
-          navigate('/dashboard');
-        }, 1200);
+  const handleGoogle = () => {
+    setMensaje({ texto: 'Redirigiendo a Google...', tipo: 'success' });
+    supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/login`,
+      },
+    }).then(({ error, data }) => {
+      if (error) {
+        console.error('Error Google OAuth Register:', error);
+        setMensaje({ texto: error.message || 'No se pudo iniciar sesión con Google.', tipo: 'error' });
+      } else if (data?.url) {
+        window.location.href = data.url;
       } else {
-        setMensaje({ texto: 'Error: No se pudo iniciar sesión con tu cuenta de Google.', tipo: 'error' });
+        setMensaje({ texto: 'Error: No se pudo redirigir a Google. Revisa la configuración de OAuth en Supabase.', tipo: 'error' });
       }
-    } catch (err) {
-      console.error(err);
-      setMensaje({ texto: 'Error con Google Sign-In.', tipo: 'error' });
-    }
+    });
   };
 
   return (

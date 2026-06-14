@@ -517,7 +517,7 @@ function Landing() {
                 <div>
                   <p className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-0.5">Vendedor</p>
                   <p className="text-xs sm:text-sm text-slate-700 font-semibold truncate max-w-[150px]">
-                    {emp.seller || 'Emprendedor'}
+                    {emp.sellerName || emp.seller || emp.nombre || emp.email || 'Emprendedor'}
                   </p>
                 </div>
                 
