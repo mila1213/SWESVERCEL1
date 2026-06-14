@@ -126,6 +126,7 @@ El sistema sigue una arquitectura cliente-servidor:
   VITE_BACKEND_URL=http://localhost:8000/api
 ```
 
+
 ## Pasos para la ejecucion del proyecto:
 1. Clona el repositorio en Visual Studio Code
 2. En el proyecto abre una nueva terminal para cada carpeta:
