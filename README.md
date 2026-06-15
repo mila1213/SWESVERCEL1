@@ -128,7 +128,7 @@ El sistema sigue una arquitectura cliente-servidor:
  ´´´
 
 
-## Pasos para la ejecucion del proyecto:
+## Pasos para la ejecucion localmente del proyecto:
 1. Clona el repositorio en Visual Studio Code
 2. En el proyecto abre una nueva terminal para cada carpeta:
    - Frontend
@@ -208,6 +208,7 @@ El frontend está optimizado para distribuirse de forma global y cuenta con rees
 
 ### URL de Despliegue:
 **Frontend:** https://swes-proyecto-web-mm5j.vercel.app/
+
 **Backend:** https://swes-proyecto-web-b8y3.vercel.app/
 
 ## Autores
