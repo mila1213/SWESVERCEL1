@@ -2,7 +2,9 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 
-require("dotenv").config({ path: path.join(__dirname, ".env") });
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
 
 const authRoutes = require("./routes/auth.routes");
 const productRoutes = require("./routes/product.routes");
@@ -62,12 +64,6 @@ app.post("/api/contact", async (req, res) => {
     res.status(500).json({ mensaje: "Error al enviar mensaje" });
   }
 });
-const PORT = process.env.PORT || 5000;
-if (process.env.NODE_ENV !== "production") {
-  app.listen(PORT, () => {
-    console.log(`Servidor corriendo localmente en el puerto ${PORT}`);
-  });
-}
 
 
 module.exports = app;
