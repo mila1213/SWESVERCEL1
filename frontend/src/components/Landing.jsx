@@ -1,22 +1,19 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import logoSweEpn from '../assets/logo_swes_epn.png';
+import logoSwes from '../assets/icono_sistema.png';
 import { getAll } from '../services/crudService';
-import { IconIdBadge, IconSearch, IconChartBar, IconUsers, IconBriefcase, IconUser} from '@tabler/icons-react';
-import fondoCompras from '../assets/fondo_compras.jpg';
-import carroCompras from '../assets/carrito_compras.jpg';
-import comprador from '../assets/comprador.jpg';
-import vendedor from '../assets/vendedor.jpg';
-
+import { IconIdBadge, IconSearch, IconChartBar, IconUsers, IconBrandWhatsapp, IconBrandFacebook, IconBrandInstagram } from '@tabler/icons-react';
+import fondoCompras from '../assets/imagen_landing.png';
 
 function Landing() {
   const [emprendimientos, setEmprendimientos] = useState([]);
+
   const features = [
-  { Icon: IconIdBadge,  color: 'bg-violet-50 text-violet-700',  title: 'Perfil de emprendimiento', desc: 'Crea tu emprendimiento con nombre, descripción, imagen, precio, categoría y datos de contacto.' },
-  { Icon: IconSearch,   color: 'bg-teal-50 text-teal-700',      title: 'Descubrimiento fácil',      desc: 'Los visitantes pueden explorar y encontrar emprendimientos filtrando por categoría.' },
-  { Icon: IconChartBar, color: 'bg-amber-50 text-amber-700',    title: 'Panel de estadísticas',     desc: 'Visualiza vistas, interacciones y el rendimiento de tu perfil en tiempo real.' },
-  { Icon: IconUsers,    color: 'bg-blue-50 text-blue-700',      title: 'Gestión de roles',          desc: 'Acceso diferenciado para administradores, emprendedores y visitantes.' },
-];
+    { Icon: IconIdBadge,  color: 'bg-violet-50 text-violet-700', title: 'Perfil de emprendimiento', desc: 'Crea y personaliza tu perfil de negocio' },
+    { Icon: IconSearch,   color: 'bg-teal-50 text-teal-700',     title: 'Descubrimiento fácil',      desc: 'Explora y filtra emprendimientos por categoría.' },
+    { Icon: IconChartBar, color: 'bg-amber-50 text-amber-700',   title: 'Panel de estadísticas',     desc: 'Visualiza como admistrador las métricas de los emprendimientos.' },
+    
+  ];
 
   useEffect(() => {
     const cargarEmprendimientos = async () => {
@@ -32,555 +29,261 @@ function Landing() {
 
   return (
     <div className="min-h-screen bg-slate-50/50 text-slate-900 selection:bg-brand-primary selection:text-white antialiased">
+
       {/* HEADER */}
-      <header className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-4 md:py-6">
-        <Link to="/" className="flex items-center gap-2 select-none">
-          <img src={logoSweEpn} alt="SWES EPN" className="h-10 md:h-12 object-contain" />
-        </Link>
-        
-        <nav className="flex items-center gap-2 md:gap-3">
-          <Link
-            to="/login"
-            className="rounded-full border border-slate-300 px-3 md:px-5 py-2 text-xs md:text-sm font-medium text-slate-700 transition hover:bg-slate-50"
-          >
-            Iniciar sesión
+      <header className="bg-neutral-surface border-b border-neutral-border h-16 flex items-center px-8 relative z-50">
+        <div className="w-full max-w-7xl mx-auto flex items-center justify-between">
+
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2 select-none">
+            <img src={logoSwes} alt="SWES" className="w-7 h-7 object-contain" />
+            <span className="font-bold text-neutral-text text-xl">SWES</span>
+            <span className="font-bold text-brand-primary text-xl gap-1">EPN</span>
           </Link>
-          <Link
-            to="/register"
-            className="rounded-full bg-brand-primary px-3 md:px-5 py-2 text-xs md:text-sm font-semibold text-white transition hover:bg-brand-hover"
-          >
-            Registrarse
-          </Link>
-        </nav>
+
+          {/* Acciones derecha */}
+          <div className="flex items-center gap-3">
+            <Link
+              to="/login"
+              className="px-4 py-1.5 rounded-input text-sm font-semibold text-neutral-subtle hover:text-neutral-text hover:bg-neutral-bg transition-all"
+            >
+              Iniciar sesión
+            </Link>
+            <Link
+              to="/register"
+              className="px-4 py-1.5 rounded-input text-sm font-semibold bg-brand-primary text-white hover:bg-brand-hover transition-all"
+            >
+              Registrarse
+            </Link>
+          </div>
+
+        </div>
       </header>
 
+
       <main className="mx-auto w-full max-w-7xl px-6">
-        {/* HERO SECTION */}
-        
-        <section className="relative w-full rounded-3xl overflow-hidden mb-16" style={{ minHeight: '520px' }}>
-          {/* Imagen de fondo */}
-          <img
-          src={fondoCompras}
-          alt="Fondo SWES"
-          className="absolute inset-0 w-full h-full object-cover"
-          />
-          {/* Contenido centrado encima */}
-          
-          <div className="relative z-10 flex flex-col items-center justify-center text-center px-6 pt-6 pb-27 md:pt-10 md:pb-32">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 border border-white/30 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-white mb-6">
-            Plataforma de emprendimientos
-            </span>
-            
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-[1.15] mb-6 text-white max-w-3xl">
-              Impulsa tu negocio y conecta con la comunidad universitaria
+
+        {/* HERO: Texto izquierda + Imagen derecha */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center mb-16 min-h-[420px]">
+
+          {/* TEXTO */}
+          <div className="flex flex-col items-start text-left lg:pl-12">
+
+            <h1 className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.15] text-slate-900 mb-6">
+              Impulsa tu negocio y conecta con la <span className="text-brand-primary">comunidad universitaria</span>
             </h1>
-            
-            <p className="max-w-xl text-base sm:text-lg text-white/80 mb-10 leading-relaxed">
-            SWES conecta emprendedores con clientes. Crea tu perfil, promociona tus productos y haz crecer tu negocio.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+
+            {/* BOTONES */}
+            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto mt-10">
               <Link
-              to="/register"
-              className="rounded-full bg-white px-7 py-3 text-sm font-semibold text-brand-primary hover:bg-slate-100 transition">Publicar mi emprendimiento
+                to="/register"
+                className="rounded-full bg-brand-primary px-7 py-3.5 text-sm font-bold text-white hover:bg-brand-hover hover:shadow-lg hover:shadow-brand-primary/20 transition-all text-center"
+              >
+                Publicar mi emprendimiento
               </Link>
-              
               <Link
-              to="/login"
-              className="rounded-full bg-white px-7 py-3 text-sm font-semibold text-brand-primary hover:bg-slate-100 transition">Explorar emprendimientos
+                to="/login"
+                className="rounded-full border border-slate-300 bg-white px-7 py-3.5 text-sm font-bold text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all text-center"
+              >
+                Explorar emprendimientos
               </Link>
-
-            </div>
-
-          </div>
-        </section>
-
-        {/* SECCIÓN DEL PROBLEMA */}
-        
-        <section className="py-12 md:py-20 bg-slate-100/50 rounded-3xl px-6 md:px-12 mb-16">
-        <div className="max-w-5xl mx-auto text-center">
-         <h2 className="text-2xl sm:text-3xl font-black text-brand-primary tracking-tight mb-6">
-          ¿Cansado de perder ventas{' '}
-          <span className="text-brand-primary">y tiempo</span>
-          <br />
-          dentro del campus?
-          </h2>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-28 max-w-5xl mx-auto">
-            
-            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-              
-              <div className="p-4">
-                
-                <span className="inline-flex items-center gap-1 text-xs font-medium uppercase tracking-wide bg-violet-50 text-violet-800 px-3 py-1 rounded-full mb-2">
-                  
-                  <IconBriefcase size={12} /> Emprendedor
-                  </span>
-                  
-                  <h4 className="font-semibold text-slate-900 text-xl mb-1">Invisible para tus clientes</h4>
-                  
-                  <p className="text-xm text-slate-500 leading-relaxed">Pierdes entre 3 a 5 clientes por semana porque tus publicaciones desaparecen entre mensajes de WhatsApp.</p>
-                  
-              </div>
-              
-              <img src={vendedor} alt="Vendedor" className="w-full h-40 object-cover" />
-            
-            </div>
-            
-            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-              
-              <div className="p-4">
-                
-                <span className="inline-flex items-center gap-1 text-xs font-medium uppercase tracking-wide bg-teal-50 text-teal-800 px-3 py-1 rounded-full mb-2">
-                  
-                  <IconUser size={12} /> Comprador
-                  
-                </span>
-                
-                <h4 className="font-semibold text-slate-900 text-xl mb-1">No encuentras lo que buscas</h4>
-                
-                <p className="text-xm text-slate-500 leading-relaxed">El 72% intentó comprar dentro del campus pero no pudo contactar al vendedor a tiempo.</p>
-              </div>
-              
-              <img src={comprador} alt="Comprador" className="w-full h-40 object-cover" />
             </div>
           </div>
-        </div>
-        
-        </section>
 
-        {/* FUNCIONALIDADES */}
+          {/* IMAGEN */}
+          <div className="flex items-center justify-center">
+            <img
+              src={fondoCompras}
+              alt="Fondo SWES"
+              className="max-w-full max-h-[420px] object-contain"
+            />
+          </div>
+        </section>
         
-        <section className="py-16 md:py-24 border-t border-slate-200/60">
+        {/* (ROLES / CTA / CAMPAIGN) */}
         
-        <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-12 md:mb-16">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-brand-primary mb-4">
-          Funcionalidades
+        <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-16">
+          {/* ROLES: ¿Quién puede usar SWES? */}
           
-          </span>
-          
-          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-4">
-            Todo lo que necesita tu emprendimiento
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm border-t-4 border-t-blue-600 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+            <h3 className="font-bold text-slate-900 text-xl mb-5 pb-3 border-b border-slate-100">¿Quién puede usar SWES?</h3>
             
-          </h2>
-          
-          <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl">
-            
-            Herramientas pensadas estratégicamente para que los emprendedores puedan escalar sus negocios y la comunidad universitaria encuentre lo que busca en segundos.
-          </p>
-         </div>
-         
-         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-5xl mx-auto">
-          
-          {features.map((f, i) => (
-            <div 
-            key={i} 
-            className="group relative rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-slate-300">
+            <div className="space-y-7">
               
-              <div className="flex flex-col sm:flex-row items-start gap-4">
-                {/* Contenedor del Icono con animación en hover */}
-                <div className={`inline-flex items-center justify-center w-12 h-12 rounded-2xl shrink-0 transition-transform duration-300 group-hover:scale-110 shadow-sm ${f.color}`}>
-                  <f.Icon size={24} stroke={1.75} aria-hidden="true" />
-                </div>
+              {[
                 
-                {/* Textos */}
-                
-                <div className="space-y-1.5">
-                  <h3 className="font-bold text-slate-900 text-base tracking-tight transition-colors group-hover:text-brand-primary">
-                    {f.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-                    {f.desc}
-                  </p>
+                { role: 'Visitante', desc: 'Explora y contacta emprendimientos.', color: 'bg-blue-50 text-blue-600' },
+                { role: 'Emprendedor', desc: 'Publica y gestiona tu negocio.', color: 'bg-blue-50 text-blue-600' },
+                { role: 'Administrador', desc: 'Controla y modera la plataforma.', color: 'bg-blue-50 text-blue-600' },
+              ].map((r, i) => (
+                <div key={i} className="flex items-start gap-3">
+                  <div className={`inline-flex items-center justify-center w-9 h-9 rounded-xl shrink-0 font-bold text-sm ${r.color}`}>
+                    {r.role.charAt(0)}
+                  </div>
                   
+                  <div>
+                    <p className="font-semibold text-slate-900 text-md">{r.role}</p>
+                    <p className="text-sm text-slate-500 leading-relaxed">{r.desc}</p>
+                  </div>
                 </div>
-              </div>
+              ))}
+              
             </div>
-          ))}
-        </div>
-        </section>
-
-        {/* ROLES */}
-        
-        <section className="py-16 md:py-24 border-t border-slate-200/60 bg-gradient-to-b from-transparent to-slate-50/30">
-        <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-12 md:mb-16">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-brand-primary mb-4">
-          Roles
-          </span>
+          </div>
           
-          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-4">
-            
-            ¿Quién puede usar SWES?
-          </h2>
-          <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl">
-            Tres tipos de acceso diseñados estratégicamente para interactuar con el ecosistema universitario de forma segura y eficiente.
-          </p>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto items-stretch">
+          {/* FAQ */}
           
-          {[
-            {
-              title: 'Visitante',
-              desc: 'Para la comunidad que busca apoyar y descubrir negocios.',
-              color: 'border-slate-200 hover:border-slate-300',
-              iconColor: 'text-slate-500 bg-slate-100',
-              items: [
-                'Ver emprendimientos disponibles',
-                'Buscar emprendimientos por categoría',
-                'Contactar emprendedores de forma directa',
-                'Registrarse en la plataforma en segundos'
-              ]
-            },
-            {
-              title: 'Emprendedor',
-              desc: 'El motor de la plataforma. Diseñado para potenciar tus ventas.',
-              color: 'border-brand-primary shadow-md md:-translate-y-2 ring-4 ring-brand-primary/5',
-              highlight: true,
-              iconColor: 'text-brand-primary bg-brand-primary/10',
-              items: [
-                'Crear y personalizar tu perfil de negocio',
-                'Publicar productos con fotos, precios y descripción',
-                'Gestionar y actualizar tus publicaciones activas',
-                'Acceder al panel de analíticas e interacciones']
-            },
-            {
-              title: 'Administrador',
-              desc: 'Control total para garantizar un entorno seguro y confiable.',
-              color: 'border-slate-200 hover:border-slate-300',
-              iconColor: 'text-slate-600 bg-slate-100',
-              items: [
-                'Gestionar todos los emprendimientos del campus',
-                'Monitorear reportes globales y estadísticas',
-                'Moderar y administrar accesos de la plataforma'
-              ]}
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm border-t-4 border-t-blue-600 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+            <h3 className="font-bold text-slate-900 text-xl mb-5 pb-3 border-b border-slate-100">Preguntas Frecuentes</h3>
             
-            ].map((role, idx) => (
-            <div 
-            key={idx} 
-            className={`relative flex flex-col justify-between rounded-2xl border bg-white p-6 lg:p-8 transition-all duration-300 hover:shadow-xl ${role.color}`}
+            <div className="space-y-3">
+              
+              {[
+                { q: '¿La plataforma tiene algún costo?', a: 'No, SWES es gratuito para la comunidad universitaria.' },
+        { q: '¿Cómo se coordinan pagos y entregas?', a: 'Te contactas directamente con el vendedor vía WhatsApp.' },
+        { q: '¿Necesito correo institucional?', a: 'No es obligatorio, el sistema adapta los accesos según tu rol.' },
+      ].map((faq, i) => {
+        const [open, setOpen] = useState(false);
+        return (
+          <div key={i} className={`border rounded-xl overflow-hidden transition-colors ${open ? 'border-blue-200 bg-blue-50/40' : 'border-slate-100'}`}>
+            <button
+              onClick={() => setOpen(!open)}
+              className="w-full flex items-center justify-between gap-2 p-3 text-left"
             >
-              {role.highlight && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-brand-primary px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm">
-                  Recomendado
-                </span>
-              )}
+              <span className="text-md font-semibold text-slate-900">{faq.q}</span>
+              <span className={`text-slate-400 transition-transform shrink-0 ${open ? 'rotate-180 text-blue-500' : ''}`}>▾</span>
+            </button>
+            {open && (
+              <div className="px-3 pb-3">
+                <p className="text-sm text-slate-500 leading-relaxed">{faq.a}</p>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  </div>
 
-        <div>
-          {/* Encabezado de Tarjeta */}
-          <div className="mb-6">
-            <h3 className="font-black text-xl text-slate-900 tracking-tight mb-2">
-              {role.title}
-            </h3>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              {role.desc}
+  {/* CAMPAIGN: Funcionalidades destacadas */}
+  <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm border-t-4 border-t-blue-600 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+    <h3 className="font-bold text-slate-900 text-xl mb-5 pb-3 border-b border-slate-100">Lo que ofrece SWES</h3>
+    <div className="space-y-7">
+      {features.map((f, i) => (
+        <div key={i} className="flex items-start gap-3">
+          <div className={`inline-flex items-center justify-center w-9 h-9 rounded-xl shrink-0 ${f.color}`}>
+            <f.Icon size={18} stroke={1.75} aria-hidden="true" />
+          </div>
+          <div>
+            <p className="font-semibold text-slate-900 text-md">{f.title}</p>
+            <p className="text-sm text-slate-500 leading-relaxed">{f.desc}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+        
+        {/* EMPRENDIMIENTOS DESTACADOS */}
+        <section className="py-8 md:py-10 border-t border-slate-200/60 mb-5">
+          <div className="flex flex-col items-center text-center max-w-2xl mx-auto mb-10">
+            <h2 className="text-2xl sm:text-3xl font-bold text-brand-primary tracking-tight">
+              Emprendimientos destacados
+            </h2>
+            <p className="text-md sm:text-sm text-slate-600 mt-4 font-semibold">
+              Descubre los proyectos más populares de nuestra comunidad universitaria
             </p>
           </div>
 
-          {/* Lista de características con Checkmarks */}
-          <ul className="space-y-3.5">
-            {role.items.map((item, i) => (
-              <li key={i} className="text-xs sm:text-sm text-slate-600 flex items-start gap-3">
-                <span className={`inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0 mt-0.5 ${role.highlight ? 'text-brand-primary bg-brand-primary/10' : 'text-slate-600 bg-slate-100'}`}>
-                  <svg className="w-3 h-3 font-bold" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                </span>
-                <span className="leading-tight">{item}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    ))}
-  </div>
-</section>
+          {/* Lista de Emprendimientos */}
+          {emprendimientos.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-4xl mx-auto px-4">
+              {emprendimientos.slice(0, 2).map((emp) => (
+                <div
+                  key={emp.id}
+                  className="group rounded-2xl border border-slate-200/80 bg-white overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl cursor-pointer"
+                >
+                  {/* CONTENEDOR DE IMAGEN */}
+                  <div className="relative w-full h-48 bg-gradient-to-br from-brand-primary/5 to-brand-accent/5 overflow-hidden">
+                    {emp.image ? (
+                      <img 
+                        src={emp.image} 
+                        alt={emp.name} 
+                        className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105" 
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-4xl bg-slate-50">📦</div>
+                    )}
+                    
+                    {/* CATEGORÍA ESTILIZADA */}
+                    {emp.category && (
+                      <span className="absolute top-3 left-3 rounded-lg bg-white/80 backdrop-blur-md px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-widest text-slate-800 shadow-sm border border-white/40">
+                        {emp.category}
+                      </span>
+                    )}
+                  </div>
 
-        {/* CÓMO FUNCIONA */}
-<section className="py-16 md:py-24 border-t border-slate-200/60">
-  <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-12 md:mb-16">
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-brand-primary mb-4">
-      ¿Cómo funciona?
-    </span>
-    <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-4">
-      Empieza en 3 simples pasos
-    </h2>
-    <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl">
-      Diseñamos un proceso rápido y directo para que puedas registrarte y empezar a conectar con la comunidad en cuestión de minutos.
-    </p>
-  </div>
+                  {/* CUERPO DE LA TARJETA */}
+                  <div className="p-5">
+                    <div className="flex items-baseline justify-between gap-4 mb-2">
+                      <h3 className="font-bold text-slate-900 text-xl line-clamp-1 group-hover:text-brand-primary transition-colors duration-200">
+                        {emp.name}
+                      </h3>
+                      {emp.price && (
+                        <span className="text-brand-primary font-black text-sm shrink-0">
+                          ${Number(emp.price).toFixed(2)}
+                        </span>
+                      )}
+                    </div>
+                    
+                    <p className="text-xs text-slate-500 leading-relaxed line-clamp-2 mb-4">
+                      {emp.description || 'Sin descripción disponible actualmente.'}
+                    </p>
 
-  {/* Contenedor relativo para poder dibujar las líneas conectoras */}
-  <div className="relative grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto isolation-auto">
-    
-    {/* Línea conectora horizontal de fondo (Solo visible desde md:) */}
-    <div className="absolute top-12 left-[15%] right-[15%] h-0.5 border-t-2 border-dashed border-slate-200 -z-10 hidden md:block" aria-hidden="true" />
-
-    {[
-      {
-        step: '01',
-        title: 'Crea tu cuenta',
-        desc: 'Regístrate en la plataforma adaptando tu perfil en menos de 2 minutos.'
-      },
-      {
-        step: '02',
-        title: 'Publica tu emprendimiento',
-        desc: 'Sube tus productos con fotos, precios detallados y tus canales de contacto directo.'
-      },
-      {
-        step: '03',
-        title: 'Llega a más clientes',
-        desc: 'Toda la comunidad universitaria descubre tu negocio y te contactará de inmediato.'
-      }
-    ].map((item, idx) => (
-      <div 
-        key={idx} 
-        className="group flex flex-col items-center md:items-start text-center md:text-left bg-white rounded-2xl border border-slate-200/70 p-6 shadow-sm transition-all duration-300 hover:shadow-md"
-      >
-        {/* Burbuja del número del paso */}
-        <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-slate-50 text-slate-900 font-black text-sm border border-slate-200 shadow-sm mb-5 transition-colors duration-300 group-hover:bg-brand-primary group-hover:text-white group-hover:border-brand-primary">
-          {item.step}
-        </div>
-        
-        {/* Título y Descripción */}
-        <div className="space-y-2">
-          <h3 className="font-bold text-slate-900 text-base md:text-lg tracking-tight transition-colors group-hover:text-brand-primary">
-            {item.title}
-          </h3>
-          <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-            {item.desc}
-          </p>
-        </div>
-      </div>
-    ))}
-  </div>
-</section>
-
-        {/* PREGUNTAS FRECUENTES */}
-<section className="py-16 md:py-24 border-t border-slate-200/60 bg-slate-50/30">
-  <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-12">
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-brand-primary mb-4">
-      Soporte
-    </span>
-    <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-4">
-      Preguntas Frecuentes
-    </h2>
-    <p className="text-sm text-slate-600 max-w-xl">
-      ¿Tienes alguna duda sobre cómo funciona la plataforma? Aquí te respondemos de forma rápida.
-    </p>
-  </div>
-
-  <div className="max-w-3xl mx-auto space-y-3 px-4">
-    {[
-      { 
-        q: "¿La plataforma tiene algún costo?", 
-        a: "No, SWES es un proyecto completamente gratuito para la comunidad universitaria. Puedes registrarte, publicar tu negocio y gestionar tu perfil sin pagar ninguna comisión por venta." 
-      },
-      { 
-        q: "¿Cómo se coordinan las entregas y los pagos?", 
-        a: "SWES funciona como una vitrina digital interactiva. El comprador explora el catálogo y se contacta directamente contigo vía WhatsApp para acordar el método de pago (efectivo, transferencia) y el punto de entrega seguro dentro del campus." 
-      },
-      { 
-        q: "¿Necesito obligatoriamente un correo institucional para registrarme?", 
-        a: "La plataforma está optimizada prioritariamente para la comunidad universitaria, pero el sistema cuenta con un sistema de gestión flexible que adapta los accesos y validaciones de seguridad de acuerdo al rol que elijas." 
-      }
-    ].map((faq, i) => {
-      // Estado local para manejar qué acordeón está abierto
-      const [isOpen, setIsOpen] = useState(false);
-
-      return (
-        <div 
-          key={i} 
-          className={`overflow-hidden rounded-2xl border transition-all duration-300 bg-white ${
-            isOpen 
-              ? 'border-brand-primary/40 shadow-md ring-4 ring-brand-primary/5' 
-              : 'border-slate-200 shadow-sm hover:border-slate-300'
-          }`}
-        >
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="flex w-full items-center justify-between gap-4 p-5 text-left transition-colors"
-          >
-            <h4 className={`font-bold text-sm md:text-base tracking-tight transition-colors ${
-              isOpen ? 'text-brand-primary' : 'text-slate-900'
-            }`}>
-              {faq.q}
-            </h4>
-            
-            {/* Flecha indicadora que rota según el estado */}
-            <span className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-50 border border-slate-200 text-slate-500 transition-transform duration-300 ${
-              isOpen ? 'rotate-180 bg-brand-primary/10 text-brand-primary border-brand-primary/20' : ''
-            }`}>
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-              </svg>
-            </span>
-          </button>
-
-          {/* Contenedor colapsable con animación suave de altura */}
-          <div 
-            className={`transition-all duration-300 ease-in-out ${
-              isOpen ? 'max-h-40 border-t border-slate-100' : 'max-h-0'
-            }`}
-          >
-            <div className="p-5 bg-slate-50/50">
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                {faq.a}
-              </p>
+                    {/* ENLACE DE ACCIÓN SUTIL */}
+                    <div className="flex items-center gap-1 text-xs font-bold text-brand-primary/80 group-hover:text-brand-primary transition-colors">
+                      <span>Ver detalles del negocio</span>
+                      <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-          </div>
-        </div>
-      );
-    })}
-  </div>
-</section>
+          )}
+        </section>
 
-        {/* CTA FINAL */}
-        <section className="py-10 md:py-16 rounded-3xl bg-gradient-to-r from-brand-primary/20 to-brand-accent/20 px-6 md:px-10 text-center border border-brand-accent/30">
+        {/* SEGUNDA LLAMADA A LA ACCIÓN */}
+        <section className="py-10 md:py-14 rounded-3xl bg-gradient-to-r from-brand-primary/20 to-brand-accent/20 px-6 md:px-10 text-center border border-brand-accent/30 mb-5">
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-3">¿Listo para impulsar tu emprendimiento?</h2>
-          <p className="text-sm sm:text-base text-slate-600 mb-6 md:mb-8">Únete a cientos de emprendedores que ya usan SWES para crecer.</p>
+          <p className="text-sm sm:text-base text-slate-600 mb-6">Únete a cientos de emprendedores que ya usan SWES para crecer.</p>
           <Link
             to="/register"
-            className="inline-flex items-center gap-2 rounded-full bg-brand-primary px-6 md:px-8 py-2 md:py-3 text-sm font-semibold text-white transition hover:bg-brand-hover"
+            className="inline-flex items-center gap-2 rounded-full bg-brand-primary px-6 md:px-8 py-2.5 md:py-3 text-sm font-semibold text-white transition hover:bg-brand-hover"
           >
             Comenzar gratis
             <span>→</span>
           </Link>
         </section>
-
-        {/* EMPRENDIMIENTOS SECTION */}
-<section className="pt-12 md:pt-16 border-t border-slate-200/60 bg-gradient-to-b from-transparent to-slate-50/50">
-  <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-12 md:mb-16">
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-brand-primary mb-4">
-      Destacados
-    </span>
-    <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-4">
-      Emprendimientos de nuestra comunidad
-    </h2>
-    <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl">
-      Explora algunas de las propuestas y productos innovadores creados por estudiantes dentro del campus.
-    </p>
-  </div>
-
-  {emprendimientos.length > 0 ? (
-    <div className="space-y-12">
-      {/* Grid limitado estrictamente a un máximo de 3 elementos */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto">
-        {emprendimientos.slice(0, 3).map((emp) => (
-          <div 
-            key={emp.id} 
-            className="group rounded-2xl border border-slate-200/80 bg-white overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:border-slate-300/60"
-          >
-            {/* Contenedor de la Imagen con Posición Relativa */}
-            <div className="relative w-full h-52 md:h-56 bg-gradient-to-br from-brand-primary/10 to-brand-accent/10 overflow-hidden">
-              {emp.image ? (
-                <img 
-                  src={emp.image} 
-                  alt={emp.name} 
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-5xl bg-slate-50">📦</div>
-              )}
-
-              {/* Badge/Etiqueta de Categoría Flotante */}
-              {emp.category && (
-                <span className="absolute top-3 left-3 rounded-xl bg-white/80 backdrop-blur-md px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-slate-800 shadow-sm border border-white/40">
-                  {emp.category}
-                </span>
-              )}
-            </div>
-
-            {/* Contenido de la Tarjeta */}
-            <div className="p-5 md:p-6 flex flex-col justify-between space-y-4">
-              <div>
-                {/* Nombre del Producto */}
-                <h3 className="font-black text-slate-900 text-base md:text-lg mb-2 tracking-tight line-clamp-1 group-hover:text-brand-primary transition-colors">
-                  {emp.name}
-                </h3>
-
-                {/* Precio Estilizado */}
-                {emp.price && (
-                  <p className="text-brand-primary font-black text-xl mb-3 tracking-tight">
-                    ${Number(emp.price).toFixed(2)}
-                  </p>
-                )}
-
-                {/* Descripción Corta */}
-                <p className="text-xs sm:text-sm text-slate-500 leading-relaxed line-clamp-2 mb-4">
-                  {emp.description}
-                </p>
-              </div>
-
-              {/* Separador y Datos del Vendedor */}
-              <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                <div>
-                  <p className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-0.5">Vendedor</p>
-                  <p className="text-xs sm:text-sm text-slate-700 font-semibold truncate max-w-[150px]">
-                    {emp.sellerName || emp.seller || emp.nombre || emp.email || 'Emprendedor'}
-                  </p>
-                </div>
-                
-                {/* Botón visual de acción simulado */}
-                <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-slate-50 text-slate-600 border border-slate-200 transition-colors group-hover:bg-brand-primary group-hover:text-white group-hover:border-brand-primary">
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                  </svg>
-                </span>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Botón secundario para ver el catálogo completo si hay más */}
-      {emprendimientos.length > 3 && (
-        <div className="text-center mt-4">
-          <Link
-            to="/login"
-            className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-6 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 hover:border-slate-400"
-          >
-            Ver todos los emprendimientos
-          </Link>
-        </div>
-      )}
-    </div>
-  ) : (
-    <div className="rounded-2xl bg-white p-8 md:p-12 text-center border border-slate-200/80 shadow-sm max-w-xl mx-auto">
-      <div className="text-4xl mb-3">✨</div>
-      <p className="text-sm md:text-base text-slate-600 font-medium">
-        Aún no hay emprendimientos registrados. ¡Sé el primero en registrar tu idea!
-      </p>
-    </div>
-  )}
-</section>
       </main>
 
-      {/* FOOTER */}
-<footer className="border-t border-slate-200 mt-12 md:mt-20">
-  <div className="mx-auto max-w-7xl px-6 py-10 md:py-14">
-
-    <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-      
-      {/* Logo + descripción */}
-      <div className="flex flex-col items-center md:items-start gap-2">
-        <Link to="/" className="flex items-center gap-2">
-          <img src={logoSweEpn} alt="SWES EPN" className="h-8 object-contain" />
-        </Link>
-        <p className="text-xs text-slate-500 leading-relaxed text-center md:text-left">
-          Plataforma de emprendimientos universitarios de la Escuela Politécnica Nacional.
-        </p>
-      </div>
-
-      {/* Copyright */}
-      <div className="flex flex-col items-center md:items-end gap-1">
-        <p className="text-xs text-slate-400">© 2026 SWES — Proyecto universitario EPN</p>
-        <p className="text-xs text-slate-400">Desarrollado por estudiantes de la EPN</p>
-      </div>
-
-    </div>
-  </div>
-</footer>
+      {/* DATOS DE CONTACTO */}
+      <footer className="border-t border-slate-200">
+        <div className="mx-auto max-w-7xl px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex flex-col items-center md:items-start gap-2">
+            <Link to="/" className="flex items-center gap-2">
+              <img src={logoSwes} alt="SWES" className="w-6 h-6 object-contain" />
+              <span className="font-bold text-neutral-text text-sm">SWES EPN</span>
+            </Link>
+            <p className="text-xs text-slate-500 text-center md:text-left">
+              Plataforma de emprendimientos universitarios de la Escuela Politécnica Nacional.
+            </p>
+          </div>
+          <div className="flex flex-col items-center md:items-end gap-1">
+            <p className="text-xs text-slate-400">© 2026 SWES — Proyecto universitario EPN</p>
+            <p className="text-xs text-slate-400">Desarrollado por estudiantes de la EPN</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

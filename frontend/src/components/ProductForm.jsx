@@ -141,7 +141,7 @@ function ProductForm() {
       
       {/* Encabezado Principal */}
       <div className="mb-10 text-center">
-        <span className="inline-block px-3 py-1 mb-3 text-[11px] font-bold tracking-wider text-[#00665c] uppercase bg-[#00665c]/10 rounded-full">
+        <span className="inline-block px-3 py-1 mb-3 text-[11px] font-bold tracking-wider text-blue-900 uppercase bg-blue-50 rounded-full">
           Vitrina Comunitaria
         </span>
         <h2 className="text-2xl font-bold text-gray-950 tracking-tight sm:text-3xl">
@@ -168,7 +168,7 @@ function ProductForm() {
               className={`w-full px-4 py-2.5 border rounded-xl text-sm bg-gray-50/50 transition-all outline-none font-medium focus:bg-white focus:ring-4
                 ${errors.name 
                   ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-50' 
-                  : 'border-gray-200 focus:border-[#00665c] focus:ring-[#00665c]/10'}`}
+                  : 'border-gray-200 focus:border-blue-700 focus:ring-blue-900/10'}`}
             />
             {errors.name && (
               <span className="text-rose-600 text-xs font-semibold mt-1 flex items-center gap-1.5">
@@ -188,7 +188,7 @@ function ProductForm() {
                 className={`w-full pl-4 pr-10 py-2.5 border rounded-xl text-sm bg-gray-50/50 transition-all outline-none font-medium appearance-none focus:bg-white focus:ring-4
                   ${errors.category 
                     ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-50' 
-                    : 'border-gray-200 focus:border-[#00665c] focus:ring-[#00665c]/10'}`}
+                    : 'border-gray-200 focus:border-blue-700 focus:ring-blue-900/10'}`}
                 style={{ backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%239ca3af\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'%3e%3c/polyline%3e%3c/svg%3e")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1em' }}
               >
                 <option value="">Selecciona una opción</option>
@@ -221,7 +221,7 @@ function ProductForm() {
                 className={`w-full pl-9 pr-4 py-2.5 border rounded-xl text-sm bg-gray-50/50 transition-all outline-none font-medium focus:bg-white focus:ring-4
                   ${errors.price 
                     ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-50' 
-                    : 'border-gray-200 focus:border-[#00665c] focus:ring-[#00665c]/10'}`}
+                    : 'border-gray-200 focus:border-blue-700 focus:ring-blue-900/10'}`}
               />
             </div>
             {errors.price && (
@@ -240,7 +240,7 @@ function ProductForm() {
               onChange={handleChange} 
               placeholder="Cuéntales a tus compañeros de qué trata tu emprendimiento, horarios, puntos de entrega..." 
               rows="3" 
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm bg-gray-50/50 transition-all outline-none font-medium resize-none focus:bg-white focus:border-[#00665c] focus:ring-4 focus:ring-[#00665c]/10"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm bg-gray-50/50 transition-all outline-none font-medium resize-none focus:bg-white focus:border-blue-700 focus:ring-4 focus:ring-blue-900/10"
             />
           </div>
 
@@ -278,7 +278,7 @@ function ProductForm() {
               value={form.image} 
               onChange={handleChange} 
               placeholder="https://ejemplo.com/imagen.jpg" 
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-white outline-none focus:border-[#00665c] transition-colors font-medium shadow-3xs"
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-white outline-none focus:border-blue-700 focus:ring-4 focus:ring-blue-900/10 transition-colors font-medium shadow-3xs"
             />
           </div>
           
@@ -312,7 +312,7 @@ function ProductForm() {
           <button 
             type="submit" 
             disabled={loading} 
-            className="flex-1 py-3 bg-[#00665c] hover:bg-[#004d45] text-white text-xs font-bold rounded-xl shadow-xs transition-all uppercase tracking-wider disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+            className="flex-1 py-3 bg-blue-900 hover:bg-blue-800 text-white text-xs font-bold rounded-xl shadow-xs transition-all uppercase tracking-wider disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
           >
             {loading ? 'Guardando cambios...' : 'Publicar Emprendimiento'}
           </button>

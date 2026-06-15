@@ -28,9 +28,11 @@ function AppInner() {
   const hideNav = authRoutes.includes(location.pathname) || location.pathname.startsWith("/reset-password/");
 
   return (
-    <main>
+    <main className="flex flex-col h-screen overflow-y-auto bg-[#f4f6f8]">
       
       {!hideNav && <Header />}
+
+      <div className="flex-1 w-full">
 
       <Routes>
         <Route path="/" element={<Landing />} />
@@ -50,6 +52,8 @@ function AppInner() {
         <Route path="/admin/users" element={<ProtectedRoute> <AdminUsers /> </ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute> <Settings /> </ProtectedRoute>} />
       </Routes>
+
+      </div>
     </main>
   );
 }

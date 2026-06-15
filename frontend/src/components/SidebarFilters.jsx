@@ -25,7 +25,7 @@ function SidebarFilters({ categoriaActiva, setCategoriaActiva, alLimpiarFiltros 
         <div className="flex flex-col gap-2">
           <button
             onClick={() => setCategoriaActiva('todas')}
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all text-left border ${categoriaActiva === 'todas' ? 'border-[#cbeee7] bg-[#f0fbfa] text-[#00665c]' : 'border-transparent hover:border-gray-100'}`}
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all text-left border ${categoriaActiva === 'todas' ? 'border-blue-200 bg-blue-50 text-blue-900 font-bold' : 'border-transparent hover:border-gray-100 text-gray-600'}`}
           >
             <FiGlobe className="w-5 h-5 text-gray-500" />
             <span className="truncate">Todas las Categorías</span>
@@ -37,7 +37,7 @@ function SidebarFilters({ categoriaActiva, setCategoriaActiva, alLimpiarFiltros 
               <button
                 key={cat.id}
                 onClick={() => setCategoriaActiva(cat.id)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all text-left border ${isActive ? 'border-[#cbeee7] bg-[#f0fbfa] text-[#00665c]' : 'border-transparent hover:border-gray-100'}`}
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all text-left border ${isActive ? 'border-blue-200 bg-blue-50 text-blue-900 font-bold' : 'border-transparent hover:border-gray-100 text-gray-600'}`}
               >
                 <span className="text-gray-600">{cat.icon}</span>
                 <span className="truncate">{cat.label}</span>

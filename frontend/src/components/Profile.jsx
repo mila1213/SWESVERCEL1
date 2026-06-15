@@ -36,7 +36,7 @@ function Profile() {
 
         <div className="rounded-3xl border border-slate-200 bg-slate-50 px-5 py-4">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Institución</p>
-          <p className="mt-2 text-base font-medium text-[#00665c]">Escuela Politécnica Nacional</p>
+          <p className="mt-2 text-base font-medium text-blue-900">Escuela Politécnica Nacional</p>
         </div>
       </div>
 
@@ -44,7 +44,7 @@ function Profile() {
         <button
           type="button"
           onClick={() => navigate('/profile/edit')}
-          className="rounded-full bg-[#00665c] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#004d45]"
+          className="rounded-full bg-blue-900 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-800 hover:shadow transition-all duration-200"
         >
           Editar información
         </button>

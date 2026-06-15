@@ -150,7 +150,7 @@ function AdminProducts() {
           {role !== 'visitante' && (
             <button
               onClick={() => navigate('/admin/products/new')}
-              className="bg-[#00665c] hover:bg-[#004a43] text-white px-5 py-2.5 rounded-xl font-semibold transition"
+              className="bg-blue-900 hover:bg-blue-800 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm hover:shadow transition-all duration-200"
             >
               Publicar Emprendimiento
             </button>
@@ -183,7 +183,7 @@ function AdminProducts() {
             {role !== 'visitante' && (
               <button
                 onClick={() => navigate('/admin/products/new')}
-                className="mt-6 bg-[#00665c] hover:bg-[#004a43] text-white px-6 py-2 rounded-lg font-semibold transition"
+                className="mt-6 bg-blue-900 hover:bg-blue-800 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-sm hover:shadow transition-all duration-200"
               >
                 Crear Primer Emprendimiento
               </button>
@@ -192,14 +192,16 @@ function AdminProducts() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {products.map((p) => (
-              <div key={p.id} className="bg-white border rounded-2xl p-5 shadow-sm hover:shadow-md transition">
+              <div key={p.id} className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition flex flex-col h-full">
                 {/* IMAGEN */}
                 <img src={p.image} alt={p.name} className="h-40 w-full object-cover rounded-xl mb-4" />
                 
                 {/* CONTENIDO */}
                 <h2 className="text-lg font-bold text-gray-800">{p.name}</h2>
-                <p className="text-sm text-gray-600 mb-2">{p.description}</p>
-                <p className="font-bold text-[#00665c] mb-3">${p.price}</p>
+                <p className="text-sm text-gray-600 mt-1 mb-2 line-clamp-3 leading-relaxed">{p.description}</p>
+                <p className="font-semibold text-lg text-blue-900 mb-3">${p.price}</p>
+
+                <div className="mt-auto">
 
                 {/* INFO DEL VENDEDOR */}
                 <div className="bg-gray-50 p-3 rounded-lg mb-3 text-sm text-gray-700">
@@ -221,6 +223,7 @@ function AdminProducts() {
                   >
                     Eliminar
                   </button>
+                </div>
                 </div>
               </div>
             ))}

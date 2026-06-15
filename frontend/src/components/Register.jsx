@@ -91,7 +91,9 @@ const Register = () => {
     <div className="h-screen w-full flex overflow-hidden">
 
       {/* FORMULARIO */}
-      <div className="flex-1 flex items-center justify-center bg-gray-100 px-6 py-8">
+      <div className="w-full lg:w-3/5 bg-gray-100 overflow-y-auto">
+      
+      <div className="min-h-full flex items-center justify-center px-6 py-8">
 
         <form
           onSubmit={handleSubmit}
@@ -100,17 +102,19 @@ const Register = () => {
 
           {/* LOGO */}
           <div className="flex flex-col items-center mb-2">
-            <img
+            <div className="flex items-center gap-2 mb-3">
+              
+              <img
               src={logoSwes}
               alt="SWES"
-              className="w-16 h-16 object-contain mb-3"
-            />
-
-            <h2 className="text-3xl font-bold text-gray-800">
-              Crear cuenta
-            </h2>
-
-            <p className="text-sm text-gray-500 text-center mt-2">
+              className="w-10 h-10 object-contain" 
+              />
+              <h2 className="text-2xl font-bold text-brand-primary">
+                Crear cuenta
+              </h2>
+            </div>
+            
+            <p className="text-md text-gray-600 text-center mt-2 font-medium">
               Plataforma de emprendimientos de la EPN
             </p>
           </div>
@@ -138,7 +142,7 @@ const Register = () => {
             <select
               value={role}
               onChange={(e) => setRole(e.target.value)}
-              className="border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#00665c]"
+              className="border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-primary"
             >
               <option value="visitante">Visitante</option>
               <option value="emprendedor">Emprendedor</option>
@@ -156,7 +160,7 @@ const Register = () => {
               type="text"
               placeholder="Ingresa tu nombre"
               required
-              className="border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#00665c]"
+              className="border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-primary"
             />
           </div>
 
@@ -171,7 +175,7 @@ const Register = () => {
               type="email"
               placeholder="usuario@epn.edu.ec"
               required
-              className="border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#00665c]"
+              className="border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-primary"
             />
           </div>
 
@@ -188,7 +192,7 @@ const Register = () => {
                 maxLength={10} // Restringe visualmente a máximo 10 caracteres en el teclado
                 placeholder="09XXXXXXXX"
                 required
-                className="border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#00665c]"
+                className="border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-primary"
               />
             </div>
           )}
@@ -205,14 +209,14 @@ const Register = () => {
               placeholder="Mínimo 6 caracteres"
               minLength={6}
               required
-              className="border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#00665c]"
+              className="border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-primary"
             />
           </div>
 
           {/* BOTON REGISTRO */}
           <button
             type="submit"
-            className="bg-[#00665c] hover:bg-[#004d45] text-white py-3 rounded-xl font-semibold transition mt-2"
+            className="bg-brand-primary hover:bg-brand-hover text-white py-3 rounded-xl font-semibold transition mt-2"
           >
             Registrarse
           </button>
@@ -254,7 +258,7 @@ const Register = () => {
             ¿Ya tienes cuenta?{' '}
             <Link
               to="/login"
-              className="text-[#00665c] font-semibold hover:underline"
+              className="text-brand-primary font-semibold hover:underline"
             >
               Inicia sesión
             </Link>
@@ -266,11 +270,12 @@ const Register = () => {
 
         </form>
       </div>
+      </div>
 
       {/* PANEL DERECHO */}
-      <div className="hidden lg:flex w-1/2 bg-[#0f172a] items-center justify-center px-12">
+      <div className="hidden lg:flex lg:w-2/5 bg-brand-panel items-center justify-center px-8">
         <div className="max-w-lg">
-          <div className="bg-white/5 border border-white/10 rounded-3xl p-10 backdrop-blur-sm">
+          <div className="bg-brand-panel-card border border-brand-panel-border border-white/10 rounded-3xl p-10 backdrop-blur-sm">
             <h1 className="text-7xl font-bold text-white mb-5">SWES</h1>
             <p className="text-white/70 text-lg leading-relaxed">
               Sistema web para impulsar los emprendimientos y talentos

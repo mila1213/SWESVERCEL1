@@ -139,7 +139,7 @@ const Login = () => {
           </div>
 
           {mensaje.texto && (
-            <div className={`text-sm px-4 py-3 rounded-xl text-center font-medium ${mensaje.tipo === 'error' ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-green-50 text-green-600 border border-green-200'}`}>
+            <div className={`text-sm px-4 py-3 rounded-xl text-center font-medium ${mensaje.tipo === 'error' ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-blue-50 text-blue-600 border border-blue-200'}`}>
               {mensaje.texto}
             </div>
           )}

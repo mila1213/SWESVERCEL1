@@ -46,14 +46,14 @@ function Navbar() {
   ];
 
   return (
-    <nav className="bg-neutral-surface border-b border-neutral-border h-16 flex items-center px-8 relative z-50">
+    <nav className="bg-neutral-surface border-b border-neutral-border min-h-16 flex items-start pt-3 pb-5 px-8 relative z-[100] mt-2 mx-2 rounded-xl">
       <div className="w-full flex items-center justify-between">
 
         {/* Logo */}
         <Link to="/dashboard" className="flex items-center gap-2 select-none">
           <img src={logoSwes} alt="SWES" className="w-7 h-7 object-contain" />
-          <span className="font-bold text-neutral-text text-lg">SWES</span>
-          <span className="font-bold text-brand-accent text-lg">EPN</span>
+          <span className="font-bold text-neutral-text text-xl">SWES</span>
+          <span className="font-bold text-blue-900 text-xl">EPN</span>
         </Link>
 
         {/* CONTENEDOR DERECHO */}
@@ -83,20 +83,18 @@ function Navbar() {
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="w-9 h-9 rounded-full bg-brand-panel flex items-center justify-center
-                         text-white font-semibold text-sm hover:opacity-90 transition-all border-2 border-neutral-border"
+              className="w-9 h-9 rounded-full bg-blue-950 text-white font-bold text-sm hover:bg-blue-900 transition-colors border border-gray-100 flex items-center justify-center shadow-xs"
             >
               {username.charAt(0).toUpperCase()}
             </button>
 
             {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-neutral-surface border border-neutral-border
-                              rounded-card shadow-form z-50 overflow-hidden animate-fadeIn">
+              <div className="absolute right-0 mt-2 w-52 bg-white border border-gray-100 rounded-xl shadow-xl z-50 overflow-hidden transform origin-top-right transition-all">
                 
                 {/* Info del usuario*/}
                 <div className="px-4 py-3 border-b border-neutral-border bg-neutral-bg/30">
                   <p className="text-xs font-bold text-neutral-text">Hola, {username}</p>
-                  <p className="text-[11px] text-neutral-muted truncate">Rol: {role === 'administrador' ? 'Administrador' : role === 'emprendedor' ? 'Emprendedor' : 'Visitante'}</p>
+                  <p className="text-[11px] font-medium text-gray-400 mt-0.5 capitalize">Rol: {role === 'administrador' ? 'Administrador' : role === 'emprendedor' ? 'Emprendedor' : 'Visitante'}</p>
                 </div>
 
                 {/* Enlace a la nueva página de Perfil */}
