@@ -124,7 +124,7 @@ El sistema sigue una arquitectura cliente-servidor:
   VITE_SUPABASE_URL=https://your-project.supabase.co
   VITE_SUPABASE_ANON_KEY=sb_publishable_xxx
   VITE_BACKEND_URL=http://localhost:8000/api
-```
+ ´´´
 
 
 ## Pasos para la ejecucion del proyecto:
