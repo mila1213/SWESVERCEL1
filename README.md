@@ -24,6 +24,7 @@ El sistema sigue una arquitectura cliente-servidor:
 - Backend: Node.js + Express
 - Base de datos: Supabase (Postgres)
 - Autenticación: Supabase Auth
+- Despliegue: Vercel (Serverless Functions para el Backend).
   
 ## Estructura
 * **/docs**: Diseños y mockups.
@@ -177,6 +178,37 @@ Nota: El diseño presentado en Figma es una propuesta conceptual y puede sufrir 
 
    <img width="1535" height="629" alt="image" src="https://github.com/user-attachments/assets/44a5ce2a-9cbb-4575-8726-0daa01138c08" />
 
+
+---
+
+## Despliegue en Vercel
+
+El proyecto está configurado para desplegarse de manera independiente en Vercel utilizando configuraciones optimizadas para monorepositorios.
+
+### Backend Deployment
+El backend se ejecuta sobre **Vercel Serverless Functions**. 
+* **Root Directory:** `backend`
+* **Framework Preset:** `Express` (u `Other`)
+* **Variables de Entorno Requeridas:**
+    * `SUPABASE_URL`: Enlace del proyecto de Supabase.
+    * `SUPABASE_ANON_KEY`: Clave pública de Supabase.
+    * `SUPABASE_SERVICE_ROLE_KEY`: Clave de servicio privada de Supabase.
+    * `ENABLE_DEV_EMAILS`: Habilitación de correos de prueba (`true`).
+
+### Frontend Deployment
+El frontend está optimizado para distribuirse de forma global y cuenta con reescritura de rutas para evitar errores de recarga (404).
+* **Root Directory:** `frontend`
+* **Framework Preset:** `Vite`
+* **Variables de Entorno Requeridas:**
+    * `VITE_SUPABASE_URL`: URL del proyecto Supabase.
+    * `VITE_SUPABASE_ANON_KEY`: Clave anónima de Supabase.
+    * `VITE_BACKEND_URL`: URL de producción del backend en Vercel (ej. `https://tu-backend.vercel.app/api`).
+
+---
+
+### URL de Despliegue:
+**Frontend:** https://swes-proyecto-web-mm5j.vercel.app/
+**Backend:** https://swes-proyecto-web-b8y3.vercel.app/
 
 ## Autores
 - Nombres: Concepcion Arequipa, Camila Bueno y Leonor Yumi
