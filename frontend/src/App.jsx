@@ -15,7 +15,6 @@ const AdminProducts = lazy(() => import("./components/AdminProducts"));
 const ProductForm = lazy(() => import("./components/ProductForm"));
 const Header = lazy(() => import("./components/Header"));
 const Profile = lazy(() => import("./components/Profile"));
-const EditProfile = lazy(() => import("./components/EditProfile"));
 const Settings = lazy(() => import("./components/Settings"));
 const AdminStats = lazy(() => import("./components/AdminStats"));
 const AdminUsers = lazy(() => import("./components/AdminUsers"));
@@ -47,7 +46,6 @@ function AppInner() {
             <Route path="/reset-password/:token" element={<ResetPassword />} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-            <Route path="/profile/edit" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
             <Route path="/admin/products" element={<ProtectedRoute><AdminProducts /></ProtectedRoute>} />
             <Route path="/admin/products/new" element={<ProtectedRoute><ProductForm /></ProtectedRoute>} />
             <Route path="/admin/products/edit/:id" element={<ProtectedRoute><ProductForm /></ProtectedRoute>} />
