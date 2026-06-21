@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X } from 'lucide-react';
 import logoSwes from '../assets/icono_sistema.png';
 
 function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
@@ -35,6 +37,9 @@ function Navbar() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
 
   const links = [
     { to: '/dashboard', label: 'Tablero' },
@@ -46,7 +51,7 @@ function Navbar() {
   ];
 
   return (
-    <nav className="bg-neutral-surface border-b border-neutral-border min-h-16 flex items-start pt-3 pb-5 px-8 relative z-[100] mt-2 mx-2 rounded-xl">
+    <nav className="bg-neutral-surface border-b border-neutral-border min-h-16 flex items-start pt-3 pb-5 px-4 md:px-8 relative z-[100] mt-2 mx-2 rounded-xl">
       <div className="w-full flex items-center justify-between">
 
         {/* Logo */}
@@ -57,10 +62,10 @@ function Navbar() {
         </Link>
 
         {/* CONTENEDOR DERECHO */}
-        <div className="flex items-center gap-6">
-          
-          {/* Links de Navegación */}
-          <div className="flex items-center gap-1">
+        <div className="flex items-center gap-3 md:gap-6">
+
+          {/* Links de Navegación - Desktop */}
+          <div className="hidden md:flex items-center gap-1">
             {links.map(({ to, label }) => {
               const active = location.pathname === to;
               return (
@@ -79,6 +84,15 @@ function Navbar() {
             })}
           </div>
 
+          {/* Botón hamburguesa - Mobile/Tablet */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden w-9 h-9 flex items-center justify-center rounded-input text-neutral-subtle hover:text-neutral-text hover:bg-neutral-bg transition-colors"
+            aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+
           {/* Avatar con Dropdown */}
           <div className="relative" ref={dropdownRef}>
             <button
@@ -90,14 +104,12 @@ function Navbar() {
 
             {dropdownOpen && (
               <div className="absolute right-0 mt-2 w-52 bg-white border border-gray-100 rounded-xl shadow-xl z-50 overflow-hidden transform origin-top-right transition-all">
-                
-                {/* Info del usuario*/}
+
                 <div className="px-4 py-3 border-b border-neutral-border bg-neutral-bg/30">
                   <p className="text-xs font-bold text-neutral-text">Hola, {username}</p>
                   <p className="text-[11px] font-medium text-gray-400 mt-0.5 capitalize">Rol: {role === 'administrador' ? 'Administrador' : role === 'emprendedor' ? 'Emprendedor' : 'Visitante'}</p>
                 </div>
 
-                {/* Enlace a la nueva página de Perfil */}
                 <div className="py-1">
                   <Link
                     to="/profile"
@@ -113,35 +125,32 @@ function Navbar() {
                 </div>
 
                 <Link
-  to="/settings"
-  onClick={() => setDropdownOpen(false)}
-  className="flex items-center gap-2 px-4 py-2 text-sm text-neutral-subtle
-             hover:bg-neutral-bg hover:text-neutral-text transition-all"
->
-  <svg
-    className="w-4 h-4"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={1.8}
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M10.325 4.317a1.724 1.724 0 013.35 0 1.724 1.724 0 002.573 1.066 1.724 1.724 0 012.37 2.37 1.724 1.724 0 001.065 2.572 1.724 1.724 0 010 3.351 1.724 1.724 0 00-1.066 2.573 1.724 1.724 0 01-2.37 2.37 1.724 1.724 0 00-2.572 1.065 1.724 1.724 0 01-3.351 0 1.724 1.724 0 00-2.573-1.066 1.724 1.724 0 01-2.37-2.37 1.724 1.724 0 00-1.065-2.572 1.724 1.724 0 010-3.351 1.724 1.724 0 001.066-2.573 1.724 1.724 0 012.37-2.37 1.724 1.724 0 002.572-1.065z"
-    />
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-    />
-  </svg>
+                  to="/settings"
+                  onClick={() => setDropdownOpen(false)}
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-neutral-subtle
+                             hover:bg-neutral-bg hover:text-neutral-text transition-all"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={1.8}
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M10.325 4.317a1.724 1.724 0 013.35 0 1.724 1.724 0 002.573 1.066 1.724 1.724 0 012.37 2.37 1.724 1.724 0 001.065 2.572 1.724 1.724 0 010 3.351 1.724 1.724 0 00-1.066 2.573 1.724 1.724 0 01-2.37 2.37 1.724 1.724 0 00-2.572 1.065 1.724 1.724 0 01-3.351 0 1.724 1.724 0 00-2.573-1.066 1.724 1.724 0 01-2.37-2.37 1.724 1.724 0 00-1.065-2.572 1.724 1.724 0 010-3.351 1.724 1.724 0 001.066-2.573 1.724 1.724 0 012.37-2.37 1.724 1.724 0 002.572-1.065z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                  Configuración
+                </Link>
 
-  Configuración
-</Link>
-
-
-                {/* Botón de Salida */}
                 <div className="border-t border-neutral-border py-1">
                   <button
                     onClick={handleLogout}
@@ -162,6 +171,30 @@ function Navbar() {
         </div>
 
       </div>
+
+      {/* Panel de menú móvil */}
+      {mobileMenuOpen && (
+        <div className="md:hidden absolute top-full left-0 right-0 mt-2 mx-2 bg-white border border-neutral-border rounded-xl shadow-xl z-50 overflow-hidden">
+          <div className="flex flex-col py-2">
+            {links.map(({ to, label }) => {
+              const active = location.pathname === to;
+              return (
+                <Link
+                  key={to}
+                  to={to}
+                  className={`px-4 py-2.5 text-sm font-medium transition-all
+                    ${active
+                      ? 'bg-brand-primary text-white'
+                      : 'text-neutral-subtle hover:text-neutral-text hover:bg-neutral-bg'
+                    }`}
+                >
+                  {label}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

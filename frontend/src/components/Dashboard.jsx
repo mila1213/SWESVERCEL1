@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaWhatsapp } from 'react-icons/fa';
+import { FaSearch,FaWhatsapp } from 'react-icons/fa';
 import SidebarFilters from './SidebarFilters';
 import { getAll } from '../services/crudService';
 
@@ -40,70 +40,121 @@ function Dashboard() {
 
   return (
     <div className="min-h-screen bg-[#f4f6f8]">
-      <div className="max-w-[1500px] mx-auto px-5 py-6">
-        {/* HEADER */}
-        <div className="bg-white border border-gray-200 rounded-2xl px-8 py-6 mb-6 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 tracking-tight">Tablero de Emprendimientos</h1>
-            <p className="text-lg text-slate-500 mt-1 font-medium">Rol: <span className="capitalize text-blue-900 font-semibold">{role}</span></p>            
-          </div>
-          {(role === 'emprendedor' || role === 'administrador') && (
+      <div className="max-w-[1400px] mx-auto px-5 py-6">
+        {/* CONTENEDOR DE FILTROS Y BÚSQUEDA INTEGRADOS */}
+        <div className="flex flex-col gap-4 mb-8">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 w-full bg-white p-4 rounded-2xl border border-gray-100 shadow-3xs">
             
-            <button 
-            onClick={() => navigate('/admin/products/new')} 
-            className="bg-blue-900 hover:bg-blue-800 text-white px-5 py-2.5 rounded-xl font-semibold text-sm shadow-sm hover:shadow transition-all duration-200 shrink-0"
-            >
-            + Publicar Emprendimiento
-            </button>
-          )}
+            <div className="relative w-full sm:max-w-xl">
+              <FaSearch className="absolute left-4 top-3.5 text-gray-400 text-sm" />
+              <input
+              type="text"
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+              placeholder="Buscar emprendimientos..."
+              className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium outline-none transition-all focus:bg-white focus:border-blue-900 focus:ring-4 focus:ring-blue-900/5"
+              />
+            </div>
+
+  {/* Botón Publicar: Más estilizado */}
+  {(role === 'emprendedor' || role === 'administrador') && (
+    <button 
+      onClick={() => navigate('/admin/products/new')} 
+      className="w-full sm:w-auto bg-blue-900 hover:bg-blue-950 text-white px-6 py-2.5 rounded-xl font-semibold text-sm shadow-xs transition-all duration-200 shrink-0 whitespace-nowrap"
+    >
+      Publicar Emprendimiento
+    </button>
+  )}
+</div>
+
+          {/* Filtros en Línea Horizontal */}
+          <div className="w-full overflow-x-auto pb-2 flex gap-2 scrollbar-none snap-x">
+            <SidebarFilters categoriaActiva={categoriaActiva} setCategoriaActiva={setCategoriaActiva} />
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6 items-start">
-          <aside className="bg-white p-6 rounded-2xl shadow-sm">
-            <SidebarFilters categoriaActiva={categoriaActiva} setCategoriaActiva={setCategoriaActiva} />
-          </aside>
+          {/* SECCIÓN DE PRODUCTOS */}
+        <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
+          {loading ? (
+            <p className="text-center col-span-full text-gray-500">Cargando emprendimientos...</p>
+          ) : productosFiltrados.length === 0 ? (
+            <p className="text-center col-span-full text-gray-500">No hay emprendimientos disponibles</p>
+          ) : (
+            productosFiltrados.map((it) => (
+              <div 
+                key={it.id} 
+                className="bg-white border border-gray-150/80 rounded-2xl p-4 shadow-3xs flex flex-col h-full group hover:-translate-y-1 hover:shadow-md transition-all duration-300"
+              >
+                {/* Contenedor de la Imagen + Badge flotante */}
+                <div className="relative aspect-video w-full mb-4 overflow-hidden rounded-xl bg-gray-50 border border-gray-100/50">
+                  {it.image ? (
+                    <img 
+                      src={it.image} 
+                      alt={it.name} 
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-300 text-3xl bg-gray-50">🖼️</div>
+                  )}
 
-          <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {loading ? (
-              <p className="text-center col-span-full text-gray-500">Cargando emprendimientos...</p>
-            ) : productosFiltrados.length === 0 ? (
-              <p className="text-center col-span-full text-gray-500">No hay emprendimientos disponibles</p>
-            ) : (
-              productosFiltrados.map((it) => (
-                <div key={it.id} className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm flex flex-col h-full">
-                  <img src={it.image} alt={it.name} className="h-40 w-full object-cover rounded-xl mb-4" />
-                  <h2 className="text-lg font-bold">{it.name}</h2>
-                  <p className="text-sm text-gray-600 mt-1 mb-2 line-clamp-3 leading-relaxed">{it.description}</p>
-                  <p className="font-bold text-blue-900 mb-3">${it.price}</p>
+                  {/* Badge de Categoría sutil sobre la imagen */}
+                  <span className="absolute top-2.5 left-2.5 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded-md bg-white/90 text-blue-950 shadow-3xs backdrop-blur-xs">
+                    {it.category || 'General'}
+                  </span>
+                </div>
 
-                  <div className="mt-auto">
+                <div className="flex items-start justify-between gap-3 mb-1.5">
+  <h2 className="text-base font-bold text-gray-900 group-hover:text-blue-900 transition-colors line-clamp-1 min-w-0">
+    {it.name}
+  </h2>
 
+  <p className="text-gray-900 font-semibold text-[17px] tracking-tight shrink-0">
+    <span className="text-xs font-normal text-gray-500 mr-0.5">US</span>${it.price}
+  </p>
+</div>
+
+                {/* Descripción Corta */}
+                <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed mb-4">
+                  {it.description || 'Sin descripción disponible.'}
+                </p>
+
+                {/* Contenedor Inferior Dinámico (Empujado al fondo) */}
+                <div className="mt-auto">
                   
-                  {/* INFO DEL VENDEDOR */}
-                  <div className="bg-gray-50 p-3 rounded-lg mb-3 text-sm text-gray-700">
-                    <p><strong>Vendedor:</strong> {it.sellerName || it.sellername || 'No disponible'}</p>
-                    <p><strong>Teléfono:</strong> {it.sellerPhone || it.sellerphone || 'No disponible'}</p>
+                  {/* LÍNEA DIVISORIA Y AVATAR MINIMALISTA DEL VENDEDOR */}
+                  <div className="pt-3 border-t border-gray-100 mb-3 flex items-center gap-2.5">
+                    <div className="h-7 w-7 rounded-full bg-slate-100 border border-slate-200 text-slate-700 font-bold text-[11px] flex items-center justify-center uppercase shrink-0">
+                      {(it.sellerName || it.sellername || 'V').substring(0, 2)}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-semibold text-gray-800 truncate">
+                        {it.sellerName || it.sellername || 'Anónimo'}
+                      </p>
+                      <p className="text-[10px] text-gray-400 font-medium truncate">
+                        Tel: {it.sellerPhone || it.sellerphone || 'No asignado'}
+                      </p>
+                    </div>
                   </div>
 
-                  {/* SOLO BOTÓN DE CONTACTO - SIN EDITAR/ELIMINAR */}
+                  {/* BOTÓN DE CONTACTO INTEGRADO */}
                   <a 
                     href={`https://wa.me/${it.sellerPhone?.replace(/\D/g, '') || it.sellerphone?.replace(/\D/g, '')}`} 
                     target="_blank" 
                     rel="noreferrer" 
-                    className="block w-full text-center bg-blue-900 hover:bg-blue-600 text-white py-2 rounded-lg text-sm font-semibold transition"
+                    className="flex items-center justify-center gap-2 w-full text-center bg-blue-900 hover:bg-blue-950 text-white py-2 rounded-xl text-xs font-bold transition-colors duration-200"
                   >
+                    <FaWhatsapp className="text-sm" />
                     Contactar por WhatsApp
                   </a>
 
-                  </div>
                 </div>
-              ))
-            )}
-          </section>
+              </div>
+            ))
+          )}
+        </section>
+
         </div>
       </div>
-    </div>
   );
 }
 

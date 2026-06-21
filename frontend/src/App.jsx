@@ -1,58 +1,61 @@
-import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
-import Register from "./components/Register";
-import Login from "./components/Login";
-import VerifyAccount from "./components/VerifyAccount";
-import ForgotPassword from "./components/ForgotPassword";
-import ResetPassword from "./components/ResetPassword";
-import Dashboard from "./components/Dashboard";
-import AdminProducts from "./components/AdminProducts";
-import ProductForm from "./components/ProductForm";
-import Header from "./components/Header";
-import Profile from "./components/Profile";
-import EditProfile from "./components/EditProfile";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { lazy, Suspense } from "react";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Landing from "./components/Landing";
 import "./index.css";
 import "./App.css";
-import Settings from "./components/Settings";
-import AdminStats from "./components/AdminStats";
-import AdminUsers from "./components/AdminUsers";
+
+const Landing = lazy(() => import("./components/Landing"));
+const Register = lazy(() => import("./components/Register"));
+const Login = lazy(() => import("./components/Login"));
+const VerifyAccount = lazy(() => import("./components/VerifyAccount"));
+const ForgotPassword = lazy(() => import("./components/ForgotPassword"));
+const ResetPassword = lazy(() => import("./components/ResetPassword"));
+const Dashboard = lazy(() => import("./components/Dashboard"));
+const AdminProducts = lazy(() => import("./components/AdminProducts"));
+const ProductForm = lazy(() => import("./components/ProductForm"));
+const Header = lazy(() => import("./components/Header"));
+const Profile = lazy(() => import("./components/Profile"));
+const EditProfile = lazy(() => import("./components/EditProfile"));
+const Settings = lazy(() => import("./components/Settings"));
+const AdminStats = lazy(() => import("./components/AdminStats"));
+const AdminUsers = lazy(() => import("./components/AdminUsers"));
 
 function AppInner() {
   const location = useLocation();
-  
-  // Rutas exactas de autenticación 
+
   const authRoutes = ["/", "/login", "/register", "/verify", "/forgot-password", "/reset-password"];
-  
-  
   const hideNav = authRoutes.includes(location.pathname) || location.pathname.startsWith("/reset-password/");
 
   return (
     <main className="flex flex-col h-screen overflow-y-auto bg-[#f4f6f8]">
-      
-      {!hideNav && <Header />}
+
+      {!hideNav && (
+        <Suspense fallback={null}>
+          <Header />
+        </Suspense>
+      )}
 
       <div className="flex-1 w-full">
-
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/verify" element={<VerifyAccount />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/reset-password/:token" element={<ResetPassword />} />
-        <Route path="/dashboard" element={ <ProtectedRoute> <Dashboard /> </ProtectedRoute>}/>
-        <Route path="/profile" element={<ProtectedRoute> <Profile /> </ProtectedRoute>} />
-        <Route path="/profile/edit" element={<ProtectedRoute> <EditProfile /> </ProtectedRoute>}/>
-        <Route path="/admin/products" element={<ProtectedRoute> <AdminProducts/> </ProtectedRoute>} />
-        <Route path="/admin/products/new" element={<ProtectedRoute> <ProductForm /> </ProtectedRoute>} />
-        <Route path="/admin/products/edit/:id" element={<ProtectedRoute> <ProductForm /> </ProtectedRoute>} />
-        <Route path="/admin/stats" element={<ProtectedRoute> <AdminStats /> </ProtectedRoute>} />
-        <Route path="/admin/users" element={<ProtectedRoute> <AdminUsers /> </ProtectedRoute>} />
-        <Route path="/settings" element={<ProtectedRoute> <Settings /> </ProtectedRoute>} />
-      </Routes>
-
+        <Suspense fallback={<div className="flex items-center justify-center h-full text-neutral-muted">Cargando...</div>}>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/verify" element={<VerifyAccount />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
+            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route path="/profile/edit" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
+            <Route path="/admin/products" element={<ProtectedRoute><AdminProducts /></ProtectedRoute>} />
+            <Route path="/admin/products/new" element={<ProtectedRoute><ProductForm /></ProtectedRoute>} />
+            <Route path="/admin/products/edit/:id" element={<ProtectedRoute><ProductForm /></ProtectedRoute>} />
+            <Route path="/admin/stats" element={<ProtectedRoute><AdminStats /></ProtectedRoute>} />
+            <Route path="/admin/users" element={<ProtectedRoute><AdminUsers /></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+          </Routes>
+        </Suspense>
       </div>
     </main>
   );

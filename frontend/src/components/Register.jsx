@@ -2,14 +2,16 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import { registerUser } from '../services/authService';
-import logoSwes from '../assets/icono_sistema.png';
+import icono from '../assets/icono_sistema.png';
+import imgLogin from '../assets/imagen_login.jpeg';
+import { User, Mail, Lock, Phone, Eye, EyeOff, ChevronDown } from 'lucide-react';
 
 const Register = () => {
   const navigate = useNavigate();
   const [mensaje, setMensaje] = useState({ texto: '', tipo: '' });
   const [role, setRole] = useState('visitante');
+  const [verPassword, setVerPassword] = useState(false);
 
-  // REGISTRO NORMAL
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMensaje({ texto: '', tipo: '' });
@@ -19,29 +21,27 @@ const Register = () => {
 
     const normalizedEmail = data.email?.toLowerCase().trim();
 
-    // VALIDAR CORREO EPN
     if (!normalizedEmail?.endsWith('@epn.edu.ec')) {
-      setMensaje({ 
-        texto: 'Error: Solo se permiten correos institucionales @epn.edu.ec. Si eres visitante, usa "Registrarse con Google".', 
-        tipo: 'error' 
+      setMensaje({
+        texto: 'Solo se permiten correos institucionales @epn.edu.ec. Si eres visitante, usa "Registrarse con Google".',
+        tipo: 'error'
       });
-      return; 
+      return;
     }
 
-    // VALIDACIONES ESPECÍFICAS PARA EMPRENDEDOR
     if (role === 'emprendedor') {
       const phoneClean = data.phone?.trim();
 
       if (!phoneClean) {
-        setMensaje({ texto: 'Error: El número de celular es obligatorio.', tipo: 'error' });
+        setMensaje({ texto: 'El número de celular es obligatorio.', tipo: 'error' });
         return;
       }
 
-      const phoneRegex = /^0\d{9}$/; 
+      const phoneRegex = /^0\d{9}$/;
       if (!phoneRegex.test(phoneClean)) {
-        setMensaje({ 
-          texto: 'Error: El número de celular debe tener exactamente 10 dígitos y empezar con 0 (Ej: 09XXXXXXXX).', 
-          tipo: 'error' 
+        setMensaje({
+          texto: 'El número de celular debe tener exactamente 10 dígitos y empezar con 0 (Ej: 09XXXXXXXX).',
+          tipo: 'error'
         });
         return;
       }
@@ -63,7 +63,7 @@ const Register = () => {
     } catch (error) {
       console.error(error);
       const message = error.response?.data?.message || error.response?.data?.mensaje || 'Error de conexión con el servidor.';
-      setMensaje({ texto: `Error: ${message}`, tipo: 'error' });
+      setMensaje({ texto: message, tipo: 'error' });
     }
   };
 
@@ -82,214 +82,131 @@ const Register = () => {
       } else if (data?.url) {
         window.location.href = data.url;
       } else {
-        setMensaje({ texto: 'Error: No se pudo redirigir a Google. Revisa la configuración de OAuth en Supabase.', tipo: 'error' });
+        setMensaje({ texto: 'No se pudo redirigir a Google. Revisa la configuración de OAuth en Supabase.', tipo: 'error' });
       }
     });
   };
 
   return (
     <div className="h-screen w-full flex overflow-hidden">
+      {/* Panel izquierdo: formulario */}
+      <div className="flex-1 flex flex-col items-center bg-white px-8 md:px-16 py-12 overflow-y-auto">
+        <div className="max-w-sm w-full mx-auto flex flex-col gap-3">
 
-      {/* FORMULARIO */}
-      <div className="w-full lg:w-3/5 bg-gray-100 overflow-y-auto">
-      
-      <div className="min-h-full flex items-center justify-center px-6 py-8">
-
-        <form
-          onSubmit={handleSubmit}
-          className="w-full max-w-md bg-white rounded-3xl shadow-xl p-8 flex flex-col gap-4"
-        >
-
-          {/* LOGO */}
-          <div className="flex flex-col items-center mb-2">
-            <div className="flex items-center gap-2 mb-3">
-              
-              <img
-              src={logoSwes}
-              alt="SWES"
-              className="w-10 h-10 object-contain" 
-              />
-              <h2 className="text-2xl font-bold text-brand-primary">
-                Crear cuenta
-              </h2>
-            </div>
-            
-            <p className="text-md text-gray-600 text-center mt-2 font-medium">
-              Plataforma de emprendimientos de la EPN
-            </p>
+          <div className="mb-1">
+            <h2 className="text-2xl font-bold text-neutral-text leading-tight">Crea tu cuenta</h2>
+            <p className="text-sm text-neutral-muted mt-1">Únete a la plataforma de emprendimientos de la EPN.</p>
           </div>
 
-          {/* CONTENEDOR DE ALERTAS ESTILIZADAS */}
-          {mensaje.texto && (
-            <div
-              className={`border-l-4 p-3 rounded-xl text-xs font-medium transition-all duration-300 ${
-                mensaje.tipo === 'error'
-                  ? 'bg-red-50 border-red-500 text-red-700'
-                  : 'bg-green-50 border-green-500 text-green-700'
-              }`}
-            >
-              {mensaje.tipo === 'error' ? '⚠️ ' : '✅ '}
-              {mensaje.texto}
-            </div>
-          )}
+          <form onSubmit={handleSubmit} className="flex flex-col gap-3">
 
-          {/* ROL */}
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">
-              Tipo de usuario
-            </label>
-
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-primary"
-            >
-              <option value="visitante">Visitante</option>
-              <option value="emprendedor">Emprendedor</option>
-            </select>
-          </div>
-
-          {/* NOMBRE */}
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">
-              Nombre completo
-            </label>
-
-            <input
-              name="nombre"
-              type="text"
-              placeholder="Ingresa tu nombre"
-              required
-              className="border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-primary"
-            />
-          </div>
-
-          {/* EMAIL */}
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">
-              Correo institucional
-            </label>
-
-            <input
-              name="email"
-              type="email"
-              placeholder="usuario@epn.edu.ec"
-              required
-              className="border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-primary"
-            />
-          </div>
-
-          {/* TELEFONO SOLO EMPRENDEDOR */}
-          {role === 'emprendedor' && (
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">
-                Número celular
-              </label>
-
-              <input
-                name="phone"
-                type="tel"
-                maxLength={10} // Restringe visualmente a máximo 10 caracteres en el teclado
-                placeholder="09XXXXXXXX"
-                required
-                className="border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-primary"
-              />
-            </div>
-          )}
-
-          {/* PASSWORD */}
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">
-              Contraseña
-            </label>
-
-            <input
-              name="password"
-              type="password"
-              placeholder="Mínimo 6 caracteres"
-              minLength={6}
-              required
-              className="border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-primary"
-            />
-          </div>
-
-          {/* BOTON REGISTRO */}
-          <button
-            type="submit"
-            className="bg-brand-primary hover:bg-brand-hover text-white py-3 rounded-xl font-semibold transition mt-2"
-          >
-            Registrarse
-          </button>
-
-          {/* GOOGLE SOLO VISITANTE */}
-          {role === 'visitante' && (
-            <>
-              <div className="flex items-center gap-3 my-1">
-                <div className="flex-1 h-px bg-gray-200"></div>
-                <span className="text-xs text-gray-400">o</span>
-                <div className="flex-1 h-px bg-gray-200"></div>
+              <label className="text-sm font-medium text-neutral-text">Tipo de usuario</label>
+              <div className="relative flex items-center border border-neutral-border rounded-input px-3 gap-2 bg-white focus-within:border-brand-primary focus-within:shadow-input transition-all">
+                <select
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  className="w-full pl-3 pr-10 py-2.5 text-sm text-neutral-text outline-none bg-transparent appearance-none cursor-pointer z-10"
+                >
+                  <option value="visitante">Visitante</option>
+                  <option value="emprendedor">Emprendedor</option>
+                </select>
+                <div className="absolute right-3 pointer-events-none z-0">
+                  <ChevronDown className="w-4 h-4 text-neutral-muted" />
+                </div>
               </div>
-
-              <button
-                type="button"
-                onClick={handleGoogle}
-                className="border border-gray-300 bg-white hover:bg-gray-50 py-3 rounded-xl font-medium flex items-center justify-center gap-3 transition"
-              >
-                <svg className="w-5 h-5" viewBox="0 0 24 24">
-                  <path fill="#EA4335" d="M12 5.04c1.64 0 3.12.56 4.28 1.67l3.2-3.2C17.52 1.58 14.94 1 12 1 7.35 1 3.37 3.67 1.39 7.56l3.77 2.93c.9-2.69 3.42-4.45 6.84-4.45z"/>
-                  <path fill="#4285F4" d="M23.49 12.27c0-.81-.07-1.59-.2-2.34H12v4.43h6.44c-.28 1.47-1.11 2.71-2.36 3.55l3.67 2.84c2.15-1.98 3.38-4.89 3.38-8.48z"/>
-                  <path fill="#FBBC05" d="M5.16 14.51c-.23-.69-.36-1.43-.36-2.2s.13-1.51.36-2.2L1.39 7.56C.5 9.35 0 11.33 0 12.4c0 1.07.5 3.05 1.39 4.84l3.77-2.73z"/>
-                  <path fill="#34A853" d="M12 23c3.24 0 5.97-1.07 7.96-2.91l-3.67-2.84c-1.1.74-2.51 1.18-4.29 1.18-3.42 0-5.94-1.76-6.84-4.45L1.39 16.91C3.37 20.33 7.35 23 12 23z"/>
-                </svg>
-                Registrarse con Google
-              </button>
-            </>
-          )}
-
-          {/* TEXTO */}
-          <p className="text-xs text-center text-gray-500 mt-1">
-            {role === 'emprendedor'
-              ? 'Los emprendedores deben ingresar su número celular.'
-              : 'Los visitantes pueden registrarse con correo institucional o Google.'}
-          </p>
-
-          {/* LOGIN */}
-          <p className="text-center text-sm text-gray-600 mt-3">
-            ¿Ya tienes cuenta?{' '}
-            <Link
-              to="/login"
-              className="text-brand-primary font-semibold hover:underline"
-            >
-              Inicia sesión
-            </Link>
-          </p>
-
-          <p className="text-center text-xs text-gray-400 mt-2">
-            © 2026 Escuela Politécnica Nacional
-          </p>
-
-        </form>
-      </div>
-      </div>
-
-      {/* PANEL DERECHO */}
-      <div className="hidden lg:flex lg:w-2/5 bg-brand-panel items-center justify-center px-8">
-        <div className="max-w-lg">
-          <div className="bg-brand-panel-card border border-brand-panel-border border-white/10 rounded-3xl p-10 backdrop-blur-sm">
-            <h1 className="text-7xl font-bold text-white mb-5">SWES</h1>
-            <p className="text-white/70 text-lg leading-relaxed">
-              Sistema web para impulsar los emprendimientos y talentos
-              de los estudiantes de la Escuela Politécnica Nacional.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <span className="bg-white/10 text-white text-sm px-4 py-2 rounded-full">Innovación</span>
-              <span className="bg-white/10 text-white text-sm px-4 py-2 rounded-full">Emprendimiento</span>
-              <span className="bg-white/10 text-white text-sm px-4 py-2 rounded-full">Tecnología</span>
             </div>
-          </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-neutral-text">Nombre completo</label>
+              <div className="flex items-center border border-neutral-border rounded-input px-3 gap-2 bg-white focus-within:border-brand-primary focus-within:shadow-input transition-all">
+                <User className="w-4 h-4 text-neutral-muted shrink-0" />
+                <input name="nombre" type="text" placeholder="Ingresa tu nombre" required className="flex-1 py-2.5 text-sm text-neutral-text placeholder:text-neutral-muted outline-none bg-transparent" />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-neutral-text">Correo institucional</label>
+              <div className="flex items-center border border-neutral-border rounded-input px-3 gap-2 bg-white focus-within:border-brand-primary focus-within:shadow-input transition-all">
+                <Mail className="w-4 h-4 text-neutral-muted shrink-0" />
+                <input name="email" type="email" placeholder="usuario@epn.edu.ec" required className="flex-1 py-2.5 text-sm text-neutral-text placeholder:text-neutral-muted outline-none bg-transparent" />
+              </div>
+            </div>
+
+            {role === 'emprendedor' && (
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-neutral-text">Número celular</label>
+                <div className="flex items-center border border-neutral-border rounded-input px-3 gap-2 bg-white focus-within:border-brand-primary focus-within:shadow-input transition-all">
+                  <Phone className="w-4 h-4 text-neutral-muted shrink-0" />
+                  <input name="phone" type="tel" maxLength={10} placeholder="09XXXXXXXX" required className="flex-1 py-2.5 text-sm text-neutral-text placeholder:text-neutral-muted outline-none bg-transparent" />
+                </div>
+              </div>
+            )}
+
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-neutral-text">Contraseña</label>
+              <div className="flex items-center border border-neutral-border rounded-input px-3 gap-2 bg-white focus-within:border-brand-primary focus-within:shadow-input transition-all">
+                <Lock className="w-4 h-4 text-neutral-muted shrink-0" />
+                <input name="password" type={verPassword ? 'text' : 'password'} placeholder="Mínimo 6 caracteres" minLength={6} required className="flex-1 py-2.5 text-sm text-neutral-text placeholder:text-neutral-muted outline-none bg-transparent" />
+                <button
+                  type="button"
+                  onClick={() => setVerPassword(!verPassword)}
+                  aria-label={verPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                  className="text-neutral-muted hover:text-neutral-text transition-colors focus:outline-none shrink-0"
+                >
+                  {verPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            {mensaje.texto && (
+              <div className={`text-sm px-4 py-3 rounded-xl text-center font-medium ${mensaje.tipo === 'error' ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-blue-50 text-blue-600 border border-blue-200'}`}>
+                {mensaje.texto}
+              </div>
+            )}
+
+            <button type="submit" className="w-full bg-brand-primary hover:bg-brand-hover text-white font-semibold py-3 rounded-btn text-sm transition-all">Registrarse</button>
+
+            {role === 'visitante' && (
+              <>
+                <div className="flex items-center gap-3 my-1">
+                  <div className="flex-1 h-px bg-neutral-border" />
+                  <span className="text-xs text-neutral-muted whitespace-nowrap">O regístrate con</span>
+                  <div className="flex-1 h-px bg-neutral-border" />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleGoogle}
+                  className="w-full border border-neutral-border bg-white hover:bg-gray-50 py-2.5 rounded-btn font-medium flex items-center justify-center gap-2 transition text-sm text-neutral-text"
+                >
+                  <svg className="w-4 h-4" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.2-2.27H12v4.3h6.47a5.54 5.54 0 0 1-2.4 3.63v3h3.88c2.27-2.09 3.54-5.17 3.54-8.66z"/>
+                    <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3a7.4 7.4 0 0 1-11-3.9H1.07v3.09A12 12 0 0 0 12 24z"/>
+                    <path fill="#FBBC05" d="M5.05 14.19a7.2 7.2 0 0 1 0-4.38V6.72H1.07a12 12 0 0 0 0 10.56z"/>
+                    <path fill="#EA4335" d="M12 4.77c1.76 0 3.34.6 4.59 1.79l3.44-3.44C17.95 1.19 15.24 0 12 0A12 12 0 0 0 1.07 6.72l3.98 3.09A7.16 7.16 0 0 1 12 4.77z"/>
+                  </svg>
+                  Google
+                </button>
+              </>
+            )}
+
+            <p className="text-center text-xs text-neutral-muted">
+              {role === 'emprendedor'
+                ? 'Los emprendedores deben ingresar su número celular.'
+                : 'Los visitantes pueden registrarse con correo institucional o Google.'}
+            </p>
+          </form>
+
+          <p className="text-center text-sm text-neutral-muted">¿Ya tienes una cuenta? <Link to="/login" className="text-brand-accent font-semibold">Inicia sesión</Link></p>
+          <p className="text-center text-xs text-neutral-subtle">© 2026 Escuela Politécnica Nacional</p>
         </div>
       </div>
 
+      {/* Panel derecho: imagen */}
+      <div className="hidden md:block w-1/2 relative bg-brand-panel">
+        <img src={imgLogin} alt="SWES" className="absolute inset-0 w-full h-full object-cover" />
+      </div>
     </div>
   );
 };

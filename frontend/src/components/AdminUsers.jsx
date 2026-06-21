@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getAll, updateResource, deleteResource } from '../services/crudService';
+import { AlertTriangle, CheckCircle2, Trash2 } from 'lucide-react';
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
@@ -76,14 +77,46 @@ export default function AdminUsers() {
     <div className="max-w-6xl mx-auto p-6">
       {toast.mostrar && (
         <div className={`fixed bottom-5 right-5 z-50 flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-2xl border transition-all duration-300 ${toast.tipo === 'error' ? 'bg-red-50 border-red-200 text-red-700' : 'bg-green-50 border-green-200 text-green-700'}`}>
-          <span>{toast.tipo === 'error' ? '⚠️' : '✅'}</span>
+          {toast.tipo === 'error' ? <AlertTriangle className="w-5 h-5 shrink-0" /> : <CheckCircle2 className="w-5 h-5 shrink-0" />}
           <p className="text-sm font-semibold">{toast.texto}</p>
         </div>
       )}
 
       <h2 className="text-2xl font-bold mb-4">Usuarios</h2>
-      <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-        <table className="w-full table-auto">
+
+      {/* TARJETAS - Mobile y tablet */}
+      <div className="md:hidden flex flex-col gap-3">
+        {users.map((u) => (
+          <div key={u.id} className="bg-white rounded-xl border shadow-sm p-4 flex flex-col gap-3">
+            <p className="text-sm font-semibold text-gray-900 break-all">{u.email}</p>
+
+            <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs">
+              <p><span className="text-gray-400">Nombre:</span> <span className="text-gray-700">{u.nombre || '-'}</span></p>
+              <p><span className="text-gray-400">Rol:</span> <span className="text-gray-700">{u.role || '-'}</span></p>
+              <p className="col-span-2"><span className="text-gray-400">Teléfono:</span> <span className="text-gray-700">{u.phone || '-'}</span></p>
+            </div>
+
+            <div className="flex gap-2 mt-1">
+              <button
+                onClick={() => handleEditClick(u)}
+                className="flex-1 px-3 py-2 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition"
+              >
+                Editar
+              </button>
+              <button
+                onClick={() => handleDeleteClick(u.id)}
+                className="flex-1 px-3 py-2 rounded-xl border border-red-200 bg-red-50 text-red-700 text-xs font-semibold hover:bg-red-100 transition"
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* TABLA - Desktop */}
+      <div className="hidden md:block bg-white rounded-xl shadow-sm border overflow-x-auto">
+        <table className="w-full min-w-[640px] table-auto">
           <thead className="bg-gray-50">
             <tr>
               <th className="p-3 text-left text-xs text-gray-500">Email</th>
@@ -194,7 +227,9 @@ export default function AdminUsers() {
       {modalEliminar.abierto && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6 border border-gray-100 text-center">
-            <div className="text-red-500 text-4xl">🗑️</div>
+            <div className="flex justify-center">
+              <Trash2 className="w-10 h-10 text-red-500" />
+            </div>
             <h3 className="text-xl font-bold text-gray-900 mt-4">Confirmar eliminación</h3>
             <p className="text-sm text-gray-500 mt-2">¿Estás seguro de que quieres eliminar este usuario?</p>
             <div className="mt-6 flex justify-center gap-3">

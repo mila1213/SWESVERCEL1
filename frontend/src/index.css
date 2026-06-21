@@ -18,3 +18,8 @@ body {
   --brand-500: #00665c;
   --brand-600: #004d45;
 }
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}

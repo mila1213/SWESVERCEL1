@@ -46,10 +46,8 @@ function AdminProducts() {
       let data = [];
 
       if (role === 'administrador') {
-        // Admin: ver TODOS los productos
         data = await getAll('products');
       } else if (role === 'emprendedor') {
-        // Emprendedor: ver solo SUS productos
         data = await getByUserId('products', miUid);
       } else {
         throw new Error(`Rol no permitido: ${role}`);
@@ -73,9 +71,7 @@ function AdminProducts() {
   };
 
   useEffect(() => {
-    // Se ejecuta cada vez que la ruta cambia a /admin/products
     if (location.pathname === '/admin/products') {
-      console.log('Navegando a AdminProducts, recargando productos...');
       load();
     }
   }, [location.pathname]);
@@ -122,13 +118,13 @@ function AdminProducts() {
             <div className="flex gap-3">
               <button
                 onClick={() => setModalEliminar({ abierto: false, productoId: null })}
-                className="flex-1 py-2 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50"
+                className="flex-1 py-2 rounded-xl border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleExecuteDelete}
-                className="flex-1 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white font-medium"
+                className="flex-1 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white font-medium transition"
               >
                 Eliminar
               </button>
@@ -137,93 +133,135 @@ function AdminProducts() {
         </div>
       )}
 
-      <div className="max-w-6xl mx-auto px-6 py-10">
+      <div className="max-w-[1400px] mx-auto px-5 py-8">
         {/* HEADER */}
-        <div className="bg-white border border-gray-200 rounded-2xl px-8 py-7 mb-6 shadow-sm flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800">Emprendimientos</h1>
-            <p className="text-sm text-gray-600 mt-1">
-              {role === 'administrador' ? 'Gestiona todos los productos del sistema' : 'Gestiona y edita tus emprendimientos'}
-            </p>
-          </div>
+        <div className="bg-white border border-gray-100 rounded-2xl px-6 py-5 mb-8 shadow-3xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+  <div>
+    <h1 className="text-xl font-bold text-gray-950 tracking-tight uppercase">
+      {role === 'administrador' ? 'Emprendimientos SWES' : 'Mis Emprendimientos'}
+    </h1>
+    
+    <p className="text-xs text-gray-500 mt-1">
+      {role === 'administrador' 
+      ? 'Panel de control global: Gestiona todos los productos registrados en el sistema' 
+      : 'Modifica, gestiona y mantén actualizados tus propios emprendimientos'}
+    </p>
+  </div>
 
-          {role !== 'visitante' && (
-            <button
-              onClick={() => navigate('/admin/products/new')}
-              className="bg-blue-900 hover:bg-blue-800 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm hover:shadow transition-all duration-200"
-            >
-              Publicar Emprendimiento
-            </button>
-          )}
-        </div>
+  {role !== 'visitante' && (
+    <button
+      onClick={() => navigate('/admin/products/new')}
+      className="w-full sm:w-auto bg-blue-900 hover:bg-blue-950 text-white px-5 py-2.5 rounded-xl font-semibold text-sm shadow-xs transition-all duration-200 shrink-0"
+    >
+      Publicar Emprendimiento
+    </button>
+  )}
+</div>
 
         {/* CONTENIDO PRINCIPAL */}
         {loading ? (
-          <div className="bg-white border rounded-2xl p-16 text-center">
-            <p className="text-gray-500 font-medium">Cargando emprendimientos...</p>
+          <div className="bg-white border border-gray-100 rounded-2xl p-16 text-center shadow-3xs">
+            <p className="text-gray-500 text-sm font-medium">Cargando emprendimientos...</p>
           </div>
         ) : error ? (
-          <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-8 text-center">
-            <p className="text-red-700 font-bold text-lg mb-4">Error al cargar</p>
-            <p className="text-red-600 mb-6">{error}</p>
+          <div className="bg-red-50 border border-red-200 rounded-2xl p-8 text-center max-w-xl mx-auto">
+            <p className="text-red-700 font-bold text-base mb-2">Error al cargar datos</p>
+            <p className="text-xs text-red-600 mb-5">{error}</p>
             <button
               onClick={() => {
                 setError(null);
                 load();
               }}
-              className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-semibold transition"
+              className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-xl text-xs font-semibold transition"
             >
               Reintentar
             </button>
           </div>
         ) : products.length === 0 ? (
-          <div className="bg-white border-2 border-dashed border-gray-300 rounded-2xl p-16 text-center">
-            <p className="text-gray-700 font-semibold text-lg">No hay emprendimientos</p>
-            <p className="text-gray-500 mt-2">Crea tu primer emprendimiento haciendo clic en el botón de arriba</p>
+          <div className="bg-white border-2 border-dashed border-gray-200 rounded-2xl p-16 text-center shadow-3xs max-w-2xl mx-auto">
+            <p className="text-gray-800 font-bold text-base">No tienes productos registrados</p>
+            <p className="text-xs text-gray-400 mt-1">Crea tu primer emprendimiento para empezar a promocionarte en la comunidad.</p>
             {role !== 'visitante' && (
               <button
                 onClick={() => navigate('/admin/products/new')}
-                className="mt-6 bg-blue-900 hover:bg-blue-800 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-sm hover:shadow transition-all duration-200"
+                className="mt-5 bg-blue-900 hover:bg-blue-950 text-white px-5 py-2.5 rounded-xl font-semibold text-sm shadow-xs transition-all"
               >
                 Crear Primer Emprendimiento
               </button>
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
             {products.map((p) => (
-              <div key={p.id} className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition flex flex-col h-full">
-                {/* IMAGEN */}
-                <img src={p.image} alt={p.name} className="h-40 w-full object-cover rounded-xl mb-4" />
+              <div 
+                key={p.id} 
+                className="bg-white border border-gray-100/60 rounded-3xl p-5 shadow-[0_8px_30px_rgba(0,0,0,0.015)] flex flex-col h-full group hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(0,0,0,0.03)] transition-all duration-300"
+              >
+                {/* IMAGEN: Renderizado completo y fluido */}
+                <div className="relative w-full aspect-video mb-4 overflow-hidden rounded-2xl bg-gray-50/50 flex items-center justify-center border border-gray-100">
+                  {p.image ? (
+                    <img 
+                      src={p.image} 
+                      alt={p.name} 
+                      className="max-h-full max-w-full object-contain transition-transform duration-500 group-hover:scale-105" 
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-300 text-3xl">🖼️</div>
+                  )}
+
+                  {p.category && (
+                    <span className="absolute top-2.5 left-2.5 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-md bg-white/90 text-blue-950 shadow-3xs backdrop-blur-xs">
+                      {p.category}
+                    </span>
+                  )}
+                </div>
                 
-                {/* CONTENIDO */}
-                <h2 className="text-lg font-bold text-gray-800">{p.name}</h2>
-                <p className="text-sm text-gray-600 mt-1 mb-2 line-clamp-3 leading-relaxed">{p.description}</p>
-                <p className="font-semibold text-lg text-blue-900 mb-3">${p.price}</p>
+                {/* CONTENIDO PRINCIPAL */}
+                <h2 className="text-lg font-bold text-gray-950 group-hover:text-blue-900 transition-colors line-clamp-1 tracking-tight">
+                  {p.name}
+                </h2>
+                
+                <p className="text-xs text-gray-500 mt-1 mb-3.5 line-clamp-2 leading-relaxed font-medium">
+                  {p.description || 'Sin descripción disponible.'}
+                </p>
+                
+                {/* PRECIO ADAPTADO EXACTAMENTE AL ESTILO REQUERIDO */}
+                <p className="text-gray-900 font-semibold text-[17px] tracking-tight mb-4">
+                  <span className="text-xs font-normal text-gray-500 mr-0.5">US</span>${p.price}
+                </p>
 
+                {/* FOOTER DINÁMICO */}
                 <div className="mt-auto">
+                  {/* INFO DEL VENDEDOR: Diseño Avatar Minimalista */}
+                  <div className="pt-3 border-t border-gray-100 mb-4 flex items-center gap-2.5">
+                    <div className="h-7 w-7 rounded-full bg-slate-100 border border-slate-200/60 text-slate-700 font-bold text-[11px] flex items-center justify-center uppercase shrink-0">
+                      {(p.sellerName || p.sellername || 'V').substring(0, 2)}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-semibold text-gray-800 truncate">
+                        {p.sellerName || p.sellername || 'No disponible'}
+                      </p>
+                      <p className="text-[10px] text-gray-400 font-medium truncate">
+                        {p.sellerPhone || p.sellerphone || 'Sin teléfono'}
+                      </p>
+                    </div>
+                  </div>
 
-                {/* INFO DEL VENDEDOR */}
-                <div className="bg-gray-50 p-3 rounded-lg mb-3 text-sm text-gray-700">
-                  <p><strong>Vendedor:</strong> {p.sellerName || p.sellername || 'No disponible'}</p>
-                  <p><strong>Teléfono:</strong> {p.sellerPhone || p.sellerphone || 'No disponible'}</p>
-                </div>
-
-                {/* BOTONES - Siempre aparecen (emprendedor solo ve sus productos, admin ve todos) */}
-                <div className="flex gap-2 mt-4">
-                  <Link
-                    to={`/admin/products/edit/${p.id}`}
-                    className="flex-1 text-center bg-blue-50 text-blue-600 py-2 rounded-lg text-xs font-bold hover:bg-blue-100 transition"
-                  >
-                    Editar
-                  </Link>
-                  <button
-                    onClick={() => confirmarEliminar(p.id)}
-                    className="flex-1 bg-red-50 text-red-600 py-2 rounded-lg text-xs font-bold hover:bg-red-100 transition"
-                  >
-                    Eliminar
-                  </button>
-                </div>
+                  {/* ACCIONES DE EDICIÓN Y ELIMINACIÓN */}
+                  <div className="flex gap-2.5">
+                    <Link
+                      to={`/admin/products/edit/${p.id}`}
+                      className="flex-1 text-center bg-gray-50 hover:bg-gray-100 border border-gray-200/80 text-gray-700 py-2 rounded-xl text-xs font-bold transition-colors duration-150"
+                    >
+                      Editar
+                    </Link>
+                    <button
+                      onClick={() => confirmarEliminar(p.id)}
+                      className="flex-1 bg-red-50 hover:bg-red-100/80 border border-red-100 text-red-600 py-2 rounded-xl text-xs font-bold transition-colors duration-150"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}

@@ -15,7 +15,7 @@ export default {
         neutral: {
           bg:     "#ffffff",
           border: "#e2e8f0",
-          muted:  "#94a3b8",
+          muted:  "#64748b",
           text:   "#1e293b",
           subtle: "#64748b",
         },

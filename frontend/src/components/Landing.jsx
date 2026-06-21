@@ -4,9 +4,13 @@ import logoSwes from '../assets/icono_sistema.png';
 import { getAll } from '../services/crudService';
 import { IconIdBadge, IconSearch, IconChartBar, IconUsers, IconBrandWhatsapp, IconBrandFacebook, IconBrandInstagram } from '@tabler/icons-react';
 import fondoCompras from '../assets/imagen_landing.png';
+import { Menu, X } from 'lucide-react';
+
 
 function Landing() {
   const [emprendimientos, setEmprendimientos] = useState([]);
+  const [menuOpen, setMenuOpen] = useState(false);
+
 
   const features = [
     { Icon: IconIdBadge,  color: 'bg-violet-50 text-violet-700', title: 'Perfil de emprendimiento', desc: 'Crea y personaliza tu perfil de negocio' },
@@ -31,40 +35,70 @@ function Landing() {
     <div className="min-h-screen bg-slate-50/50 text-slate-900 selection:bg-brand-primary selection:text-white antialiased">
 
       {/* HEADER */}
-      <header className="bg-neutral-surface border-b border-neutral-border h-16 flex items-center px-8 relative z-50">
-        <div className="w-full max-w-7xl mx-auto flex items-center justify-between">
+      <header className="bg-neutral-surface border-b border-neutral-border min-h-16 flex items-center px-4 md:px-8 py-3 relative z-50">
+  <div className="w-full max-w-7xl mx-auto flex items-center justify-between gap-2">
 
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 select-none">
-            <img src={logoSwes} alt="SWES" className="w-7 h-7 object-contain" />
-            <span className="font-bold text-neutral-text text-xl">SWES</span>
-            <span className="font-bold text-brand-primary text-xl gap-1">EPN</span>
-          </Link>
+    {/* Logo */}
+    <Link to="/" className="flex items-center gap-2 select-none shrink-0">
+      <img src={logoSwes} alt="SWES" className="w-7 h-7 object-contain" />
+      <span className="font-bold text-neutral-text text-lg sm:text-xl">SWES</span>
+      <span className="font-bold text-brand-primary text-lg sm:text-xl">EPN</span>
+    </Link>
 
-          {/* Acciones derecha */}
-          <div className="flex items-center gap-3">
-            <Link
-              to="/login"
-              className="px-4 py-1.5 rounded-input text-sm font-semibold text-neutral-subtle hover:text-neutral-text hover:bg-neutral-bg transition-all"
-            >
-              Iniciar sesión
-            </Link>
-            <Link
-              to="/register"
-              className="px-4 py-1.5 rounded-input text-sm font-semibold bg-brand-primary text-white hover:bg-brand-hover transition-all"
-            >
-              Registrarse
-            </Link>
-          </div>
+    {/* Acciones - Desktop */}
+    <div className="hidden sm:flex items-center gap-3">
+      <Link
+        to="/login"
+        className="px-4 py-1.5 rounded-input text-sm font-semibold text-neutral-subtle hover:text-neutral-text hover:bg-neutral-bg transition-all whitespace-nowrap"
+      >
+        Iniciar sesión
+      </Link>
+      <Link
+        to="/register"
+        className="px-4 py-1.5 rounded-input text-sm font-semibold bg-brand-primary text-white hover:bg-brand-hover transition-all whitespace-nowrap"
+      >
+        Registrarse
+      </Link>
+    </div>
 
-        </div>
-      </header>
+    {/* Acciones - Mobile: CTA principal + hamburguesa */}
+    <div className="flex sm:hidden items-center gap-2">
+      <Link
+        to="/register"
+        className="px-3 py-1.5 rounded-input text-xs font-semibold bg-brand-primary text-white hover:bg-brand-hover transition-all whitespace-nowrap"
+      >
+        Registrarse
+      </Link>
+      <button
+        onClick={() => setMenuOpen(!menuOpen)}
+        className="w-9 h-9 flex items-center justify-center rounded-input text-neutral-subtle hover:text-neutral-text hover:bg-neutral-bg transition-colors"
+        aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
+      >
+        {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+      </button>
+    </div>
+
+  </div>
+
+  {/* Panel del menú móvil */}
+  {menuOpen && (
+    <div className="sm:hidden absolute top-full left-0 right-0 mt-1 mx-2 bg-white border border-neutral-border rounded-xl shadow-xl z-50 overflow-hidden">
+      <Link
+        to="/login"
+        onClick={() => setMenuOpen(false)}
+        className="block px-4 py-3 text-sm font-semibold text-neutral-subtle hover:bg-neutral-bg hover:text-neutral-text transition-all"
+      >
+        Iniciar sesión
+      </Link>
+    </div>
+  )}
+</header>
 
 
-      <main className="mx-auto w-full max-w-7xl px-6">
+      <main className="mx-auto w-full max-w-7xl px-6 pt-8 md:pt-14">
 
         {/* HERO: Texto izquierda + Imagen derecha */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center mb-16 min-h-[420px]">
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center mb-16 lg:min-h-[420px]">
 
           {/* TEXTO */}
           <div className="flex flex-col items-start text-left lg:pl-12">
@@ -91,7 +125,7 @@ function Landing() {
           </div>
 
           {/* IMAGEN */}
-          <div className="flex items-center justify-center">
+          <div className="hidden lg:flex items-center justify-center">
             <img
               src={fondoCompras}
               alt="Fondo SWES"

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { FiUsers, FiPackage, FiDollarSign } from 'react-icons/fi';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import { Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Title, Tooltip, Legend } from 'chart.js';
+import { Pie } from 'react-chartjs-2';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(ArcElement, Title, Tooltip, Legend);
 
 const BACKEND = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000/api';
 
@@ -56,23 +56,33 @@ export default function AdminStats() {
 
       <div className="bg-white rounded-2xl p-4 shadow-sm border">
         <h3 className="text-lg font-semibold mb-3">Resumen</h3>
-        <Bar
-          data={{
-            labels: ['Usuarios', 'Emprendimientos', 'Valor'],
-            datasets: [
-              {
-                label: 'Valores',
-                data: [stats.totalUsers || 0, stats.totalProducts || 0, parseFloat(stats.totalValue) || 0],
-                backgroundColor: ['#00665c', '#ff7a59', '#6b8cff'],
+        <div className="max-w-sm mx-auto">
+          <Pie
+            data={{
+              labels: ['Usuarios', 'Emprendimientos', 'Valor'],
+              datasets: [
+                {
+                  label: 'Valores',
+                  data: [stats.totalUsers || 0, stats.totalProducts || 0, parseFloat(stats.totalValue) || 0],
+                  backgroundColor: ['#00665c', '#ff7a59', '#6b8cff'],
+                  borderColor: '#ffffff',
+                  borderWidth: 2,
+                },
+              ],
+            }}
+            options={{
+              responsive: true,
+              plugins: {
+                legend: { position: 'bottom' },
+                tooltip: {
+                  callbacks: {
+                    label: (context) => `${context.label}: ${context.formattedValue}`,
+                  },
+                },
               },
-            ],
-          }}
-          options={{
-            responsive: true,
-            plugins: { legend: { display: false } },
-            scales: { y: { beginAtZero: true } },
-          }}
-        />
+            }}
+          />
+        </div>
       </div>
     </div>
   );
