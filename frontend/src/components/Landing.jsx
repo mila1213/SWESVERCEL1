@@ -36,7 +36,7 @@ function Landing() {
 
       {/* HEADER */}
       <header className="bg-neutral-surface border-b border-neutral-border min-h-16 flex items-center px-4 md:px-8 py-3 relative z-50">
-  <div className="w-full max-w-7xl mx-auto flex items-center justify-between gap-2">
+  <div className="w-full max-w-screen-2xl mx-auto flex items-center justify-between gap-2">
 
     {/* Logo */}
     <Link to="/" className="flex items-center gap-2 select-none shrink-0">
@@ -134,7 +134,6 @@ function Landing() {
           </div>
         </section>
         
-        {/* (ROLES / CTA / CAMPAIGN) */}
         
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-16">
           {/* ROLES: ¿Quién puede usar SWES? */}
@@ -233,8 +232,9 @@ function Landing() {
           {emprendimientos.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-4xl mx-auto px-4">
               {emprendimientos.slice(0, 2).map((emp) => (
-                <div
+                <Link
                   key={emp.id}
+                  to="/login"
                   className="group rounded-2xl border border-slate-200/80 bg-white overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl cursor-pointer"
                 >
                   {/* CONTENEDOR DE IMAGEN */}
@@ -280,7 +280,7 @@ function Landing() {
                       <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}
@@ -300,22 +300,9 @@ function Landing() {
         </section>
       </main>
 
-      {/* DATOS DE CONTACTO */}
       <footer className="border-t border-slate-200">
-        <div className="mx-auto max-w-7xl px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex flex-col items-center md:items-start gap-2">
-            <Link to="/" className="flex items-center gap-2">
-              <img src={logoSwes} alt="SWES" className="w-6 h-6 object-contain" />
-              <span className="font-bold text-neutral-text text-sm">SWES EPN</span>
-            </Link>
-            <p className="text-xs text-slate-500 text-center md:text-left">
-              Plataforma de emprendimientos universitarios de la Escuela Politécnica Nacional.
-            </p>
-          </div>
-          <div className="flex flex-col items-center md:items-end gap-1">
-            <p className="text-xs text-slate-400">© 2026 SWES — Proyecto universitario EPN</p>
-            <p className="text-xs text-slate-400">Desarrollado por estudiantes de la EPN</p>
-          </div>
+        <div className="mx-auto max-w-screen-2xl px-6 py-6 flex items-center justify-center">
+          <p className="text-xs text-slate-400">© 2026 SWES — Proyecto universitario EPN</p>
         </div>
       </footer>
     </div>

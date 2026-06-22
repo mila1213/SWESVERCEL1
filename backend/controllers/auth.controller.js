@@ -233,6 +233,14 @@ const login = async (req, res) => {
     }
 
     const userId = data.user?.id;
+    const currentAccessToken = data.session?.access_token;
+    if (currentAccessToken) {
+      const { error: signOutOthersError } = await supabaseAdmin.auth.admin.signOut(currentAccessToken, 'others');
+      if (signOutOthersError) {
+        console.warn("No se pudo cerrar otras sesiones del usuario:", signOutOthersError.message || signOutOthersError);
+      }
+    }
+
     let role = getRoleByEmail(normalizedEmail);
     let phone = "";
     let nombre = data.user?.user_metadata?.nombre || "";

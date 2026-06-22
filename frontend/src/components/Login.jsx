@@ -93,17 +93,17 @@ const Login = () => {
   }, [navigate]);
 
   return (
-    <div className="h-screen w-full flex overflow-hidden">
+    <div className="min-h-screen w-full flex flex-col md:flex-row overflow-auto">
       {/* Panel izquierdo: formulario */}
-      <div className="flex-1 flex flex-col justify-center bg-white px-16 py-6 overflow-y-auto">
-        <div className="max-w-sm w-full mx-auto flex flex-col gap-3">
+      <div className="flex-1 flex flex-col items-center justify-center bg-white px-8 md:px-16 py-8 overflow-y-auto">
+        <div className="max-w-xl w-full mx-auto flex flex-col gap-3">
 
-          <div className="flex items-center gap-2 mb-4">
+          <Link to="/" className="flex items-center gap-2 mb-4 cursor-pointer hover:opacity-80 transition-opacity">
             <div className="w-9 h-9 rounded-lg bg-white border border-neutral-border flex items-center justify-center">
               <img src={icono} alt="SWES" className="w-5 h-5" />
             </div>
             <span className="text-lg font-bold text-brand-500">SWES</span>
-          </div>
+          </Link>
 
           <div className="mb-1">
             <h2 className="text-2xl font-bold text-neutral-text leading-tight">¡Hola, emprendedor!</h2>
