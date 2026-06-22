@@ -34,7 +34,7 @@ const updateUser = async (req, res) => {
       return res.status(400).json({ mensaje: "No hay datos para actualizar" });
     }
 
-    const { data: existing, error: existingError } = await supabaseService
+    const { data: existing, error: existingError } = await supabaseAdmin
       .from("users")
       .select("id")
       .eq("id", id)

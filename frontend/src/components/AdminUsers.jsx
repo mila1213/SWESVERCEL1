@@ -54,10 +54,16 @@ export default function AdminUsers() {
 
   const handleSaveUser = async () => {
     if (!selectedUser) return;
+
+    if (selectedUser.role !== 'emprendedor' && selectedUser.phone) {
+      mostrarToast('Solo los emprendedores pueden tener teléfono.', 'error');
+      return;
+    }
+
     const updates = {
       nombre: selectedUser.nombre,
       role: selectedUser.role,
-      phone: selectedUser.phone,
+      phone: selectedUser.role === 'emprendedor' ? selectedUser.phone : '',
     };
 
     try {
@@ -199,8 +205,12 @@ export default function AdminUsers() {
                   type="text"
                   value={selectedUser.phone || ''}
                   onChange={(e) => setSelectedUser((prev) => ({ ...prev, phone: e.target.value }))}
-                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm"
+                  disabled={selectedUser.role !== 'emprendedor'}
+                  className={`w-full rounded-xl border px-4 py-3 text-sm ${selectedUser.role !== 'emprendedor' ? 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed' : 'border-gray-200 bg-white text-gray-900'}`}
                 />
+                {selectedUser.role !== 'emprendedor' && (
+                  <p className="mt-2 text-xs text-orange-600">Solo los emprendedores pueden registrar un teléfono.</p>
+                )}
               </div>
             </div>
 
