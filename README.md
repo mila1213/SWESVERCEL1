@@ -152,11 +152,10 @@ Nota: El diseño presentado en Figma es una propuesta conceptual y puede sufrir 
 
 ## Capturas del sistema
 
-1. Registro de cuenta 
-   
-   <img width="959" height="500" alt="image" src="https://github.com/user-attachments/assets/c858c9ed-aaf8-4cce-a101-8ca08302a070" />
+1. Registro de cuenta
 
-   <img width="959" height="499" alt="image" src="https://github.com/user-attachments/assets/1226b376-373c-40cd-a84a-ac3dd7fc5694" />
+   <img width="1878" height="878" alt="image" src="https://github.com/user-attachments/assets/cfd479e5-e38d-406d-a222-00ac0473c804" />
+
 
 3. Inicio de sesion
 
@@ -164,16 +163,18 @@ Nota: El diseño presentado en Figma es una propuesta conceptual y puede sufrir 
 
 
 5. Autenticacion de inicio de sesion: Credenciales incorrectas
-   
-   <img width="699" height="434" alt="image" src="https://github.com/user-attachments/assets/15097803-02d6-4ce5-91f8-b322e94b45ae" />
+
+   <img width="1857" height="876" alt="image" src="https://github.com/user-attachments/assets/69cbdb64-858b-4242-a167-984e6a2c9beb" />
+
 
 6. Autenticacion de registro de usuario: Validacion de correo electronico unico
 
-   <img width="701" height="440" alt="image" src="https://github.com/user-attachments/assets/1795b7c4-ed4f-46f0-a5bb-ef100b6543af" />
+  <img width="1882" height="912" alt="image" src="https://github.com/user-attachments/assets/938f1eb7-0bd5-4fef-90f8-8a2ce64ee411" />
 
 7. Autenticacion de registro de usuario: Validacion de la contraseña con un minimo de 6 caracteres
 
-   <img width="701" height="441" alt="image" src="https://github.com/user-attachments/assets/c70a2252-1fa8-48d2-a786-4d1ea86ee7a3" />
+   <img width="1763" height="842" alt="image" src="https://github.com/user-attachments/assets/a2ca2d9a-2062-4ebe-b719-6853446b3505" />
+
 
 4. Base de dtos en Supabase
    <img width="1062" height="731" alt="image" src="https://github.com/user-attachments/assets/86963e05-903a-4300-86e3-330a8a6911e6" />
