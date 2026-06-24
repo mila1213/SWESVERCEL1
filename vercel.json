@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "experimentalServices": {
+    "frontend": {
+      "root": "frontend"
+    },
+    "backend": {
+      "root": "backend"
+    }
+  }
+}
