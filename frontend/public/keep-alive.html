@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SWES - Mantener Base de Datos Activa</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            max-width: 500px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        .status-indicator.active {
+            background-color: #4caf50;
+        }
+        .status-indicator.inactive {
+            background-color: #f44336;
+        }
+        .status-text {
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .info-box {
+            background: #f5f5f5;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            text-align: left;
+            font-size: 14px;
+            color: #555;
+            line-height: 1.6;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 25px 0;
+        }
+        .stat-box {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+        .stat-label {
+            color: #999;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        .stat-value {
+            color: #667eea;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .log-area {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .log-entry {
+            margin-bottom: 8px;
+            padding: 5px 0;
+            border-bottom: 1px solid #333;
+        }
+        .log-entry.success {
+            color: #4caf50;
+        }
+        .log-entry.error {
+            color: #f44336;
+        }
+        .log-entry.info {
+            color: #2196f3;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .countdown {
+            font-size: 14px;
+            color: #999;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 SWES Keep-Alive</h1>
+        <p class="subtitle">Mantiene tu base de datos Supabase activa</p>
+        
+        <div class="status-text">
+            Estado: <span class="status-indicator active"></span>
+            <span id="statusText">Inicializando...</span>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-label">Pings Enviados</div>
+                <div class="stat-value" id="pingCount">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Último Ping</div>
+                <div class="stat-value" id="lastPing">--:--:--</div>
+            </div>
+        </div>
+
+        <div class="countdown">
+            Próximo ping en: <span id="nextPingCountdown">5:00</span>
+        </div>
+
+        <div class="info-box">
+            <strong>ℹ️ Información:</strong><br>
+            Esta página envía peticiones a tu backend cada 5 minutos para mantener Supabase activo. 
+            Puedes mantenerla abierta en una pestaña o usar GitHub Actions para automatizar esto.
+        </div>
+
+        <div class="log-area" id="logArea">
+            <div class="log-entry info">[INFO] Iniciando sistema de keep-alive...</div>
+        </div>
+
+        <div class="controls">
+            <button onclick="manualPing()">Ping Manual</button>
+            <button onclick="toggleAutoKeepAlive()">Pausar Auto Keep-Alive</button>
+            <button onclick="clearLogs()">Limpiar Logs</button>
+        </div>
+    </div>
+
+    <script>
+        const BACKEND_URL = (window.location.hostname === 'localhost' 
+            ? 'http://localhost:9000' 
+            : 'https://swesvercel-1-7bf6.vercel.app');
+        const KEEP_ALIVE_ENDPOINT = `${BACKEND_URL}/api/keep-alive`;
+        const PING_INTERVAL = 5 * 60 * 1000; // 5 minutos
+
+        let pingCount = 0;
+        let autoKeepAliveActive = true;
+        let nextPingTime = Date.now() + PING_INTERVAL;
+
+        function addLog(message, type = 'info') {
+            const logArea = document.getElementById('logArea');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            const now = new Date().toLocaleTimeString('es-ES');
+            entry.textContent = `[${now}] ${message}`;
+            logArea.appendChild(entry);
+            logArea.scrollTop = logArea.scrollHeight;
+
+            // Limitar a 20 logs
+            if (logArea.children.length > 20) {
+                logArea.removeChild(logArea.firstChild);
+            }
+        }
+
+        async function manualPing() {
+            addLog('🔵 Enviando ping manual...', 'info');
+            try {
+                const response = await fetch(KEEP_ALIVE_ENDPOINT);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    pingCount++;
+                    const now = new Date();
+                    document.getElementById('pingCount').textContent = pingCount;
+                    document.getElementById('lastPing').textContent = now.toLocaleTimeString('es-ES');
+                    addLog(`✅ Ping exitoso (${data.message})`, 'success');
+                    document.getElementById('statusText').textContent = 'Activo';
+                } else {
+                    addLog(`⚠️ Ping completado con status ${response.status}`, 'error');
+                }
+            } catch (error) {
+                addLog(`❌ Error: ${error.message}`, 'error');
+                document.getElementById('statusText').textContent = 'Error';
+            }
+        }
+
+        function updateCountdown() {
+            const now = Date.now();
+            const remaining = Math.max(0, nextPingTime - now);
+            const minutes = Math.floor(remaining / 60000);
+            const seconds = Math.floor((remaining % 60000) / 1000);
+            document.getElementById('nextPingCountdown').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function toggleAutoKeepAlive() {
+            autoKeepAliveActive = !autoKeepAliveActive;
+            const btn = event.target;
+            btn.textContent = autoKeepAliveActive ? 'Pausar Auto Keep-Alive' : 'Reanudar Auto Keep-Alive';
+            addLog(`Auto keep-alive ${autoKeepAliveActive ? 'reanudado' : 'pausado'}`, 'info');
+        }
+
+        function clearLogs() {
+            document.getElementById('logArea').innerHTML = '';
+            pingCount = 0;
+            document.getElementById('pingCount').textContent = '0';
+            addLog('[INFO] Logs limpiados', 'info');
+        }
+
+        // Auto ping cada 5 minutos
+        setInterval(() => {
+            if (autoKeepAliveActive) {
+                nextPingTime = Date.now() + PING_INTERVAL;
+                manualPing();
+            }
+        }, PING_INTERVAL);
+
+        // Actualizar countdown cada segundo
+        setInterval(updateCountdown, 1000);
+
+        // Primer ping inmediatamente
+        window.addEventListener('load', () => {
+            addLog('✨ Página cargada correctamente', 'success');
+            updateCountdown();
+        });
+
+        // Log si el usuario cierra la pestaña
+        window.addEventListener('beforeunload', () => {
+            console.log(`Keep-alive completó ${pingCount} pings`);
+        });
+    </script>
+</body>
+</html>

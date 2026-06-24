@@ -1,0 +1,33 @@
+name: Keep Supabase Active
+
+on:
+  schedule:
+    # Ejecuta cada 5 minutos (UTC)
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call keep-alive endpoint
+        run: |
+          echo "🔄 Manteniendo base de datos activa..."
+          RESPONSE=$(curl -s -w "\n%{http_code}" https://swesvercel-1-7bf6.vercel.app/api/keep-alive)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n 1)
+          BODY=$(echo "$RESPONSE" | head -n -1)
+          
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "✅ Keep-alive exitoso"
+            exit 0
+          else
+            echo "⚠️ Keep-alive completado con status $HTTP_CODE"
+            exit 0
+          fi
+      
+      - name: Log timestamp
+        run: |
+          echo "📅 Timestamp: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"

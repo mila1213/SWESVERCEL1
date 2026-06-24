@@ -39,6 +39,24 @@ app.use((err, req, res, next) => {
 
 app.get("/", (req, res) => res.send("API Supabase funcionando"));
 app.get("/api", (req, res) => res.send("API Supabase funcionando"));
+
+// Endpoint para mantener activa la base de datos (keep-alive)
+app.get("/api/keep-alive", async (req, res) => {
+  try {
+    const { supabaseAdmin } = require("./supabase");
+    // Simple query para mantener activa la conexión
+    const { data, error } = await supabaseAdmin.from("users").select("count", { count: "exact", head: true });
+    if (error) {
+      console.warn("Keep-alive warning:", error.message);
+      return res.json({ status: "ok", message: "Keep-alive ejecutado (con warning)" });
+    }
+    res.json({ status: "ok", message: "Base de datos está activa", timestamp: new Date().toISOString() });
+  } catch (err) {
+    console.error("Keep-alive error:", err);
+    res.status(500).json({ status: "error", message: err.message });
+  }
+});
+
 app.use("/api", debugRoutes);
 app.use("/api", authRoutes);
 app.use("/api", productRoutes);
