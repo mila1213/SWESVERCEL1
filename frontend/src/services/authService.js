@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const BACKEND = import.meta.env.VITE_BACKEND_URL || "http://localhost:9000/api";
+const rawBackend = (import.meta.env.VITE_BACKEND_URL || "http://localhost:9000").trim().replace(/\/+$/, "");
+const BACKEND = rawBackend.endsWith("/api") ? rawBackend : `${rawBackend}/api`;
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem("token");

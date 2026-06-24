@@ -54,13 +54,16 @@ const verifyToken = async (req, res, next) => {
 
     const { data: profile, error: profileError } = await supabaseAdmin
       .from("users")
-      .select("role")
+      .select("id, role, email")
       .eq("id", user.id)
       .single();
 
     let role = "visitante";
+    let profileId = user.id;
+
     if (profile) {
       role = profile.role || role;
+      profileId = profile.id || profileId;
       if (getRoleByEmail(user.email?.toLowerCase().trim()) === "administrador") {
         role = "administrador";
       }
@@ -68,27 +71,53 @@ const verifyToken = async (req, res, next) => {
       const normalizedEmail = user.email?.toLowerCase().trim();
       role = getRoleByEmail(normalizedEmail);
 
-      const { error: insertError } = await supabaseAdmin.from("users").upsert({
-        id: user.id,
-        email: normalizedEmail,
-        nombre: user.user_metadata?.full_name || user.email || "",
-        role,
-        phone: user.user_metadata?.phone || "",
-        created_at: new Date().toISOString(),
-      }, { onConflict: 'id' });
+      const { error: insertError, data: inserted } = await supabaseAdmin
+        .from("users")
+        .upsert(
+          {
+            id: user.id,
+            email: normalizedEmail,
+            nombre: user.user_metadata?.full_name || user.email || "",
+            role,
+            phone: user.user_metadata?.phone || "",
+            created_at: new Date().toISOString(),
+          },
+          { onConflict: 'id' }
+        )
+        .select()
+        .single();
+
       if (insertError) {
         if (insertError.code === '42501') {
           console.warn("Advertencia RLS al crear perfil faltante en middleware:", insertError.message);
+        } else if (insertError.code === '23505') {
+          console.warn("Perfil existente encontrado por email en middleware:", insertError.message);
+          const { data: existingByEmail, error: emailError } = await supabaseAdmin
+            .from("users")
+            .select("id, role")
+            .eq("email", normalizedEmail)
+            .maybeSingle();
+          if (emailError) {
+            console.error("Error consultando perfil existente por email en middleware:", emailError);
+          }
+          if (existingByEmail) {
+            profileId = existingByEmail.id;
+            role = existingByEmail.role || role;
+          }
         } else {
           console.error("Error creando perfil faltante en middleware:", insertError);
         }
+      } else if (inserted) {
+        profileId = inserted.id || profileId;
       }
     }
 
     console.log('   Rol del usuario:', role);
+    console.log('   Profile ID asignado al usuario:', profileId);
 
     req.user = {
       uid: user.id,
+      profileId,
       email: user.email,
       role,
     };
@@ -127,7 +156,7 @@ const authorizeSelfOrAdmin = (req, res, next) => {
   }
 
   const isAdmin = req.user.role === "administrador";
-  const isSelf = req.user.uid === req.params.id;
+  const isSelf = req.user.uid === req.params.id || req.user.profileId === req.params.id;
 
   if (!isAdmin && !isSelf) {
     return res.status(403).json({

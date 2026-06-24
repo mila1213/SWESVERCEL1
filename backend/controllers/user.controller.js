@@ -31,8 +31,18 @@ const updateUser = async (req, res) => {
       return res.status(400).json({ mensaje: "No hay datos para actualizar" });
     }
 
-    const { data: existing } = await supabaseAdmin.from("users").select("id").eq("id", id).single();
-    if (!existing) return res.status(404).json({ mensaje: "Usuario no encontrado" });
+    const { data: existing, error: existingError } = await supabaseAdmin
+      .from("users")
+      .select("id")
+      .eq("id", id)
+      .single();
+
+    if (!existing) {
+      if (existingError) {
+        console.error('Error buscando usuario existente:', existingError);
+      }
+      return res.status(404).json({ mensaje: "Usuario no encontrado" });
+    }
 
     const { data, error } = await supabaseAdmin
       .from("users")
@@ -41,7 +51,10 @@ const updateUser = async (req, res) => {
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Error en actualización de usuario Supabase:', error);
+      throw error;
+    }
     res.json(data);
   } catch (err) {
     console.error("Error al actualizar usuario:", err);

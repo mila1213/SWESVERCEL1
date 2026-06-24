@@ -5,7 +5,8 @@ import { Pie } from 'react-chartjs-2';
 
 ChartJS.register(ArcElement, Title, Tooltip, Legend);
 
-const BACKEND = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000/api';
+const rawBackend = (import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000').trim().replace(/\/+$/, '');
+const BACKEND = rawBackend.endsWith('/api') ? rawBackend : `${rawBackend}/api`;
 
 export default function AdminStats() {
   const [stats, setStats] = useState(null);

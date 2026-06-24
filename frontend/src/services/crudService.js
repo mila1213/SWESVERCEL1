@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const BACKEND = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000/api';
+const rawBackend = (import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000').trim().replace(/\/+$/, '');
+const BACKEND = rawBackend.endsWith('/api') ? rawBackend : `${rawBackend}/api`;
 
 // Función auxiliar interna para obtener las cabeceras con el token
 const getAuthHeaders = () => {
