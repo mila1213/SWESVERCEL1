@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
-import { resetPassword } from "../services/authService";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
+import { resetPassword, resetPasswordWithCode } from "../services/authService";
 import logoSwes from '../assets/icono_sistema.png'; // Logo institucional
 
 function ResetPassword() {
+  const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
   const { token: tokenParam } = useParams();
   const location = useLocation();
   const [newPassword, setNewPassword] = useState("");
@@ -14,16 +16,39 @@ function ResetPassword() {
   const hashParams = new URLSearchParams(location.hash.replace(/^#/, ''));
   const hashToken = hashParams.get('token') || hashParams.get('oobCode') || hashParams.get('access_token');
   const token = tokenParam || queryToken || hashToken;
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!token) {
-      setMessage('No se encontró el token de recuperación. Usa el enlace que envió el correo.');
+    if (!newPassword) {
+      setMessage('Ingresa una nueva contraseña.');
       return;
     }
+
     try {
-      const data = await resetPassword(token, newPassword);
+      let data;
+      const codeValue = code.trim();
+      const hasManualCode = !token && codeValue.length > 0;
+
+      if (token) {
+        data = await resetPassword(token, newPassword);
+      } else if (hasManualCode) {
+        if (!email.trim()) {
+          setMessage('Ingresa tu correo electrónico y el código de recuperación.');
+          return;
+        }
+        data = await resetPasswordWithCode(email.trim(), codeValue, newPassword);
+      } else {
+        setMessage('No se encontró token ni código. Usa el enlace de recuperación o introduce el código manualmente.');
+        return;
+      }
+
       setMessage(data.message);
+      // If password updated successfully, redirect to login
+      if (data?.message && data.message.toLowerCase().includes('contraseña actualizada')) {
+        // small delay so user sees the success message
+        setTimeout(() => navigate('/login'), 1200);
+      }
     } catch (error) {
       setMessage(error.response?.data?.message || "Error al cambiar contraseña");
     }
@@ -48,6 +73,36 @@ function ResetPassword() {
 
         {/* Formulario */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+          {!token && (
+            <>
+              <div className="flex flex-col gap-1.5">
+                <label className="font-semibold text-xs text-gray-400 uppercase tracking-wider">Correo electrónico</label>
+                <input
+                  type="email"
+                  placeholder="usuario@epn.edu.ec"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 font-medium transition-all outline-none focus:bg-white focus:border-[#00665c] focus:ring-4 focus:ring-[#00665c]/10"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="font-semibold text-xs text-gray-400 uppercase tracking-wider">Código o token de recuperación</label>
+                <input
+                  type="text"
+                  placeholder="Ingresa el código de 6 dígitos o el token del enlace"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 font-medium transition-all outline-none focus:bg-white focus:border-[#00665c] focus:ring-4 focus:ring-[#00665c]/10"
+                />
+              </div>
+
+              <p className="text-xs text-gray-400">
+                Si no tienes un enlace, usa el código dev que recibiste en el frontend o por correo.
+              </p>
+            </>
+          )}
+
           <div className="flex flex-col gap-1.5">
             <label className="font-semibold text-xs text-gray-400 uppercase tracking-wider">Nueva Contraseña</label>
             <input 

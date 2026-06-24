@@ -22,10 +22,7 @@ const Login = () => {
       return;
     }
 
-    if (!email.toLowerCase().endsWith('@epn.edu.ec')) {
-      setMensaje({ texto: 'Solo se permiten correos institucionales @epn.edu.ec. Si eres visitante, usa "Ingresar con Google".', tipo: 'error' });
-      return;
-    }
+    // Allow non-institutional emails (visitors can log in with email/password)
 
     try {
       const data = await loginUser(email, password);

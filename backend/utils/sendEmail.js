@@ -3,11 +3,13 @@ let sendEmail;
 try {
   const nodemailer = require('nodemailer');
 
-  const MAIL_HOST = process.env.MAIL_HOST || '';
-  const MAIL_PORT = process.env.MAIL_PORT ? Number(process.env.MAIL_PORT) : 587;
-  const MAIL_USER = process.env.MAIL_USER || '';
-  const MAIL_PASS = process.env.MAIL_PASS || '';
-  const MAIL_FROM = process.env.MAIL_FROM || MAIL_USER || 'no-reply@example.com';
+  const MAIL_HOST = process.env.MAIL_HOST || process.env.SMTP_HOST || '';
+  const MAIL_PORT = process.env.MAIL_PORT ? Number(process.env.MAIL_PORT) : process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 587;
+  const MAIL_USER = process.env.MAIL_USER || process.env.MAIL_USERNAME || process.env.SMTP_USER || process.env.SMTP_USERNAME || '';
+  const MAIL_PASS = process.env.MAIL_PASS || process.env.MAIL_PASSWORD || process.env.SMTP_PASS || process.env.SMTP_PASSWORD || '';
+  const MAIL_FROM = process.env.MAIL_FROM || process.env.MAIL_FROM_ADDRESS || MAIL_USER || 'no-reply@example.com';
+  const MAIL_SECURE = process.env.MAIL_SECURE === 'true' || MAIL_PORT === 465;
+  const MAIL_TLS_REJECT_UNAUTHORIZED = process.env.MAIL_TLS_REJECT_UNAUTHORIZED !== 'false';
 
   if (!MAIL_HOST || !MAIL_USER || !MAIL_PASS) {
     if (process.env.ENABLE_DEV_EMAILS === 'true') {
@@ -45,8 +47,11 @@ try {
     const transporter = nodemailer.createTransport({
       host: MAIL_HOST,
       port: MAIL_PORT,
-      secure: MAIL_PORT === 465,
+      secure: MAIL_SECURE,
       auth: { user: MAIL_USER, pass: MAIL_PASS },
+      tls: {
+        rejectUnauthorized: MAIL_TLS_REJECT_UNAUTHORIZED,
+      },
     });
 
     sendEmail = async ({ to, subject, html, text, replyTo }) => {

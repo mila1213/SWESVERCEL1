@@ -1,5 +1,7 @@
 const express = require("express");
 const { supabaseAdmin } = require("../supabase");
+const crypto = require('crypto');
+const { createOrUpdateUserProfile } = require('../utils/authHelpers');
 const { verifyToken, authorizeRoles } = require("../middleware/authMiddleware");
 
 const router = express.Router();
@@ -39,11 +41,30 @@ router.get("/products/user/:userId", verifyToken, async (req, res) => {
     console.log('   Token presente:', !!req.headers.authorization);
     console.log('   Usuario del token:', req.user?.email);
     console.log('   UID solicitado:', userId);
+    // Si el cliente pide sus propios productos (userId === token uid),
+    // debemos intentar mapear el uid del token al profile.id existente
+    // cuando haya una fila en `users` con el mismo email pero distinto id.
+    let lookupUserId = userId;
+    try {
+      if (req.user?.uid && req.user.uid === userId) {
+        const { data: byId } = await supabaseAdmin.from('users').select('id,email').eq('id', req.user.uid).maybeSingle();
+        if (!byId) {
+          const email = (req.user.email || '').toLowerCase().trim();
+          const { data: byEmail } = await supabaseAdmin.from('users').select('id,email').eq('email', email).maybeSingle();
+          if (byEmail && byEmail.id) {
+            console.log('Mapping lookupUserId from token uid to profile id for product query:', req.user.uid, '->', byEmail.id);
+            lookupUserId = byEmail.id;
+          }
+        }
+      }
+    } catch (mapErr) {
+      console.warn('Error mapping token uid to profile id for products query:', mapErr.message || mapErr);
+    }
 
     const { data, error } = await supabaseAdmin
       .from("products")
       .select("*, users(id, email, nombre, phone)")
-      .eq("user_id", userId);
+      .eq("user_id", lookupUserId);
     
     if (error) {
       console.error('❌ Error Supabase:', error);
@@ -87,6 +108,38 @@ router.get("/products/:id", async (req, res) => {
 
 router.post("/products", verifyToken, authorizeRoles("emprendedor", "administrador"), async (req, res) => {
   try {
+    if (!req.user || !req.user.uid) {
+      return res.status(401).json({ message: 'Usuario no autenticado' });
+    }
+
+    // Asegurar que exista un perfil en la tabla users para el uid (evita FK violation)
+    let mappedUserId = req.user.uid;
+    try {
+      const { data: existingProfile } = await supabaseAdmin.from('users').select('id,email').eq('id', req.user.uid).maybeSingle();
+      if (!existingProfile) {
+        // intentar crear o recuperar perfil
+        const { error: profileErr, profile } = await createOrUpdateUserProfile(
+          req.user.uid,
+          req.user.email || '',
+          req.user.email || '',
+          req.user.role || 'visitante',
+          ''
+        );
+
+        if (profileErr) {
+          console.warn('Error creando perfil desde product route:', profileErr.message || profileErr);
+        }
+
+        // Si encontramos un perfil existente con distinto id (por unique email), usaremos ese id
+        if (profile && profile.id && profile.id !== req.user.uid) {
+          console.log('Mapping product.user_id from token uid to existing profile id:', req.user.uid, '->', profile.id);
+          mappedUserId = profile.id;
+        }
+      }
+    } catch (syncErr) {
+      console.warn('No se pudo asegurar perfil de usuario antes de crear producto:', syncErr.message || syncErr);
+    }
+
     const product = {
       name: req.body.name,
       description: req.body.description,
@@ -95,9 +148,11 @@ router.post("/products", verifyToken, authorizeRoles("emprendedor", "administrad
       image: req.body.image || null,
       sellername: req.body.sellerName || req.body.sellername || req.body.seller_name || null,
       sellerphone: req.body.sellerPhone || req.body.sellerphone || req.body.seller_phone || null,
-      user_id: req.user.uid,
+      user_id: mappedUserId,
       created_at: new Date().toISOString(),
     };
+    // Some DB schemas require a non-null id default. Ensure an id is present.
+    if (!product.id) product.id = crypto.randomUUID();
     const { data, error } = await supabaseAdmin.from("products").insert(product).select().single();
     if (error) throw error;
     res.status(201).json(data);
@@ -119,8 +174,31 @@ router.put("/products/:id", verifyToken, async (req, res) => {
 
     if (fetchError || !existing) return res.status(404).json({ message: "Producto no encontrado" });
 
-    const isOwner = existing.user_id === req.user.uid;
+    // Determinar propiedad real teniendo en cuenta inconsistencia entre
+    // auth.uid (token) y public.users.id (profile) cuando existen perfiles
+    // con el mismo email pero distinto id.
+    let isOwner = existing.user_id === req.user.uid;
     const isAdmin = req.user.role === "administrador";
+    if (!isOwner) {
+      try {
+        // obtener email del profile referenciado por product.user_id
+        const { data: profileRef } = await supabaseAdmin.from('users').select('id,email').eq('id', existing.user_id).maybeSingle();
+        const tokenEmail = (req.user?.email || '').toLowerCase().trim();
+        if (profileRef && profileRef.email && profileRef.email.toLowerCase().trim() === tokenEmail) {
+          console.log('Ownership matched by email: token -> product.user_id', tokenEmail, existing.user_id);
+          isOwner = true;
+        } else {
+          // también verificar si el token uid corresponde a otro profile id por email
+          const { data: profileByEmail } = await supabaseAdmin.from('users').select('id,email').eq('email', tokenEmail).maybeSingle();
+          if (profileByEmail && profileByEmail.id && profileByEmail.id === existing.user_id) {
+            console.log('Ownership matched by mapping token uid -> existing profile id for product:', req.user.uid, '->', existing.user_id);
+            isOwner = true;
+          }
+        }
+      } catch (mapErr) {
+        console.warn('Error comprobando propiedad de producto por email mapping:', mapErr.message || mapErr);
+      }
+    }
     if (!isOwner && !isAdmin) {
       return res.status(403).json({ message: "No tienes permiso para actualizar este producto" });
     }
@@ -159,8 +237,26 @@ router.delete("/products/:id", verifyToken, async (req, res) => {
 
     if (fetchError || !existing) return res.status(404).json({ message: "Producto no encontrado" });
 
-    const isOwner = existing.user_id === req.user.uid;
+    // Igual lógica que en PUT: permitir eliminar si el product.user_id
+    // corresponde a un profile con el mismo email del token.
+    let isOwner = existing.user_id === req.user.uid;
     const isAdmin = req.user.role === "administrador";
+    if (!isOwner) {
+      try {
+        const { data: profileRef } = await supabaseAdmin.from('users').select('id,email').eq('id', existing.user_id).maybeSingle();
+        const tokenEmail = (req.user?.email || '').toLowerCase().trim();
+        if (profileRef && profileRef.email && profileRef.email.toLowerCase().trim() === tokenEmail) {
+          isOwner = true;
+        } else {
+          const { data: profileByEmail } = await supabaseAdmin.from('users').select('id,email').eq('email', tokenEmail).maybeSingle();
+          if (profileByEmail && profileByEmail.id && profileByEmail.id === existing.user_id) {
+            isOwner = true;
+          }
+        }
+      } catch (mapErr) {
+        console.warn('Error comprobando propiedad de producto por email mapping (delete):', mapErr.message || mapErr);
+      }
+    }
     if (!isOwner && !isAdmin) {
       return res.status(403).json({ message: "No tienes permiso para eliminar este producto" });
     }

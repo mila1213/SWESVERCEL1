@@ -1,0 +1,93 @@
+{
+  "totalAuth": 17,
+  "mismatches": [
+    {
+      "authId": "5e365f01-e2f3-40d6-81de-9c7ff6a61ce3",
+      "authEmail": "juan.perez@epn.edu.ec",
+      "profileId": "01a0b3d8-1e27-4ff0-0123-012345678989",
+      "profileEmail": "juan.perez@epn.edu.ec"
+    },
+    {
+      "authId": "54577db1-632d-4ff9-a1da-7ae0ffa06e5c",
+      "authEmail": "maria.velez@epn.edu.ec",
+      "profileId": "ef5f91b6-9c05-4fd8-f012-890123456767",
+      "profileEmail": "maria.velez@epn.edu.ec"
+    },
+    {
+      "authId": "72e125a5-ff16-47b4-be3f-55f8702eddd2",
+      "authEmail": "elizabeth@epn.edu.ec",
+      "profileId": "df4f80a5-8fb4-4fc7-ef01-789012345656",
+      "profileEmail": "elizabeth@epn.edu.ec"
+    },
+    {
+      "authId": "42e4ca43-62d0-42ff-ad82-38a4af9e32da",
+      "authEmail": "camibueriv@gmail.com",
+      "profileId": "ce3f79f4-7ea3-4fb6-def1-678901234545",
+      "profileEmail": "camibueriv@gmail.com"
+    },
+    {
+      "authId": "e23f4ab6-819c-4b07-8d9e-5c491ab43e1f",
+      "authEmail": "camibuenorivera2005@gmail.com",
+      "profileId": "bd2e68f3-6d92-4fa5-def0-567890123434",
+      "profileEmail": "camibuenorivera2005@gmail.com"
+    },
+    {
+      "authId": "29862597-4fcb-4b2b-9a26-69d797dd47c3",
+      "authEmail": "concepcion.arequipa@epn.edu.ec",
+      "profileId": "ac1d57f2-5c81-4f94-cdef-456789012323",
+      "profileEmail": "concepcion.arequipa@epn.edu.ec"
+    },
+    {
+      "authId": "f57fb4ac-6844-4294-ba58-04aa136e17f7",
+      "authEmail": "camila.bueno@epn.edu.ec",
+      "profileId": "9b9c46f1-4b70-4f83-bcdf-345678901212",
+      "profileEmail": "camila.bueno@epn.edu.ec"
+    },
+    {
+      "authId": "04fac6eb-fac7-44d5-9411-02d9cb159961",
+      "authEmail": "leonor.yumi@epn.edu.ec",
+      "profileId": "8a8c45e0-3a69-4f72-abcd-234567890101",
+      "profileEmail": "leonor.yumi@epn.edu.ec"
+    }
+  ],
+  "missingProfiles": [
+    {
+      "authId": "97e1da4a-88ee-4ee1-a91e-cf324bd42d37",
+      "authEmail": "maria.velez1@epn.edu.ec"
+    }
+  ],
+  "orphanProfiles": [
+    {
+      "profileId": "8a8c45e0-3a69-4f72-abcd-234567890101",
+      "profileEmail": "leonor.yumi@epn.edu.ec"
+    },
+    {
+      "profileId": "9b9c46f1-4b70-4f83-bcdf-345678901212",
+      "profileEmail": "camila.bueno@epn.edu.ec"
+    },
+    {
+      "profileId": "ac1d57f2-5c81-4f94-cdef-456789012323",
+      "profileEmail": "concepcion.arequipa@epn.edu.ec"
+    },
+    {
+      "profileId": "bd2e68f3-6d92-4fa5-def0-567890123434",
+      "profileEmail": "camibuenorivera2005@gmail.com"
+    },
+    {
+      "profileId": "ce3f79f4-7ea3-4fb6-def1-678901234545",
+      "profileEmail": "camibueriv@gmail.com"
+    },
+    {
+      "profileId": "df4f80a5-8fb4-4fc7-ef01-789012345656",
+      "profileEmail": "elizabeth@epn.edu.ec"
+    },
+    {
+      "profileId": "ef5f91b6-9c05-4fd8-f012-890123456767",
+      "profileEmail": "maria.velez@epn.edu.ec"
+    },
+    {
+      "profileId": "01a0b3d8-1e27-4ff0-0123-012345678989",
+      "profileEmail": "juan.perez@epn.edu.ec"
+    }
+  ]
+}

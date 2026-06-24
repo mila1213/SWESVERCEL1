@@ -28,4 +28,37 @@ router.get('/debug/supabase', async (req, res) => {
   }
 });
 
+// Depuración: buscar usuario por email en auth y en tabla public.users
+router.get('/debug/user', async (req, res) => {
+  try {
+    const email = (req.query.email || '').toLowerCase().trim();
+    if (!email) return res.status(400).json({ message: 'Falta parámetro email' });
+
+    // Buscar en auth (paginado)
+    let foundAuth = null;
+    let page = 1;
+    while (page) {
+      const { data, error } = await supabaseAdmin.auth.admin.listUsers({ page, perPage: 100 });
+      if (error) return res.status(500).json({ message: 'Error listando usuarios de auth', detail: error.message });
+      const u = (data?.users || []).find((x) => x?.email?.toLowerCase() === email);
+      if (u) {
+        foundAuth = u;
+        break;
+      }
+      page = data?.nextPage || null;
+    }
+
+    // Buscar en tabla users
+    const { data: profile, error: profileError } = await supabaseAdmin.from('users').select('*').eq('email', email).single();
+    if (profileError && profileError.code !== 'PGRST116') {
+      // PGRST116 = no rows (PostgREST)
+    }
+
+    res.json({ email, authUser: foundAuth || null, profile: profile || null });
+  } catch (err) {
+    console.error('Debug /debug/user error:', err);
+    res.status(500).json({ message: 'Error interno', detail: err.message });
+  }
+});
+
 module.exports = router;

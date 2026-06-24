@@ -112,14 +112,33 @@ El sistema sigue una arquitectura cliente-servidor:
   SUPABASE_SERVICE_ROLE_KEY=sb_secret_xxx
 
   # Optional email settings for password recovery
-  # Para pruebas locales sin SMTP real, usa ENABLE_DEV_EMAILS=true.
-  # Para enviar correos reales, configura MAIL_HOST, MAIL_USER, MAIL_PASS y pon ENABLE_DEV_EMAILS=false.
-  ENABLE_DEV_EMAILS=true
-  MAIL_HOST=
+  # Para pruebas locales sin SMTP real, usa ENABLE_DEV_EMAILS=true y deja los campos SMTP vacíos.
+  # Para enviar correos reales, pon ENABLE_DEV_EMAILS=false y completa los datos SMTP.
+  ENABLE_DEV_EMAILS=false
+  # Gmail
+  # MAIL_HOST=smtp.gmail.com
+  # MAIL_PORT=587
+  # MAIL_SECURE=false
+  # MAIL_USER=tu-correo@gmail.com
+  # MAIL_PASS=tu-app-password
+  # MAIL_FROM=Tu Nombre <tu-correo@gmail.com>
+
+  # Outlook / Microsoft 365
+  # MAIL_HOST=smtp.office365.com
+  # MAIL_PORT=587
+  # MAIL_SECURE=false
+  # MAIL_USER=tu-correo@outlook.com
+  # MAIL_PASS=tu-app-password
+  # MAIL_FROM=Tu Nombre <tu-correo@outlook.com>
+
+  MAIL_HOST=smtp.example.com
   MAIL_PORT=587
-  MAIL_USER=
-  MAIL_PASS=
-  MAIL_FROM=swes-noreply@example.com
+  MAIL_USER=your-smtp-user@example.com
+  MAIL_PASS=your-smtp-password
+  MAIL_FROM=swes-noreply@yourdomain.com
+  MAIL_SECURE=false
+  MAIL_TLS_REJECT_UNAUTHORIZED=true
+  # También puedes usar SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD y MAIL_FROM_ADDRESS.
 
   # Frontend (.env)
   VITE_SUPABASE_URL=https://your-project.supabase.co

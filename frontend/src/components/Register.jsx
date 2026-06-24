@@ -21,11 +21,9 @@ const Register = () => {
 
     const normalizedEmail = data.email?.toLowerCase().trim();
 
-    if (!normalizedEmail?.endsWith('@epn.edu.ec')) {
-      setMensaje({
-        texto: 'Solo se permiten correos institucionales @epn.edu.ec. Si eres visitante, usa "Registrarse con Google".',
-        tipo: 'error'
-      });
+    // Solo exigir correo institucional para emprendedores; visitantes pueden usar cualquier email (o Google)
+    if (role === 'emprendedor' && !normalizedEmail?.endsWith('@epn.edu.ec')) {
+      setMensaje({ texto: 'El correo debe ser institucional @epn.edu.ec para emprendedores.', tipo: 'error' });
       return;
     }
 
@@ -133,10 +131,10 @@ const Register = () => {
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-neutral-text">Correo institucional</label>
+              <label className="text-sm font-medium text-neutral-text">Correo electrónico</label>
               <div className="flex items-center border border-neutral-border rounded-input px-3 gap-2 bg-white focus-within:border-brand-primary focus-within:shadow-input transition-all">
                 <Mail className="w-4 h-4 text-neutral-muted shrink-0" />
-                <input name="email" type="email" placeholder="usuario@epn.edu.ec" required className="flex-1 py-2.5 text-sm text-neutral-text placeholder:text-neutral-muted outline-none bg-transparent" />
+                <input name="email" type="email" placeholder={role === 'emprendedor' ? 'usuario@epn.edu.ec' : 'usuario@example.com'} required className="flex-1 py-2.5 text-sm text-neutral-text placeholder:text-neutral-muted outline-none bg-transparent" />
               </div>
             </div>
 
@@ -198,10 +196,10 @@ const Register = () => {
               </>
             )}
 
-            <p className="text-center text-xs text-neutral-muted">
+                <p className="text-center text-xs text-neutral-muted">
               {role === 'emprendedor'
-                ? 'Los emprendedores deben ingresar su número celular.'
-                : 'Los visitantes pueden registrarse con correo institucional o Google.'}
+                ? 'Los emprendedores deben ingresar su número celular y usar correo @epn.edu.ec.'
+                : 'Los visitantes pueden registrarse con correo (incl. Gmail) o con Google.'}
             </p>
           </form>
 

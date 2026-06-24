@@ -5,8 +5,12 @@ const {
   getUserById,
   updateUser,
   deleteUser,
+  createUser,
 } = require("../controllers/user.controller");
 const { verifyToken, authorizeRoles, authorizeSelfOrAdmin } = require("../middleware/authMiddleware");
+
+// Crear usuario (solo administrador)
+router.post("/users", verifyToken, authorizeRoles("administrador"), createUser);
 
 // Obtener todos los usuarios (solo administrador)
 router.get("/users", verifyToken, authorizeRoles("administrador"), getAllUsers);

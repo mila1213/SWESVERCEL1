@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
-import { getAll, updateResource, deleteResource } from '../services/crudService';
-import { AlertTriangle, CheckCircle2, Trash2 } from 'lucide-react';
+import { getAll, updateResource, deleteResource, createResource } from '../services/crudService';
+import { AlertTriangle, CheckCircle2, Trash2, Plus } from 'lucide-react';
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState({ mostrar: false, texto: '', tipo: '' });
   const [selectedUser, setSelectedUser] = useState(null);
+  const [crearNuevo, setCrearNuevo] = useState(false);
+  const [nuevoUsuario, setNuevoUsuario] = useState({ email: '', password: '', nombre: '', role: 'visitante', phone: '' });
+  const [nuevoErrors, setNuevoErrors] = useState({ email: '', password: '', nombre: '', phone: '' });
   const [modalEliminar, setModalEliminar] = useState({ abierto: false, usuarioId: null });
 
   const mostrarToast = (texto, tipo = 'success') => {
@@ -77,6 +80,85 @@ export default function AdminUsers() {
     }
   };
 
+  const handleCreateUser = async () => {
+    // Validaciones
+    if (!nuevoUsuario.email || !nuevoUsuario.password || !nuevoUsuario.nombre) {
+      mostrarToast('Email, contraseña y nombre son obligatorios', 'error');
+      return;
+    }
+
+    if (nuevoUsuario.password.length < 6) {
+      mostrarToast('La contraseña debe tener mínimo 6 caracteres', 'error');
+      return;
+    }
+
+    if (nuevoUsuario.role === 'emprendedor' && !nuevoUsuario.phone) {
+      mostrarToast('Los emprendedores deben registrar un teléfono', 'error');
+      return;
+    }
+
+    try {
+      const userData = {
+        email: nuevoUsuario.email,
+        password: nuevoUsuario.password,
+        nombre: nuevoUsuario.nombre,
+        role: nuevoUsuario.role,
+      };
+
+      if (nuevoUsuario.role === 'emprendedor') {
+        userData.phone = nuevoUsuario.phone;
+      }
+
+      await createResource('users', userData);
+      mostrarToast('Usuario creado correctamente', 'success');
+      setCrearNuevo(false);
+      setNuevoUsuario({ email: '', password: '', nombre: '', role: 'visitante', phone: '' });
+      await loadUsers();
+    } catch (err) {
+      console.error(err);
+      const errorMsg = err.response?.data?.mensaje || err.message || 'No se pudo crear el usuario';
+      mostrarToast(errorMsg, 'error');
+    }
+  };
+
+  // Validación en tiempo real para el modal de creación
+  const validateNuevo = (field, value) => {
+    const errors = { ...nuevoErrors };
+    if (field === 'email') {
+      const v = (value || nuevoUsuario.email || '').toLowerCase().trim();
+      if (!v) errors.email = 'El email es obligatorio';
+      else if (nuevoUsuario.role === 'emprendedor' && !v.endsWith('@epn.edu.ec')) errors.email = 'Emprendedores requieren correo @epn.edu.ec';
+      else errors.email = '';
+    }
+    if (field === 'password') {
+      const v = value || nuevoUsuario.password || '';
+      if (!v) errors.password = 'La contraseña es obligatoria';
+      else if (v.length < 6) errors.password = 'Mínimo 6 caracteres';
+      else errors.password = '';
+    }
+    if (field === 'nombre') {
+      const v = value || nuevoUsuario.nombre || '';
+      errors.nombre = v ? '' : 'El nombre es obligatorio';
+    }
+    if (field === 'phone') {
+      const v = value || nuevoUsuario.phone || '';
+      if (nuevoUsuario.role === 'emprendedor') {
+        errors.phone = v ? '' : 'El teléfono es obligatorio para emprendedores';
+      } else {
+        errors.phone = '';
+      }
+    }
+    setNuevoErrors(errors);
+  };
+
+  const isCreateValid = () => {
+    if (!nuevoUsuario.email || !nuevoUsuario.password || !nuevoUsuario.nombre) return false;
+    if (nuevoUsuario.role === 'emprendedor' && !nuevoUsuario.phone) return false;
+    if (Object.values(nuevoErrors).some((v) => v && v.length > 0)) return false;
+    return true;
+  };
+  const validationMessage = Object.values(nuevoErrors).find((v) => v) || '';
+
   if (loading) return <div className="p-6">Cargando usuarios...</div>;
 
   return (
@@ -90,34 +172,53 @@ export default function AdminUsers() {
 
       <h2 className="text-2xl font-bold mb-4">Usuarios</h2>
 
+      <button
+        onClick={() => setCrearNuevo(true)}
+        className="mb-6 px-4 py-3 rounded-xl bg-brand-primary text-white text-sm font-semibold hover:bg-brand-hover transition flex items-center gap-2"
+      >
+        <Plus className="w-4 h-4" />
+        Crear nuevo usuario
+      </button>
+
       {/* TARJETAS - Mobile y tablet */}
       <div className="md:hidden flex flex-col gap-3">
-        {users.map((u) => (
-          <div key={u.id} className="bg-white rounded-xl border shadow-sm p-4 flex flex-col gap-3">
-            <p className="text-sm font-semibold text-gray-900 break-all">{u.email}</p>
+        {users.map((u) => {
+          return (
+            <div key={u.id} className="bg-white rounded-xl border shadow-sm p-4 flex flex-col gap-3">
+              <p className="text-sm font-semibold text-gray-900 break-all">{u.email}</p>
 
-            <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs">
-              <p><span className="text-gray-400">Nombre:</span> <span className="text-gray-700">{u.nombre || '-'}</span></p>
-              <p><span className="text-gray-400">Rol:</span> <span className="text-gray-700">{u.role || '-'}</span></p>
-              <p className="col-span-2"><span className="text-gray-400">Teléfono:</span> <span className="text-gray-700">{u.phone || '-'}</span></p>
-            </div>
+              <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs">
+                <p>
+                  <span className="text-gray-400">Nombre:</span>{' '}
+                  <span className="text-gray-700">{u.nombre || '-'}</span>
+                </p>
+                <p>
+                  <span className="text-gray-400">Rol:</span>{' '}
+                  <span className="text-gray-700">{u.role || '-'}</span>
+                </p>
+                <p className="col-span-2">
+                  <span className="text-gray-400">Teléfono:</span>{' '}
+                  <span className="text-gray-700">{u.phone || '-'}</span>
+                </p>
+              </div>
 
-            <div className="flex gap-2 mt-1">
-              <button
-                onClick={() => handleEditClick(u)}
-                className="flex-1 px-3 py-2 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition"
-              >
-                Editar
-              </button>
-              <button
-                onClick={() => handleDeleteClick(u.id)}
-                className="flex-1 px-3 py-2 rounded-xl border border-red-200 bg-red-50 text-red-700 text-xs font-semibold hover:bg-red-100 transition"
-              >
-                Eliminar
-              </button>
+              <div className="flex gap-2 mt-1">
+                <button
+                  onClick={() => handleEditClick(u)}
+                  className="flex-1 px-3 py-2 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition"
+                >
+                  Editar
+                </button>
+                <button
+                  onClick={() => handleDeleteClick(u.id)}
+                  className="flex-1 px-3 py-2 rounded-xl border border-red-200 bg-red-50 text-red-700 text-xs font-semibold hover:bg-red-100 transition"
+                >
+                  Eliminar
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* TABLA - Desktop */}
@@ -159,8 +260,129 @@ export default function AdminUsers() {
         </table>
       </div>
 
+      {crearNuevo && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[200] p-4">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-xl p-6 border border-gray-100">
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">Crear nuevo usuario</h3>
+                <p className="text-sm text-gray-500">Completa los datos para crear un usuario.</p>
+              </div>
+              <button onClick={() => setCrearNuevo(false)} className="text-gray-400 hover:text-gray-600">Cerrar</button>
+            </div>
+
+            <div className="grid gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Email</label>
+                <input
+                  type="email"
+                  value={nuevoUsuario.email}
+                  onChange={(e) => { const v = e.target.value; setNuevoUsuario((prev) => ({ ...prev, email: v })); validateNuevo('email', v); }}
+                  placeholder="usuario@example.com"
+                  className={`w-full rounded-xl border px-4 py-3 text-sm ${nuevoErrors.email ? 'border-red-300 bg-red-50' : 'border-gray-200 bg-white'}`}
+                />
+                {nuevoErrors.email && <p className="mt-2 text-xs text-red-600">{nuevoErrors.email}</p>}
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Contraseña</label>
+                <input
+                  type="password"
+                  value={nuevoUsuario.password}
+                  onChange={(e) => { const v = e.target.value; setNuevoUsuario((prev) => ({ ...prev, password: v })); validateNuevo('password', v); }}
+                  placeholder="Mínimo 6 caracteres"
+                  className={`w-full rounded-xl border px-4 py-3 text-sm ${nuevoErrors.password ? 'border-red-300 bg-red-50' : 'border-gray-200 bg-white'}`}
+                />
+                {nuevoErrors.password && <p className="mt-2 text-xs text-red-600">{nuevoErrors.password}</p>}
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Nombre</label>
+                <input
+                  type="text"
+                  value={nuevoUsuario.nombre}
+                  onChange={(e) => { const v = e.target.value; setNuevoUsuario((prev) => ({ ...prev, nombre: v })); validateNuevo('nombre', v); }}
+                  placeholder="Nombre completo"
+                  className={`w-full rounded-xl border px-4 py-3 text-sm ${nuevoErrors.nombre ? 'border-red-300 bg-red-50' : 'border-gray-200 bg-white'}`}
+                />
+                {nuevoErrors.nombre && <p className="mt-2 text-xs text-red-600">{nuevoErrors.nombre}</p>}
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Rol</label>
+                <select
+                  value={nuevoUsuario.role}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    const emailVal = nuevoUsuario.email || '';
+                    const phoneVal = nuevoUsuario.phone || '';
+                    setNuevoUsuario((prev) => ({ ...prev, role: val }));
+                    // Ajustar errores dependiendo del rol seleccionado
+                    setNuevoErrors((prev) => {
+                      const next = { ...prev };
+                      if (val === 'emprendedor') {
+                        if (!emailVal.toLowerCase().endsWith('@epn.edu.ec')) next.email = 'Emprendedores requieren correo @epn.edu.ec';
+                        if (!phoneVal) next.phone = 'El teléfono es obligatorio para emprendedores';
+                      } else {
+                        // limpiar error de phone para no emprendedores
+                        if (next.phone) next.phone = '';
+                        // limpiar email error solo si era por dominio
+                        if (next.email === 'Emprendedores requieren correo @epn.edu.ec') next.email = '';
+                      }
+                      return next;
+                    });
+                  }}
+                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm"
+                >
+                  <option value="visitante">visitante</option>
+                  <option value="emprendedor">emprendedor</option>
+                  <option value="administrador">administrador</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Teléfono</label>
+                <input
+                  type="text"
+                  value={nuevoUsuario.phone}
+                  onChange={(e) => { const v = e.target.value; setNuevoUsuario((prev) => ({ ...prev, phone: v })); validateNuevo('phone', v); }}
+                  placeholder="Opcional (requerido para emprendedores)"
+                  disabled={nuevoUsuario.role !== 'emprendedor'}
+                  className={`w-full rounded-xl border px-4 py-3 text-sm ${nuevoErrors.phone ? 'border-red-300 bg-red-50' : nuevoUsuario.role !== 'emprendedor' ? 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed' : 'border-gray-200 bg-white text-gray-900'}`}
+                />
+                {nuevoErrors.phone && <p className="mt-2 text-xs text-red-600">{nuevoErrors.phone}</p>}
+                {nuevoUsuario.role === 'emprendedor' && !nuevoErrors.phone && (
+                  <p className="mt-2 text-xs text-orange-600">El teléfono es obligatorio para emprendedores.</p>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setCrearNuevo(false);
+                  setNuevoUsuario({ email: '', password: '', nombre: '', role: 'visitante', phone: '' });
+                }}
+                className="px-4 py-3 rounded-xl border border-gray-300 text-sm text-gray-700 hover:bg-gray-50 transition"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleCreateUser}
+                disabled={!isCreateValid()}
+                className={`px-4 py-3 rounded-xl text-white text-sm font-semibold transition ${isCreateValid() ? 'bg-brand-primary hover:bg-brand-hover' : 'bg-gray-300 cursor-not-allowed'}`}
+              >
+                Crear usuario
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {selectedUser && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[200] p-4">
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-xl p-6 border border-gray-100">
             <div className="flex items-center justify-between mb-5">
               <div>
@@ -235,7 +457,7 @@ export default function AdminUsers() {
       )}
 
       {modalEliminar.abierto && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[200] p-4">
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6 border border-gray-100 text-center">
             <div className="flex justify-center">
               <Trash2 className="w-10 h-10 text-red-500" />
