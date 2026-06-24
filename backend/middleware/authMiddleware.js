@@ -31,13 +31,13 @@ const verifyToken = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
 
-    console.log('🔐 Verificando token...');
+    console.log(' Verificando token...');
     console.log('   Método:', req.method);
     console.log('   Ruta:', req.path);
     console.log('   Header Authorization presente:', !!authHeader);
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      console.warn('⚠️ Token no proporcionado o formato incorrecto');
+      console.warn(' Token no proporcionado o formato incorrecto');
       return res.status(401).json({ message: "Token no proporcionado o formato inválido" });
     }
 
@@ -46,11 +46,11 @@ const verifyToken = async (req, res, next) => {
 
     const user = await getUserFromToken(token);
     if (!user) {
-      console.error('❌ Token inválido o expirado');
+      console.error('Token inválido o expirado');
       return res.status(401).json({ message: "Token inválido o expirado" });
     }
 
-    console.log('   ✅ Usuario autenticado:', user.email);
+    console.log('    Usuario autenticado:', user.email);
 
     const { data: profile, error: profileError } = await supabaseAdmin
       .from("users")
@@ -126,10 +126,10 @@ const verifyToken = async (req, res, next) => {
       console.error("Error leyendo perfil en middleware:", profileError);
     }
 
-    console.log('✅ Verificación exitosa');
+    console.log(' Verificación exitosa');
     next();
   } catch (error) {
-    console.error('❌ Error en verifyToken:', error?.message || error);
+    console.error(' Error en verifyToken:', error?.message || error);
     return res.status(401).json({ message: "Token inválido o expirado", error: error?.message || String(error) });
   }
 };
