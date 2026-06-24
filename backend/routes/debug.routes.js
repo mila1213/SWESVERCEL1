@@ -61,4 +61,25 @@ router.get('/debug/user', async (req, res) => {
   }
 });
 
+// Endpoint de depuración: forzar actualización de usuario (sin auth)
+router.post('/debug/update-user', async (req, res) => {
+  try {
+    const { id, updates } = req.body || {};
+    if (!id || !updates) return res.status(400).json({ message: 'Falta id o updates en body' });
+
+    const { data, error } = await supabaseAdmin
+      .from('users')
+      .update({ ...updates })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) return res.status(500).json({ message: 'Error actualizando usuario (debug)', detail: error.message || error });
+    res.json({ ok: true, data });
+  } catch (err) {
+    console.error('Debug update-user error:', err);
+    res.status(500).json({ message: 'Error interno debug update-user', detail: err.message });
+  }
+});
+
 module.exports = router;

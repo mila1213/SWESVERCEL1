@@ -46,7 +46,7 @@ const updateUser = async (req, res) => {
 
     const { data, error } = await supabaseAdmin
       .from("users")
-      .update({ ...req.body, updated_at: new Date().toISOString() })
+      .update({ ...req.body })
       .eq("id", id)
       .select()
       .single();
