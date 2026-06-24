@@ -160,7 +160,8 @@ Nota: El diseño presentado en Figma es una propuesta conceptual y puede sufrir 
 
 3. Inicio de sesion
 
-   <img width="702" height="443" alt="image" src="https://github.com/user-attachments/assets/44d85d26-9478-4c7b-821e-91606538f5b2" />
+   <img width="1907" height="892" alt="image" src="https://github.com/user-attachments/assets/31dab834-a489-403c-bb78-11965e949763" />
+
 
 5. Autenticacion de inicio de sesion: Credenciales incorrectas
    
@@ -174,10 +175,14 @@ Nota: El diseño presentado en Figma es una propuesta conceptual y puede sufrir 
 
    <img width="701" height="441" alt="image" src="https://github.com/user-attachments/assets/c70a2252-1fa8-48d2-a786-4d1ea86ee7a3" />
 
-4. Autenticacion en Firebase
+4. Base de dtos en Supabase
+   <img width="1062" height="731" alt="image" src="https://github.com/user-attachments/assets/86963e05-903a-4300-86e3-330a8a6911e6" />
 
-   <img width="1535" height="629" alt="image" src="https://github.com/user-attachments/assets/44a5ce2a-9cbb-4575-8726-0daa01138c08" />
+   <img width="1376" height="441" alt="image" src="https://github.com/user-attachments/assets/46fa3481-6c64-40a1-bb01-bbb4e7ceaff2" />
 
+
+
+  
 
 ---
 
